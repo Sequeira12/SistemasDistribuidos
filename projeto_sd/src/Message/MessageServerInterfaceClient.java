@@ -36,6 +36,8 @@ public class MessageServerInterfaceClient {
 					String Coimbra = "Coimbra";
 					String mensagem = h.TokenUrl(Coimbra);
 					System.out.println("HelloClient: " + mensagem);
+				}else{
+					break;
 				}
 			}
 		} catch (Exception e) {

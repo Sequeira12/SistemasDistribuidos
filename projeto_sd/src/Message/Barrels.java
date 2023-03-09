@@ -1,36 +1,30 @@
 package Message;
 
-import java.lang.reflect.Array;
-import java.rmi.*;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.*;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-public class MessageServerInterfaceServer extends UnicastRemoteObject implements MessageServerInterface,MessageBarrelsInterface {
+public class Barrels extends UnicastRemoteObject implements MessageServerInterface {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	HashMap<String, ArrayList<Element>> urls_ligacoes = new HashMap<String, ArrayList<Element>>();
 	HashMap<String,ArrayList<String>> tokens_url = new HashMap<String, ArrayList<String>>();
-	public MessageBarrelsInterface() throws RemoteException {
+	public Barrels() throws RemoteException {
 		super();
 	}
-	public MessageServerInterfaceServer() throws RemoteException {
-		super();
-	}
-
-
 	public String TokenUrl(String token) throws RemoteException{
 		ArrayList<String> a = tokens_url.get("coimbra");
 
@@ -83,23 +77,25 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 			e.printStackTrace();
 		}
 
-	}
 
+
+
+
+
+	}
 
 	public String sayHello() throws RemoteException {
 
 		return "Bem-vindo\nEscolha as opções:\n1-Url para indexar\n2-token para procurar\n0-exit\nObrigado!!\n";
 	}
+
 	// =========================================================
 	public static void main(String args[]) {
 
 		try {
-			MessageBarrelsInterface a = new MessageServerInterfaceServer() ;
-			MessageServerInterfaceServer h = new MessageServerInterfaceServer();
+			Barrels h = new Barrels();
 			Registry r = LocateRegistry.createRegistry(7001);
 			r.rebind("SD", h);
-
-
 			System.out.println("Hello Server ready.");
 
 		} catch (RemoteException re) {
@@ -107,18 +103,4 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 		}
 	}
 
-	@Override
-	public String sayHello2() throws RemoteException {
-		return null;
-	}
-
-	@Override
-	public String TokenUrl2(String token) throws RemoteException {
-		return null;
-	}
-
-	@Override
-	public void SendInfo2(String url) throws RemoteException {
-
-	}
 }
