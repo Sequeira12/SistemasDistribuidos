@@ -23,9 +23,8 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
 	HashMap<String, ArrayList<Element>> urls_ligacoes = new HashMap<String, ArrayList<Element>>();
 	HashMap<String,ArrayList<String>> tokens_url = new HashMap<String, ArrayList<String>>();
-	public MessageBarrelsInterface() throws RemoteException {
-		super();
-	}
+
+
 	public MessageServerInterfaceServer() throws RemoteException {
 		super();
 	}
@@ -94,31 +93,28 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 	public static void main(String args[]) {
 
 		try {
+			/**
+			 * Fazer por multicast a ligacao do Barrels com o Search Module
+			 * ter uma array com os (ips portos) dos barrels que estão conectados
+			 *
+			 * Fazer funcao aqui para que o barrels invoce para adicionar a porta dele a um arraylist de porta globais do servidor
+			 *
+			 */
 			MessageBarrelsInterface a = new MessageServerInterfaceServer() ;
 			MessageServerInterfaceServer h = new MessageServerInterfaceServer();
 			Registry r = LocateRegistry.createRegistry(7001);
+			//System.out.println(RemoteServer.getClientHost());
+
 			r.rebind("SD", h);
 
 
-			System.out.println("Hello Server ready.");
 
 		} catch (RemoteException re) {
 			System.out.println("Exception in HelloImpl.main: " + re);
 		}
 	}
 
-	@Override
-	public String sayHello2() throws RemoteException {
-		return null;
-	}
 
-	@Override
-	public String TokenUrl2(String token) throws RemoteException {
-		return null;
-	}
-
-	@Override
-	public void SendInfo2(String url) throws RemoteException {
-
-	}
 }
+
+
