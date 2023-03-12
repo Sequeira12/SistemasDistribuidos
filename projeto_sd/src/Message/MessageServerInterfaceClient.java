@@ -1,6 +1,8 @@
 package Message;
 
 import java.rmi.registry.LocateRegistry;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class MessageServerInterfaceClient {
@@ -15,10 +17,7 @@ public class MessageServerInterfaceClient {
 		try {
 
 			MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
-
-			String message = h.sayHello();
-
-			System.out.println("HelloClient: " + message);
+			System.out.println(h.sayHello());
 			String url = "http://www.uc.pt";
 
 			Scanner scanner = new Scanner(System.in);
@@ -32,16 +31,29 @@ public class MessageServerInterfaceClient {
 
 
 				if (numero == 1) {
+					System.out.println("insira a sua procura:");
+					Scanner scanner2 = new Scanner(System.in);
+					String palavra = scanner2.nextLine();
 
-					h.SendInfo("http://www.uc.pt");
-				}else if(numero == 2){
-					String Coimbra = "Coimbra";
-					String mensagem = h.TokenUrl(Coimbra);
+					ArrayList<String> linksAssociados = h.FindUrlWithToken(palavra);
+					System.out.println("Links Associados à sua procura:");
+					if(linksAssociados == null){
+						System.out.println("Sem resultados encontrados!!");
+					}else {
+						for (int i = 0; i < Objects.requireNonNull(linksAssociados).size(); i++) {
+							System.out.printf("- %s\n", linksAssociados.get(i));
+						}
+					}
+				/*	else if(numero == 2){
+				tring Coimbra = "Coimbra";
+					String mensagem = h.SendUrlQueue(Coimbra);
 					System.out.println("HelloClient: " + mensagem);
+				*/
 				}else{
+
 					break;
 				}
-				System.out.println("Digite um número:");
+				System.out.println("\nDigite um número:");
 			}
 		} catch (Exception e) {
 			System.out.println("Exception in main: " + e);
@@ -51,3 +63,6 @@ public class MessageServerInterfaceClient {
 	}
 
 }
+
+
+

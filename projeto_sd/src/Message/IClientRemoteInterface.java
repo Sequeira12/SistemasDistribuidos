@@ -1,11 +1,10 @@
 package Message;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public interface IClientRemoteInterface extends Remote {
-    void clientMethod() throws RemoteException;
-    void clientMethodWithArgument(String argument) throws RemoteException;
 
-    void InsereUrl(String url) throws RemoteException;
+    ArrayList<String> InsereUrl(String url) throws RemoteException;
 
 }

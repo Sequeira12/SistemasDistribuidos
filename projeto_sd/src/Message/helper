@@ -112,3 +112,9 @@ public class Barrels extends UnicastRemoteObject implements MessageBarrelsInterf
 
 
 }
+
+
+
+
+
+/Users/brunosequeira/Library/Java/JavaVirtualMachines/openjdk-19.0.2/Contents/Home/bin/java -classpath /Users/brunosequeira/IdeaProjects/PROJETOSD/out/production/PROJETOSD:/Users/brunosequeira/Desktop/jsoup-1.15.4.jar Message.Barrels

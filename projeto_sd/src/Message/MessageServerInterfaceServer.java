@@ -18,7 +18,8 @@ import java.util.StringTokenizer;
 
 public class MessageServerInterfaceServer extends UnicastRemoteObject implements MessageServerInterface,IServerRemoteInterface {
 
-	public IClientRemoteInterface clientOn;
+	public static IClientRemoteInterface clientOn;
+	public static IServerRemoteInterface Servidor;
 
 
 
@@ -29,60 +30,36 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
 	public void registerClient(IClientRemoteInterface client) throws RemoteException {
 		this.clientOn = client;
-
 		System.out.println("Barrel registrado no servidor.");
 
 
 	}
 
 	public void unregisterClient(IClientRemoteInterface client) throws RemoteException {
-
+		this.clientOn = null;
 		System.out.println("Barrel removido do servidor.");
 	}
 
-	public void serverMethod() throws RemoteException {
-		System.out.println("Método do servidor chamado.");
-		if (this.clientOn != null) {
-			this.clientOn.clientMethod();
-		}
-	}
 
+	public ArrayList<String> FindUrlWithToken(String url) throws RemoteException  {
 
-	public void callClientMethod(String argument) throws RemoteException {
-		System.out.println("Método do servidor chamando método do Barrel com argumento: " + argument);
-		if (this.clientOn  != null) {
-			this.clientOn.clientMethodWithArgument(argument);
-		}
-	}
-
-
-
-	public void SendInfo(String url) throws RemoteException  {
-
-		System.out.printf("SEND Info %s\n",url);
+		ArrayList<String> connectados = null;
 		if(this.clientOn != null) {
-			System.out.println("HHAHA\n");
-			System.out.printf("%s\n",url);
-			clientOn.InsereUrl(url);
-		}else{
-			System.out.println("NULL\n");
+			connectados = clientOn.InsereUrl(url);
+
 		}
+		return connectados;
 	}
+
 	public String sayHello() throws RemoteException {
-		if(clientOn != null){
 
-			System.out.println("AHHAHAAH\n");
-		}
-		return null;
+		return "Bem-vindo\nEscolha as opções:\n1-Url para indexar\n2-token para procurar\n0-exit\nObrigado!!\n";
 	}
 
+	public String SendUrlQueue(String token) throws RemoteException {
 
-	public String TokenUrl(String token) throws RemoteException {
-		Barrels novo = new Barrels();
-		if(novo == null){
-			System.out.println("OKKKK\n");
-		}
-		return null;
+		return  null;
+		//return mensagem;
 	}
 	// =========================================================
 	public static void main(String args[]) {
@@ -100,30 +77,12 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 			Registry r = LocateRegistry.createRegistry(7001);
 			r.rebind("SD", h);
 
-/*
 
-			MessageBarrelsInterface g = new MessageServerInterfaceServer();
-			Registry b = LocateRegistry.createRegistry(7002);
-			b.rebind("SB",g);
 
-			ClientObjetoRemoto client = null;
 
-			while( client == null) {
-				try {
-					client = (ClientObjetoRemoto) Naming.lookup("SB");
-					System.out.println();
-				} catch (Exception e) {
-					System.out.println("Waiting for client to connect...");
-
-				}
-			}
-
-			System.out.println("OAOAOAO\n");
-
-*/
-			IServerRemoteInterface serverObj =  new MessageServerInterfaceServer();
+			Servidor =  new MessageServerInterfaceServer();
 			java.rmi.registry.LocateRegistry.createRegistry(1099);
-			java.rmi.Naming.rebind("ServerObject", serverObj);
+			java.rmi.Naming.rebind("ServerObject", Servidor);
 			System.out.println("Servidor pronto para receber chamadas remotas.");
 
 
