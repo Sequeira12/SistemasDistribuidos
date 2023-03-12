@@ -1,6 +1,7 @@
 package Message;
 
 import java.lang.reflect.Array;
+import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -15,14 +16,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-public class MessageServerInterfaceServer extends UnicastRemoteObject implements MessageServerInterface,MessageBarrelsInterface {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class MessageServerInterfaceServer extends UnicastRemoteObject implements MessageServerInterface,IServerRemoteInterface {
 
-	HashMap<String, ArrayList<Element>> urls_ligacoes = new HashMap<String, ArrayList<Element>>();
-	HashMap<String,ArrayList<String>> tokens_url = new HashMap<String, ArrayList<String>>();
+	public IClientRemoteInterface clientOn;
+
 
 
 	public MessageServerInterfaceServer() throws RemoteException {
@@ -30,64 +27,62 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 	}
 
 
-	public String TokenUrl(String token) throws RemoteException{
-		ArrayList<String> a = tokens_url.get("coimbra");
+	public void registerClient(IClientRemoteInterface client) throws RemoteException {
+		this.clientOn = client;
+
+		System.out.println("Barrel registrado no servidor.");
 
 
-		System.out.printf("O resultado dos tokens: %s\n",a.get(0));
-		return a.get(1);
 	}
-	public void SendInfo(String url) throws RemoteException {
-		try {
-			Document doc = Jsoup.connect(url).get();
-			StringTokenizer tokens = new StringTokenizer(doc.text());
 
-			while (tokens.hasMoreElements() ) {
-				System.out.println(tokens.nextToken().toLowerCase());
-				String palavra = tokens.nextToken().toLowerCase();
-				if(!tokens_url.containsKey(palavra)){
+	public void unregisterClient(IClientRemoteInterface client) throws RemoteException {
 
-					int a = palavra.compareTo("coimbra");
-					if(a > 0){
-						System.out.print("YHHHH\n");
-					}
-					ArrayList<String> urls = new ArrayList<>();
-					urls.add(url);
-					tokens_url.put(palavra,urls);
-				}else{
-					tokens_url.get(palavra).add(url);
-				}
+		System.out.println("Barrel removido do servidor.");
+	}
 
-			}
-			Elements links = doc.select("a[href]");
-			for (Element link : links) {
-				System.out.println(link.text() + "\n" + link.attr("abs:href") + "\n");
-				if (!urls_ligacoes.containsKey(url)) {
-					ArrayList<Element> nova = new ArrayList<>();
-					nova.add(link);
-					urls_ligacoes.put(url, nova);
-				}else {
-					urls_ligacoes.get(url).add(link);
-
-				}
-			}
-			ArrayList<Element> fim = urls_ligacoes.get(url);
-			System.out.println("RESULTADO\n");
-			for(Element link: fim){
-				System.out.println(link.attr("abs:href"));
-			}
-
-
-		} catch (IOException e) {
-			e.printStackTrace();
+	public void serverMethod() throws RemoteException {
+		System.out.println("Método do servidor chamado.");
+		if (this.clientOn != null) {
+			this.clientOn.clientMethod();
 		}
-
 	}
 
 
-	public String sayHello() throws RemoteException {
+	public void callClientMethod(String argument) throws RemoteException {
+		System.out.println("Método do servidor chamando método do Barrel com argumento: " + argument);
+		if (this.clientOn  != null) {
+			this.clientOn.clientMethodWithArgument(argument);
+		}
+	}
 
-		return "Bem-vindo\nEscolha as opções:\n1-Url para indexar\n2-token para procurar\n0-exit\nObrigado!!\n";
+
+
+	public void SendInfo(String url) throws RemoteException  {
+
+		System.out.printf("SEND Info %s\n",url);
+		if(this.clientOn != null) {
+			System.out.println("HHAHA\n");
+			System.out.printf("%s\n",url);
+			clientOn.InsereUrl(url);
+		}else{
+			System.out.println("NULL\n");
+		}
+	}
+	public String sayHello() throws RemoteException {
+		if(clientOn != null){
+
+			System.out.println("AHHAHAAH\n");
+		}
+		return null;
+	}
+
+
+	public String TokenUrl(String token) throws RemoteException {
+		Barrels novo = new Barrels();
+		if(novo == null){
+			System.out.println("OKKKK\n");
+		}
+		return null;
 	}
 	// =========================================================
 	public static void main(String args[]) {
@@ -100,19 +95,48 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 			 * Fazer funcao aqui para que o barrels invoce para adicionar a porta dele a um arraylist de porta globais do servidor
 			 *
 			 */
-			MessageBarrelsInterface a = new MessageServerInterfaceServer() ;
+
 			MessageServerInterfaceServer h = new MessageServerInterfaceServer();
 			Registry r = LocateRegistry.createRegistry(7001);
-			//System.out.println(RemoteServer.getClientHost());
-
 			r.rebind("SD", h);
 
+/*
+
+			MessageBarrelsInterface g = new MessageServerInterfaceServer();
+			Registry b = LocateRegistry.createRegistry(7002);
+			b.rebind("SB",g);
+
+			ClientObjetoRemoto client = null;
+
+			while( client == null) {
+				try {
+					client = (ClientObjetoRemoto) Naming.lookup("SB");
+					System.out.println();
+				} catch (Exception e) {
+					System.out.println("Waiting for client to connect...");
+
+				}
+			}
+
+			System.out.println("OAOAOAO\n");
+
+*/
+			IServerRemoteInterface serverObj =  new MessageServerInterfaceServer();
+			java.rmi.registry.LocateRegistry.createRegistry(1099);
+			java.rmi.Naming.rebind("ServerObject", serverObj);
+			System.out.println("Servidor pronto para receber chamadas remotas.");
 
 
 		} catch (RemoteException re) {
 			System.out.println("Exception in HelloImpl.main: " + re);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
 		}
 	}
+
+
+
+
 
 
 }

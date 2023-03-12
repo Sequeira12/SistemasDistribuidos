@@ -25,13 +25,15 @@ public class MessageServerInterfaceClient {
 			System.out.println("Digite um número:");
 
 
+
 			while(scanner.hasNextInt()){
 
 				int numero = scanner.nextInt();
 
 
 				if (numero == 1) {
-					h.SendInfo(url);
+
+					h.SendInfo("http://www.uc.pt");
 				}else if(numero == 2){
 					String Coimbra = "Coimbra";
 					String mensagem = h.TokenUrl(Coimbra);
@@ -39,6 +41,7 @@ public class MessageServerInterfaceClient {
 				}else{
 					break;
 				}
+				System.out.println("Digite um número:");
 			}
 		} catch (Exception e) {
 			System.out.println("Exception in main: " + e);

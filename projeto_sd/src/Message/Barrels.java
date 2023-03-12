@@ -6,38 +6,52 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-public class Barrels extends UnicastRemoteObject implements MessageServerInterface {
+public class Barrels extends UnicastRemoteObject implements IClientRemoteInterface {
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-
+	private IServerRemoteInterface server;
 	HashMap<String, ArrayList<Element>> urls_ligacoes = new HashMap<String, ArrayList<Element>>();
-	HashMap<String,ArrayList<String>> tokens_url = new HashMap<String, ArrayList<String>>();
+	HashMap<String, ArrayList<String>> tokens_url = new HashMap<String, ArrayList<String>>();
+
 	public Barrels() throws RemoteException {
 		super();
 	}
-	public String TokenUrl(String token) throws RemoteException{
-		ArrayList<String> a = tokens_url.get("coimbra");
+	public void connectToServer(IClientRemoteInterface client) {
+		try {
+			server = (IServerRemoteInterface) Naming.lookup("ServerObject");
+
+			server.registerClient(client);
+			System.out.println("Conexão com o servidor estabelecida.");
+		} catch (Exception e) {
+			System.out.println("Erro: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	public String TokenUrlBarrel(String valor){
+		ArrayList<String> a = tokens_url.get(valor);
 
 
 		System.out.printf("O resultado dos tokens: %s\n",a.get(0));
-		return a.get(1);
+		return a.get(0);
 	}
-	public void SendInfo(String url) throws RemoteException {
+
+	public void InsereUrl(String url){
+		System.out.println("HEYYY\n");
 		try {
 			Document doc = Jsoup.connect(url).get();
 			StringTokenizer tokens = new StringTokenizer(doc.text());
-
-			while (tokens.hasMoreElements() ) {
+			int conta = 0;
+			while (tokens.hasMoreElements() && ++conta<20) {
 				System.out.println(tokens.nextToken().toLowerCase());
 				String palavra = tokens.nextToken().toLowerCase();
 				if(!tokens_url.containsKey(palavra)){
@@ -77,26 +91,39 @@ public class Barrels extends UnicastRemoteObject implements MessageServerInterfa
 			e.printStackTrace();
 		}
 
-
-
-
-
-
 	}
 
-	public String sayHello() throws RemoteException {
-
-		return "Bem-vindo\nEscolha as opções:\n1-Url para indexar\n2-token para procurar\n0-exit\nObrigado!!\n";
+	public void disconnectFromServer() {
+		try {
+			if (server != null) {
+				server.unregisterClient(this);
+				System.out.println("Desconectado do servidor.");
+			}
+		} catch (Exception e) {
+			System.out.println("Erro: " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
+
+	public void clientMethod() throws RemoteException {
+		System.out.println("Método do cliente chamado pelo servidor.");
+	}
+
+	public void clientMethodWithArgument(String argument) throws RemoteException {
+		System.out.println("Método do cliente chamado pelo servidor com argumento: " + argument);
+	}
+
 
 	// =========================================================
 	public static void main(String args[]) {
 
 		try {
-			Barrels h = new Barrels();
-			Registry r = LocateRegistry.createRegistry(7001);
-			r.rebind("SD", h);
-			System.out.println("Hello Server ready.");
+			Barrels clientObj = new Barrels();
+			clientObj.connectToServer(clientObj);
+			//clientObj.InsereUrl("http://www.uc.pt");
+		//	String a = clientObj.TokenUrlBarrel("coimbra"); FUNCIONA COM ESTA MERDA(MAS NAO PODE)
+
+			//System.out.println(a);
 
 		} catch (RemoteException re) {
 			System.out.println("Exception in HelloImpl.main: " + re);
