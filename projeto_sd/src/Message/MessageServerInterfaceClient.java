@@ -18,6 +18,7 @@ public class MessageServerInterfaceClient {
 
 			MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
 
+
 			String url = "http://www.uc.pt";
 
 			Scanner scanner = new Scanner(System.in);
@@ -31,7 +32,7 @@ public class MessageServerInterfaceClient {
 
 
 				if (numero == 1) {
-					System.out.println("insira a sua procura:");
+
 					Scanner scanner2 = new Scanner(System.in);
 					String palavra = scanner2.nextLine();
 
@@ -48,13 +49,14 @@ public class MessageServerInterfaceClient {
 							}
 						}
 					}
-				/*	else if(numero == 2){
-				tring Coimbra = "Coimbra";
-					String mensagem = h.SendUrlQueue(Coimbra);
-					System.out.println("HelloClient: " + mensagem);
-				*/
-				}else{
+				}else if(numero == 2){
+					System.out.println("insira a sua procura:");
+					Scanner scanner2 = new Scanner(System.in);
+					String palavra = scanner2.nextLine();
+					h.SendUrltoQueue(palavra);
 
+
+				}else{
 					break;
 				}
 				System.out.println("\nDigite um número:");

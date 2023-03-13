@@ -28,7 +28,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
     }
     public static void main(String[] args) throws RemoteException {
 
-        Urls_To_Downloaders.add("https://www.uc.pt");
+        //Urls_To_Downloaders.add("https://www.uc.pt");
 
         QueueUrls h = new QueueUrls();
         Registry r = LocateRegistry.createRegistry(7003);

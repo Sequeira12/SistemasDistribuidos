@@ -13,6 +13,8 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     public static ArrayList<IClientRemoteInterface> Barrels = new ArrayList<>();
     public static IServerRemoteInterface Servidor;
 
+    public static IQueueRemoteInterface iq;
+
 
     public MessageServerInterfaceServer() throws RemoteException {
         super();
@@ -82,6 +84,10 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         return connectados;
     }
 
+    public void SendUrltoQueue(String url) throws RemoteException {
+        iq.coloca(url);
+    }
+
     public String sayHello() throws RemoteException {
 
         return "Bem-vindo\nEscolha as opções:\n1-Url para indexar\n2-token para procurar\n0-exit\nObrigado!!\n";
@@ -105,6 +111,9 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
              *
              */
 
+
+            iq = (IQueueRemoteInterface) LocateRegistry.getRegistry(7003).lookup("QD");
+
             MessageServerInterfaceServer h = new MessageServerInterfaceServer();
             Registry r = LocateRegistry.createRegistry(7001);
             r.rebind("SD", h);
@@ -119,7 +128,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
         } catch (RemoteException re) {
             System.out.println("Exception in HelloImpl.main: " + re);
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | NotBoundException e) {
             throw new RuntimeException(e);
         }
     }

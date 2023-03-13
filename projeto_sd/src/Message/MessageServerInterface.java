@@ -11,5 +11,7 @@ public interface MessageServerInterface extends Remote, IServerRemoteInterface {
 	ArrayList<String> FindUrlWithToken(String url) throws RemoteException;
 	String sayHello() throws RemoteException;
 
+	void SendUrltoQueue(String url) throws RemoteException;
+
 
 }
