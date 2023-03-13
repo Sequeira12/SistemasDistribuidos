@@ -1,0 +1,70 @@
+varios downloaders
+varios barrels
+
+
+hashset de uma classe completa em vez de uma string
+estrutura com todos os links ja pesquisados
+
+
+
+downloader:
+url, download, separa as palavras, separa urls que encontre
+
+
+
+
+exemplo:
+	noticias futebol
+
+pesquisar todos os links onde aparece noticias  e futebol e apresentar os que apresentam os 2
+
+
+o, a, de, das, -> stop words -> ignorar
+
+
+guardar score dos links, ou seja, quantos links apontam para um certo link
+
+
+search module (server) atualiza a pagina de informacao
+
+
+varios downloaders a correr
+
+varios barrels a correr para manter o sistema a funcionar caso algum morra
+
+
+aplicacao independente para a fila de urls
+
+meter relatorio as varias fases do protocolo multicast
+
+
+
+
+relatorio:
+
+capa
+header do logo do dei
+indice
+numerar seccoes e subseccoes
+respeitar margens das paginas
+texto justificado
+referencias a sites, imagens
+paginas numeradas
+
+tabelas numeradas por cima
+figuras numeradas por baixo
+
+referenciar tabelas e figuras no texto, p.ex "como podemos ver na figura 3"
+
+conclusao: parte onde temos mais liberdade, dar a nossa opiniao sobre o trabalho, dificuldades, carga de trabalho
+
+
+
+storage barrels independentes -> por um a correr de cada vez
+
+
+
+
+
+
+
