@@ -1,28 +1,38 @@
 package Message;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.net.MalformedURLException;
+import java.rmi.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.*;
 
-public class QueueUrls {
+public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterface{
 
     public static Queue<String> Urls_To_Downloaders = new ConcurrentLinkedQueue<>();
 
-    public synchronized void retira(){
-
+    public QueueUrls() throws RemoteException{
+        super();
     }
-    public synchronized void coloca(){
 
+    public synchronized String retira(){
+        String ret = null;
+        if(!Urls_To_Downloaders.isEmpty()){
+            ret = Urls_To_Downloaders.peek();
+            Urls_To_Downloaders.remove();
+        }
+        return ret;
     }
-    public static void main(String[] args) {
+    public synchronized void coloca(String e){
+        Urls_To_Downloaders.add(e);
+    }
+    public static void main(String[] args) throws RemoteException {
 
-        Urls_To_Downloaders.add("Ola");
-        Urls_To_Downloaders.add("A ");
-        Urls_To_Downloaders.add("TUA");
-        Urls_To_Downloaders.add("MAE");
+        Urls_To_Downloaders.add("https://www.uc.pt");
 
+        QueueUrls h = new QueueUrls();
+        Registry r = LocateRegistry.createRegistry(7003);
+        r.rebind("QD", h);
 
-        Iterator<String> iterator = Urls_To_Downloaders.iterator();
-        while(iterator.hasNext()){
-            String element = (String) iterator.next();
-            System.out.print(element + ' ' + "\n"); }
     }
 }
