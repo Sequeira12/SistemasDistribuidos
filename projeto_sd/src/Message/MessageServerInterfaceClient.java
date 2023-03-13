@@ -17,14 +17,14 @@ public class MessageServerInterfaceClient {
 		try {
 
 			MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
-			System.out.println(h.sayHello());
+
 			String url = "http://www.uc.pt";
 
 			Scanner scanner = new Scanner(System.in);
 			System.out.println("Digite um número:");
 
 
-
+			System.out.println(h.sayHello());
 			while(scanner.hasNextInt()){
 
 				int numero = scanner.nextInt();
@@ -37,11 +37,15 @@ public class MessageServerInterfaceClient {
 
 					ArrayList<String> linksAssociados = h.FindUrlWithToken(palavra);
 					System.out.println("Links Associados à sua procura:");
-					if(linksAssociados == null){
+					if(linksAssociados == null ){
 						System.out.println("Sem resultados encontrados!!");
 					}else {
-						for (int i = 0; i < Objects.requireNonNull(linksAssociados).size(); i++) {
-							System.out.printf("- %s\n", linksAssociados.get(i));
+						if( linksAssociados.get(0).compareTo("Sem Resultados") == 0){
+							System.out.println("Barrels Indisponiveis!!");
+						}else {
+							for (int i = 0; i < Objects.requireNonNull(linksAssociados).size(); i++) {
+								System.out.printf("- %s\n", linksAssociados.get(i));
+							}
 						}
 					}
 				/*	else if(numero == 2){

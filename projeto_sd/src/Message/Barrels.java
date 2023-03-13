@@ -37,27 +37,21 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
 		}
 	}
 
-
+	public boolean Connected(){
+		return true;
+	}
 
 	public ArrayList<String> InsereUrl(String url){
 
 
 		ArrayList<String> connectados = new ArrayList<>();
 		connectados = tokens_url.get(url);
+		System.out.printf("Procura da palavra: %s\n",url);
 		return connectados;
 	}
 
-	public void disconnectFromServer() {
-		try {
-			if (server != null) {
-				server.unregisterClient(this);
-				System.out.println("Desconectado do servidor.");
-			}
-		} catch (Exception e) {
-			System.out.println("Erro: " + e.getMessage());
-			e.printStackTrace();
-		}
-	}
+
+
 
 
 
