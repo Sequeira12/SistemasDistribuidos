@@ -40,8 +40,8 @@ public class Downloaders {
             StringTokenizer tokens = new StringTokenizer(doc.text());
             int conta = 0;
             while (tokens.hasMoreElements() && ++conta < 100) {
-                System.out.println(tokens.nextToken().toLowerCase());
-                String palavra = tokens.nextToken().toLowerCase();
+                String palavra = tokens.nextToken();
+                System.out.println(palavra.toLowerCase());
                 tokens_url.put(palavra, url);
 
 
