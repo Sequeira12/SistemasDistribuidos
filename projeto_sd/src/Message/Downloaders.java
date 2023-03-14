@@ -1,5 +1,12 @@
 package Message;
 
+
+import java.net.MulticastSocket;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.io.IOException;
+
+
 import java.rmi.registry.LocateRegistry;
 
 import org.jsoup.Jsoup;
@@ -13,15 +20,19 @@ import java.rmi.RemoteException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import java.util.concurrent.TimeUnit;
 
-public class Downloaders{
+public class Downloaders {
     private static final long serialVersionUID = 1L;
 
     //tokens -> urls
-    public static HashMap<String,ArrayList<String>> tokens_url = new HashMap<String, ArrayList<String>>();
+    public static HashMap<String, String> tokens_url = new HashMap<String, String>();
+
+
+    public static MulticastServer MulticastServer = new MulticastServer();
 
     public static void SendInfo(String url, IQueueRemoteInterface iq) throws RemoteException {
         try {
@@ -31,21 +42,29 @@ public class Downloaders{
             while (tokens.hasMoreElements() && ++conta < 100) {
                 System.out.println(tokens.nextToken().toLowerCase());
                 String palavra = tokens.nextToken().toLowerCase();
-                if (!tokens_url.containsKey(palavra)) {
+                tokens_url.put(palavra, url);
 
-                    ArrayList<String> urls = new ArrayList<>();
-                    urls.add(url);
-                    tokens_url.put(palavra, urls);
-                } else {
-                    tokens_url.get(palavra).add(url);
-                }
 
             }
+            StringBuilder EnviaMulti = new StringBuilder();
+            String Ponto = " ; ";
+            String Barra = " | ";
+
+
+            for (HashMap.Entry<String, String> tokens_url : tokens_url.entrySet()) {
+                EnviaMulti.append(tokens_url.getKey()).append(Barra).append(tokens_url.getValue()).append(Ponto);
+            }
+            String fim = EnviaMulti.toString();
+            MulticastServer.run(fim);
+            System.out.println(EnviaMulti);
+            tokens_url.clear();
+            //  MulticastServer.run();
+
             Elements links = doc.select("a[href]");
             for (Element link : links) {
 
                 System.out.println(link.text() + "\n" + link.attr("abs:href") + "\n");
-                iq.coloca(link.attr("abs:href") );
+                iq.coloca(link.attr("abs:href"));
             }
 
         } catch (IOException e) {
@@ -53,17 +72,18 @@ public class Downloaders{
         }
     }
 
-    public static void main(String args[]){
-        try{
+    public static void main(String args[]) {
+        try {
             IQueueRemoteInterface iq = (IQueueRemoteInterface) LocateRegistry.getRegistry(7003).lookup("QD");
-
-            while(true){
+            MulticastServer MulticastServer = new MulticastServer();
+            while (true) {
                 String t;
                 t = iq.retira();
-                if(t!=null){
+                if (t != null) {
                     System.out.println(t);
-                    SendInfo(t,iq);
+                    SendInfo(t, iq);
                 }
+
                 System.out.println(t);
 
                 TimeUnit.SECONDS.sleep(10);

@@ -32,7 +32,7 @@ public class MessageServerInterfaceClient {
 
 
 				if (numero == 1) {
-
+					System.out.println("Coloque o token:");
 					Scanner scanner2 = new Scanner(System.in);
 					String palavra = scanner2.nextLine();
 
@@ -50,7 +50,7 @@ public class MessageServerInterfaceClient {
 						}
 					}
 				}else if(numero == 2){
-					System.out.println("insira a sua procura:");
+					System.out.println("COLOQUE O SITE:");
 					Scanner scanner2 = new Scanner(System.in);
 					String palavra = scanner2.nextLine();
 					h.SendUrltoQueue(palavra);

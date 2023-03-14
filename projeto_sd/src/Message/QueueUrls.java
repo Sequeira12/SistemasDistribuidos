@@ -8,7 +8,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.*;
 
 public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterface{
-
+    //     public static BlockingQueue<String> Urls_To_Downloaders = new LinkedBlockingQueue<>();
     public static Queue<String> Urls_To_Downloaders = new ConcurrentLinkedQueue<>();
 
     public QueueUrls() throws RemoteException{
