@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -51,12 +52,28 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
 
 
         ArrayList<String> connectados = new ArrayList<>();
+        String[] news = token.split(" ");
+        StringBuilder toQuery = new StringBuilder();
+        if(news.length == 1){
+            toQuery = new StringBuilder(token);
+        }else{
+            toQuery = new StringBuilder(" token_url.token1 = '" + news[0] + "' ");
+            for(int i = 1; i < news.length;i++){
+                toQuery.append(" or token_url.token1 = '").append(news[i]).append("' ");
+            }
 
-        String sql = "select distinct(url_url.url2), (select count(distinct(url1))  from url_url where url2 = token_url.url and url1 != token_url.url ) as url_count from token_url join url_url on token_url.url = url_url.url2 where token_url.token1 = ? and url1 != url2 order  by url_count desc";
+
+        }
+        String resultante = toQuery.toString();
+        System.out.println(resultante);
+        String sql = "select distinct(url_url.url2), (select count(distinct(url1))  from url_url where url2 = token_url.url and url1 != token_url.url ) as url_count from token_url join url_url on token_url.url = url_url.url2 where token_url.token1 IN (" + String.join(",", Arrays.stream(news).map(t -> "?").toArray(String[]::new)) + ") " + " and url1 != url2 order  by url_count desc";
 
 
         PreparedStatement stament = connection.prepareStatement(sql);
-        stament.setString(1, token);
+
+        for (int i = 0; i < news.length; i++) {
+            stament.setString(i+1, news[i]);
+        }
 
         ResultSet rs = stament.executeQuery();
         System.out.printf("Procura da palavra: %s\n", token);
