@@ -90,7 +90,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
     public String sayHello() throws RemoteException {
 
-        return "Bem-vindo\nEscolha as opções:\n1-Url para indexar\n2-token para procurar\n0-exit\nObrigado!!\n";
+        return "Bem-vindo\nEscolha as opções:\n1-Token para procurar\n2-URL para indexar\n0-exit\nObrigado!!\n";
     }
 
     public String SendUrlQueue(String token) throws RemoteException {

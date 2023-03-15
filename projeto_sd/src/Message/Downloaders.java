@@ -38,10 +38,10 @@ public class Downloaders {
         try {
             Document doc = Jsoup.connect(url).get();
             StringTokenizer tokens = new StringTokenizer(doc.text());
-            int conta = 0;
-            while (tokens.hasMoreElements() && ++conta < 100) {
-                String palavra = tokens.nextToken();
-                System.out.println(palavra.toLowerCase());
+
+            while (tokens.hasMoreElements() ) {
+                String palavra = tokens.nextToken().toLowerCase();
+                System.out.println(palavra);
                 tokens_url.put(palavra, url);
 
 
@@ -54,7 +54,11 @@ public class Downloaders {
             for (HashMap.Entry<String, String> tokens_url : tokens_url.entrySet()) {
                 EnviaMulti.append(tokens_url.getKey()).append(Barra).append(tokens_url.getValue()).append(Ponto);
             }
+            int tamanhoInfo = EnviaMulti.length();
+            String tamanho = Integer.toString(tamanhoInfo);
+            MulticastServer.run(tamanho);
             String fim = EnviaMulti.toString();
+
             MulticastServer.run(fim);
             System.out.println(EnviaMulti);
             tokens_url.clear();

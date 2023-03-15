@@ -21,10 +21,14 @@ public class MulticastClient extends Thread {
                 byte[] buffer = new byte[256];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
+                String messageTamanho = new String(packet.getData(), 0, packet.getLength());
 
-                System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
-                String message = new String(packet.getData(), 0, packet.getLength());
-                System.out.println(message);
+                byte[] buffer2 = new byte[Integer.parseInt(messageTamanho)*8];
+                DatagramPacket packet2 = new DatagramPacket(buffer2, buffer2.length);
+                socket.receive(packet2);
+                System.out.println("Received packet from " + packet2.getAddress().getHostAddress() + ":" + packet2.getPort() + " with message:");
+                String messageFinal = new String(packet2.getData(), 0, packet2.getLength());
+                System.out.println(messageFinal);
             }
         } catch (IOException e) {
             e.printStackTrace();
