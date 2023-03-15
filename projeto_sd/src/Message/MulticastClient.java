@@ -29,6 +29,8 @@ public class MulticastClient extends Thread {
                 System.out.println("Received packet from " + packet2.getAddress().getHostAddress() + ":" + packet2.getPort() + " with message:");
                 String messageFinal = new String(packet2.getData(), 0, packet2.getLength());
                 System.out.println(messageFinal);
+
+
             }
         } catch (IOException e) {
             e.printStackTrace();

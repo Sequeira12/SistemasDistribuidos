@@ -56,6 +56,7 @@ public class Downloaders {
             }
             int tamanhoInfo = EnviaMulti.length();
             String tamanho = Integer.toString(tamanhoInfo);
+
             MulticastServer.run(tamanho);
             String fim = EnviaMulti.toString();
 
