@@ -18,6 +18,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
     public synchronized String retira(){
         String ret = null;
         if(!Urls_To_Downloaders.isEmpty()){
+            System.out.println("URL retirado");
             ret = Urls_To_Downloaders.peek();
             Urls_To_Downloaders.remove();
         }
@@ -25,6 +26,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
     }
     public synchronized void coloca(String e){
         Urls_To_Downloaders.add(e);
+        System.out.println("URL adicionado");
     }
     public static void main(String[] args) throws RemoteException {
 

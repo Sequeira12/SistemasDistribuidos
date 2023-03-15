@@ -56,6 +56,7 @@ public class Downloaders {
 
 
             for (HashMap.Entry<String, String> tokens_url : tokens_url.entrySet()) {
+               // System.out.println(tokens_url.getKey());
                 EnviaMulti.append(tokens_url.getKey()).append(Barra).append(tokens_url.getValue()).append(Ponto);
             }
             int tamanhoInfo = EnviaMulti.length();
@@ -63,16 +64,16 @@ public class Downloaders {
 
             MulticastServer.run(tamanho);
             String fim = EnviaMulti.toString();
-
+            //System.out.println(fim);
             MulticastServer.run(fim);
-            System.out.println(EnviaMulti);
+           // System.out.println(EnviaMulti);
             tokens_url.clear();
             //  MulticastServer.run();
 
             Elements links = doc.select("a[href]");
             for (Element link : links) {
 
-                System.out.println(link.text() + "\n" + link.attr("abs:href") + "\n");
+               // System.out.println(link.text() + "\n" + link.attr("abs:href") + "\n");
                 iq.coloca(link.attr("abs:href"));
             }
 
@@ -82,13 +83,7 @@ public class Downloaders {
     }
 
     public static void main(String args[]) throws SQLException {
-        String url = "jdbc:postgresql://localhost/sddb";
-        String username = "adminsd";
-        String password = "admin";
 
-        DriverManager.registerDriver(new org.postgresql.Driver());
-        Connection connection = DriverManager.getConnection(url, username, password);
-        System.out.println("Connected to database");
 
         try {
             IQueueRemoteInterface iq = (IQueueRemoteInterface) LocateRegistry.getRegistry(7003).lookup("QD");

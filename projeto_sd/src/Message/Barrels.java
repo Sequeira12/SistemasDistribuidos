@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -53,8 +56,14 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
 
 
     // =========================================================
-    public static void main(String args[]) {
+    public static void main(String args[]) throws SQLException {
+        String url = "jdbc:postgresql://localhost/sddb";
+        String username = "adminsd";
+        String password = "admin";
 
+        DriverManager.registerDriver(new org.postgresql.Driver());
+        Connection connection = DriverManager.getConnection(url, username, password);
+        System.out.println("Connected to database");
         try {
             String El1 = "www.uc.pt";
             String El2 = "www.dei.uc.pt";
@@ -63,38 +72,14 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
             arraypalavra.add(El2);
             System.out.println("IMIMIMIM");
             String teste = "de | https://apps.uc.pt/courses/pt/index?designacao=&uno_sigla=&cic_tipo=TERCEIRO&submitform=Pesquisar#courses_list ; Ciências | https://apps.uc.pt/courses/pt/index?designacao=&uno_sigla=&cic_tipo=TERCEIRO&submitform=Pesquisar#courses_list ; Ambiente | https://apps.uc.pt/courses/pt/index?designacao=&uno_sigla=&cic_tipo=TERCEIRO&submitform=Pesquisar#courses_list ; do | https://apps.uc.pt/courses/pt/index?designacao=&uno_sigla=&cic_tipo=TERCEIRO&submitform=Pesquisar#courses_list ; Cursos | https://apps.uc.pt/courses/pt/index?designacao=&uno_sigla=&cic_tipo=TERCEIRO&submitform=Pesquisar#courses_list ; ";
-            int contador = 0;
-            // divide a string em tokens usando o caractere "|"
-            if (teste.contains(" ;")) {
-                String[] tokens = teste.split(" ;");
-                for (String token : tokens) {
-                    if (token != null && token.contains(" | ")) {
-                        String[] news = token.split(" \\| ");
-                        for (String nova : news) {
-                            if(contador == 0){
-                                String trimmedToken = nova.trim();
-                                System.out.println("TOKEN"+trimmedToken);
-                            }else{
-                                String trimmedToken = nova.trim();
-                                System.out.println("URL"+trimmedToken);
-                            }
-                            contador++;
 
-
-
-                        }
-                        contador = 0;
-
-                    }
-                }
-            }
             tokens_url.put("Coimbra", arraypalavra);
 
             Barrels clientObj = new Barrels();
             clientObj.connectToServer(clientObj);
 
             MulticastClient cliente = new MulticastClient();
-            cliente.start();
+            cliente.run(connection,1);
 
 
         } catch (RemoteException re) {
