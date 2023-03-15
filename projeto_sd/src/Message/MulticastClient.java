@@ -21,12 +21,21 @@ public class MulticastClient extends Thread {
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
             while (true) {
+                boolean UrlOrToken;
                 byte[] buffer = new byte[256];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
                 String messageTamanho = new String(packet.getData(), 0, packet.getLength());
 
-                byte[] buffer2 = new byte[Integer.parseInt(messageTamanho) * 8];
+                String[] urltoken = messageTamanho.split(" \\| ");
+                System.out.printf("%s\n",urltoken[1]);
+                if(urltoken[1].compareTo("TOKEN") == 0){
+                    UrlOrToken = true;
+                }else{
+                    UrlOrToken = false;
+                }
+
+                byte[] buffer2 = new byte[Integer.parseInt(urltoken[0]) * 8];
                 DatagramPacket packet2 = new DatagramPacket(buffer2, buffer2.length);
                 socket.receive(packet2);
                 System.out.println("Received packet from " + packet2.getAddress().getHostAddress() + ":" + packet2.getPort() + " with message:");
@@ -54,14 +63,21 @@ public class MulticastClient extends Thread {
 
                             }
                             contador = 0;
-
-                            String sql = "insert into token_url (barrel,token1,url) values(?,?,?)";
-                            PreparedStatement stament = connection.prepareStatement(sql);
-                            stament.setInt(1, id);
-                            stament.setString(2, tokenID);
-                            stament.setString(3, url);
-                            stament.executeUpdate();
-
+                            if(UrlOrToken) {
+                                String sql = "insert into token_url (barrel,token1,url) values(?,?,?)";
+                                PreparedStatement stament = connection.prepareStatement(sql);
+                                stament.setInt(1, id);
+                                stament.setString(2, tokenID);
+                                stament.setString(3, url);
+                                stament.executeUpdate();
+                            }else{
+                                String sql = "insert into url_url (barrel,url1,url2) values(?,?,?)";
+                                PreparedStatement stament = connection.prepareStatement(sql);
+                                stament.setInt(1, id);
+                                stament.setString(2, tokenID);
+                                stament.setString(3, url);
+                                stament.executeUpdate();
+                            }
                         }
                     }
                 }

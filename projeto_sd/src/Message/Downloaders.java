@@ -22,10 +22,7 @@ import java.io.IOException;
 
 import java.rmi.RemoteException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +30,7 @@ public class Downloaders {
     private static final long serialVersionUID = 1L;
 
     //tokens -> urls
-    public static HashMap<String, String> tokens_url = new HashMap<String, String>();
+
 
 
     public static MulticastServer MulticastServer = new MulticastServer();
@@ -43,39 +40,45 @@ public class Downloaders {
             Document doc = Jsoup.connect(url).get();
             StringTokenizer tokens = new StringTokenizer(doc.text());
 
-            while (tokens.hasMoreElements() ) {
-                String palavra = tokens.nextToken().toLowerCase();
-                System.out.println(palavra);
-                tokens_url.put(palavra, url);
-
-
-            }
             StringBuilder EnviaMulti = new StringBuilder();
             String Ponto = " ; ";
             String Barra = " | ";
+            while (tokens.hasMoreElements() ) {
+                String palavra = tokens.nextToken().toLowerCase();
+                System.out.println(palavra);
 
-
-            for (HashMap.Entry<String, String> tokens_url : tokens_url.entrySet()) {
-               // System.out.println(tokens_url.getKey());
-                EnviaMulti.append(tokens_url.getKey()).append(Barra).append(tokens_url.getValue()).append(Ponto);
+                EnviaMulti.append(palavra).append(Barra).append(url).append(Ponto);
             }
+
+
+            // CENA DOS TOKENS
             int tamanhoInfo = EnviaMulti.length();
             String tamanho = Integer.toString(tamanhoInfo);
-
-            MulticastServer.run(tamanho);
+            String InfoTokenMulti = tamanho + Barra + "TOKEN";
+            // info tamanho|TOKEN
+            MulticastServer.run(InfoTokenMulti);
             String fim = EnviaMulti.toString();
-            //System.out.println(fim);
             MulticastServer.run(fim);
-           // System.out.println(EnviaMulti);
-            tokens_url.clear();
-            //  MulticastServer.run();
 
+
+
+            // CENA DOS URLS
+           StringBuilder EnviaMultiLinks = new StringBuilder();
             Elements links = doc.select("a[href]");
             for (Element link : links) {
-
+                EnviaMultiLinks.append(url).append(Barra).append(link.attr("abs:href")).append(Ponto);
                // System.out.println(link.text() + "\n" + link.attr("abs:href") + "\n");
                 iq.coloca(link.attr("abs:href"));
             }
+
+            int tamanhoInfoUrls = EnviaMulti.length();
+            String tamanhoURL = Integer.toString(tamanhoInfoUrls);
+            String InfoUrlMulti = tamanhoURL + Barra + "URL";
+            // info tamanho|TOKEN
+            MulticastServer.run(InfoUrlMulti);
+            String fimUrl = EnviaMultiLinks.toString();
+            MulticastServer.run(fimUrl);
+
 
         } catch (IOException e) {
             e.printStackTrace();
