@@ -9,9 +9,7 @@ import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -20,9 +18,13 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
     /**
      *
      */
-    private static final long serialVersionUID = 1L;
+    public static ArrayList<String> StopWords = new ArrayList<String>();
+      private static final long serialVersionUID = 1L;
     private IServerRemoteInterface server;
     public static HashMap<String, ArrayList<Element>> urls_ligacoes = new HashMap<String, ArrayList<Element>>();
+
+    public static Connection connection = null;
+
     public static HashMap<String, ArrayList<String>> tokens_url = new HashMap<String, ArrayList<String>>();
 
     public Barrels() throws RemoteException {
@@ -45,12 +47,30 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         return true;
     }
 
-    public ArrayList<String> InsereUrl(String url) {
+    public ArrayList<String> ProcuraToken(String token) throws SQLException {
 
 
         ArrayList<String> connectados = new ArrayList<>();
-        connectados = tokens_url.get(url);
-        System.out.printf("Procura da palavra: %s\n", url);
+
+        String sql = "select distinct(url_url.url2), (select count(distinct(url1))  from url_url where url2 = token_url.url and url1 != token_url.url ) as url_count from token_url join url_url on token_url.url = url_url.url2 where token_url.token1 = ? and url1 != url2 order  by url_count desc";
+
+
+        PreparedStatement stament = connection.prepareStatement(sql);
+        stament.setString(1, token);
+
+        ResultSet rs = stament.executeQuery();
+        System.out.printf("Procura da palavra: %s\n", token);
+        int conta = 0;
+
+        while(rs.next()){
+            connectados.add(rs.getString(1));
+            conta++;
+        }
+        if(conta==0){
+            connectados = null;
+        }
+        rs.close();
+        stament.close();
         return connectados;
     }
 
@@ -62,7 +82,7 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         String password = "admin";
 
         DriverManager.registerDriver(new org.postgresql.Driver());
-        Connection connection = DriverManager.getConnection(url, username, password);
+        connection = DriverManager.getConnection(url, username, password);
         System.out.println("Connected to database");
         try {
             String El1 = "www.uc.pt";
@@ -79,7 +99,7 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
             clientObj.connectToServer(clientObj);
 
             MulticastClient cliente = new MulticastClient();
-            cliente.run(connection,1);
+            cliente.run(connection, 1);
 
 
         } catch (RemoteException re) {

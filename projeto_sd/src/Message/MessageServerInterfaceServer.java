@@ -5,6 +5,7 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
+import java.sql.SQLException;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -65,7 +66,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     }
 
 
-    public ArrayList<String> FindUrlWithToken(String url) throws RemoteException {
+    public ArrayList<String> FindUrlWithToken(String url) throws RemoteException, SQLException {
         ArrayList<String> connectados = new ArrayList<>();
         System.out.println(Barrels.size());
         if (Barrels.size() != 0) {
@@ -75,7 +76,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             int numero = gerador.nextInt((Barrels.size()));
             System.out.printf("Barrel que vai executar a Procura ---> %d\n", numero);
             if (Barrels.get(numero) != null) {
-                connectados = Barrels.get(numero).InsereUrl(url);
+                connectados = Barrels.get(numero).ProcuraToken(url);
             }
         } else {
             String No = "Sem Resultados";
