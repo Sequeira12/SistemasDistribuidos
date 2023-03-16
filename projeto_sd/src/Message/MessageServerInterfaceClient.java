@@ -7,6 +7,39 @@ import java.util.Scanner;
 
 public class MessageServerInterfaceClient {
 
+
+	public static void Imprime10_10(ArrayList<String> links){
+		int conta = 0;
+		for(int i = 0; i < 10 && i < links.size(); i++){
+			System.out.printf(" - %s\n",links.get(i));
+		}
+		System.out.println("Digite '+' se quer ir para a seguinte\nDigite '-' se deseja ir para a anterior\nDigite 0 se quer terminar a pesquisa");
+		Scanner client = new Scanner(System.in);
+
+		while(client.hasNextLine()){
+			String s = client.nextLine();
+			if(s.compareTo("+") == 0){
+				conta++;
+			}else if(s.compareTo("-") == 0){
+				conta--;
+			}else if(s.compareTo("0") == 0){
+				break;
+			}
+			if(conta < 0){
+				conta = 0;
+			}
+			for(int i = 10 * conta; i < 10*(conta+1) && i < links.size(); i++){
+				System.out.printf(" - %s\n",links.get(i));
+			}
+			System.out.println("Digite '+' se quer ir para a seguinte\nDigite '-' se deseja ir para a anterior\nDigite 0 se quer terminar a pesquisa\n");
+
+		}
+
+
+
+
+	}
+
 	public static void main(String args[]) {
 
 		/* This might be necessary if you ever need to download classes:
@@ -44,9 +77,8 @@ public class MessageServerInterfaceClient {
 						if( linksAssociados.get(0).compareTo("Sem Resultados") == 0){
 							System.out.println("Barrels Indisponiveis!!");
 						}else {
-							for (int i = 0; i < Objects.requireNonNull(linksAssociados).size(); i++) {
-								System.out.printf("- %s\n", linksAssociados.get(i));
-							}
+							Imprime10_10(linksAssociados);
+
 						}
 					}
 				}else if(numero == 2){
@@ -59,6 +91,7 @@ public class MessageServerInterfaceClient {
 				}else{
 					break;
 				}
+				System.out.println(h.sayHello());
 				System.out.println("\nDigite um número:");
 			}
 		} catch (Exception e) {
