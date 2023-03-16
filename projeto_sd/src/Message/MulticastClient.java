@@ -12,9 +12,13 @@ import java.sql.Statement;
 public class MulticastClient extends Thread {
     private String MULTICAST_ADDRESS = "224.3.2.1";
     private int PORT = 4321;
-
-
-    public void run(Connection connection, int id) {
+    Connection connection = null;
+    int id;
+    public void myClient(Connection conn, int i){
+        connection=conn;
+        id = i;
+    }
+    public void run() {
         MulticastSocket socket = null;
         try {
             socket = new MulticastSocket(PORT);  // create socket and bind it
