@@ -44,6 +44,7 @@ public class Downloaders {
             String Ponto = " ; ";
             String Barra = " | ";
             while (tokens.hasMoreElements() ) {
+
                 String palavra = tokens.nextToken().toLowerCase();
                 System.out.println(palavra);
 
@@ -66,6 +67,7 @@ public class Downloaders {
            StringBuilder EnviaMultiLinks = new StringBuilder();
             Elements links = doc.select("a[href]");
             for (Element link : links) {
+
                 EnviaMultiLinks.append(url).append(Barra).append(link.attr("abs:href")).append(Ponto);
                // System.out.println(link.text() + "\n" + link.attr("abs:href") + "\n");
                 iq.coloca(link.attr("abs:href"));

@@ -1,0 +1,1 @@
+/Users/brunosequeira/Library/Java/JavaVirtualMachines/openjdk-19.0.2/Contents/Home/bin/java -classpath /Users/brunosequeira/IdeaProjects/projetoSDeasy/out/production/projetoSDeasy:/Users/brunosequeira/IdeaProjects/projetoSDeasy/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/projetoSDeasy/SistemasDistribuidos/postgresql-42.5.4.jar Message.Downloaders
