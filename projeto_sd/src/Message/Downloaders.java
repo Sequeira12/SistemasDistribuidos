@@ -32,17 +32,22 @@ public class Downloaders {
     //tokens -> urls
 
 
-
+    public static Connection connection = null;
     public static MulticastServer MulticastServer = new MulticastServer();
 
     public static void SendInfo(String url, IQueueRemoteInterface iq) throws RemoteException {
         try {
             Document doc = Jsoup.connect(url).get();
+            String titulo = doc.title();
+            String citacao = doc.text().substring(0,50);
+            citacao+="...";
+
             StringTokenizer tokens = new StringTokenizer(doc.text());
 
             StringBuilder EnviaMulti = new StringBuilder();
             String Ponto = " ; ";
             String Barra = " | ";
+            EnviaMulti.append(titulo).append(Ponto).append(citacao).append(Barra);
             while (tokens.hasMoreElements() ) {
 
                 String palavra = tokens.nextToken().toLowerCase();
@@ -50,7 +55,6 @@ public class Downloaders {
 
                 EnviaMulti.append(palavra).append(Barra).append(url).append(Ponto);
             }
-
 
             // CENA DOS TOKENS
             int tamanhoInfo = EnviaMulti.length();
@@ -88,7 +92,12 @@ public class Downloaders {
     }
 
     public static void main(String args[]) throws SQLException {
+        String url = "jdbc:postgresql://localhost/sddb";
+        String username = "adminsd";
+        String password = "admin";
 
+        DriverManager.registerDriver(new org.postgresql.Driver());
+        connection = DriverManager.getConnection(url, username, password);
 
         try {
             IQueueRemoteInterface iq = (IQueueRemoteInterface) LocateRegistry.getRegistry(7003).lookup("QD");

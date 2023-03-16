@@ -105,7 +105,8 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
             clientObj.connectToServer(clientObj);
 
             MulticastClient cliente = new MulticastClient();
-            cliente.run(connection, 1);
+            cliente.myClient(connection,1);
+            cliente.run();
 
 
         } catch (RemoteException re) {
