@@ -46,45 +46,62 @@ public class MulticastClient extends Thread {
                 String messageFinal = new String(packet2.getData(), 0, packet2.getLength());
                 System.out.println(messageFinal);
                 int contador = 0;
+                int conta2 = 0;
+                String citacao = null,titulo = null, url = null;;
                 // divide a string em tokens usando o caractere "|"
                 if (messageFinal.contains(" ;")) {
                     String[] tokens = messageFinal.split(" ;");
                     for (String token : tokens) {
                         if (token != null && token.contains(" | ")) {
                             String[] news = token.split(" \\| ");
-                            String tokenID = null, url = null;
-                            for (String nova : news) {
-                                System.out.printf("%d\n",contador);
-                                if (contador == 0) {
-                                    tokenID = nova.trim();
-                                    //  System.out.println("TOKEN " + trimmedToken);
-                                } else {
-                                    url = nova.trim();
-                                    //  System.out.println("URL " + trimmedToken);
-                                }
-
-                                contador++;
-
-                            }
-                            contador = 0;
-                            if(UrlOrToken) {
-                                String sql = "insert into token_url (barrel,token1,url) values(?,?,?)";
-                                PreparedStatement stament = connection.prepareStatement(sql);
-                                stament.setInt(1, id);
-                                stament.setString(2, tokenID);
-                                stament.setString(3, url);
-                                stament.executeUpdate();
+                            String tokenID = null;
+                            if(conta2==0){
+                                titulo = news[0];
+                                citacao = news[1];
+                                conta2++;
                             }else{
-                                String sql = "insert into url_url (barrel,url1,url2) values(?,?,?)";
-                                PreparedStatement stament = connection.prepareStatement(sql);
-                                stament.setInt(1, id);
-                                stament.setString(2, tokenID);
-                                stament.setString(3, url);
-                                stament.executeUpdate();
-                            }
+
+
+                                for (String nova : news) {
+                                    System.out.printf("%d\n",contador);
+                                    if (contador == 0) {
+                                        tokenID = nova.trim();
+                                        //  System.out.println("TOKEN " + trimmedToken);
+                                    } else {
+                                        url = nova.trim();
+                                        //  System.out.println("URL " + trimmedToken);
+                                    }
+
+                                    contador++;
+
+                                }
+                                contador = 0;
+                                if(UrlOrToken) {
+                                    String sql = "insert into token_url (barrel,token1,url) values(?,?,?)";
+                                    PreparedStatement stament = connection.prepareStatement(sql);
+                                    stament.setInt(1, id);
+                                    stament.setString(2, tokenID);
+                                    stament.setString(3, url);
+                                    stament.executeUpdate();
+                                }else{
+                                    String sql = "insert into url_url (barrel,url1,url2) values(?,?,?)";
+                                    PreparedStatement stament = connection.prepareStatement(sql);
+                                    stament.setInt(1, id);
+                                    stament.setString(2, tokenID);
+                                    stament.setString(3, url);
+                                    stament.executeUpdate();
+                                }
                         }
                     }
                 }
+                }
+                String sql = "insert into url_info (url,titulo,citacao) values(?,?,?)";
+                PreparedStatement stament = connection.prepareStatement(sql);
+                stament.setString(1, url);
+                stament.setString(2, titulo);
+                stament.setString(3, citacao);
+                stament.executeUpdate();
+
 
 
             }

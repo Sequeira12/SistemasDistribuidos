@@ -47,7 +47,7 @@ public class Downloaders {
             StringBuilder EnviaMulti = new StringBuilder();
             String Ponto = " ; ";
             String Barra = " | ";
-            EnviaMulti.append(titulo).append(Ponto).append(citacao).append(Barra);
+            EnviaMulti.append(titulo).append(Barra).append(citacao).append(Ponto);
             while (tokens.hasMoreElements() ) {
 
                 String palavra = tokens.nextToken().toLowerCase();
