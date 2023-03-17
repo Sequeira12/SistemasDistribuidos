@@ -4,20 +4,20 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.Arrays;
 
 public class MulticastClient extends Thread {
     private String MULTICAST_ADDRESS = "224.3.2.1";
     private int PORT = 4321;
     Connection connection = null;
     int id;
-    public void myClient(Connection conn, int i){
-        connection=conn;
+
+    public void myClient(Connection conn, int i) {
+        connection = conn;
         id = i;
     }
+
     public void run() {
         MulticastSocket socket = null;
         try {
@@ -32,10 +32,10 @@ public class MulticastClient extends Thread {
                 String messageTamanho = new String(packet.getData(), 0, packet.getLength());
 
                 String[] urltoken = messageTamanho.split(" \\| ");
-                System.out.printf("%s\n",urltoken[1]);
-                if(urltoken[1].compareTo("TOKEN") == 0){
+                System.out.printf("%s\n", urltoken[1]);
+                if (urltoken[1].compareTo("TOKEN") == 0) {
                     UrlOrToken = true;
-                }else{
+                } else {
                     UrlOrToken = false;
                 }
 
@@ -47,7 +47,8 @@ public class MulticastClient extends Thread {
                 System.out.println(messageFinal);
                 int contador = 0;
                 int conta2 = 0;
-                String citacao = null,titulo = null, url = null;;
+                String citacao = null, titulo = null, url = null;
+                ;
                 // divide a string em tokens usando o caractere "|"
                 if (messageFinal.contains(" ;")) {
                     String[] tokens = messageFinal.split(" ;");
@@ -55,53 +56,72 @@ public class MulticastClient extends Thread {
                         if (token != null && token.contains(" | ")) {
                             String[] news = token.split(" \\| ");
                             String tokenID = null;
-                            if(conta2==0){
+                            if (conta2 == 1 && UrlOrToken) {
+                                String sql = "insert into url_info (url,titulo,citacao) values(?,?,?)";
+                                PreparedStatement stament = connection.prepareStatement(sql);
+                                stament.setString(1, url);
+                                stament.setString(2, titulo);
+                                stament.setString(3, citacao);
+                                stament.executeUpdate();
+                                conta2++;
+                            }
+                            if (conta2 == 0 && UrlOrToken) {
                                 titulo = news[0];
                                 citacao = news[1];
+                                url = news[2];
+                                System.out.println(titulo + citacao);
                                 conta2++;
-                            }else{
+
+                            } else {
 
 
                                 for (String nova : news) {
-                                    System.out.printf("%d\n",contador);
+
                                     if (contador == 0) {
                                         tokenID = nova.trim();
-                                        //  System.out.println("TOKEN " + trimmedToken);
+
                                     } else {
                                         url = nova.trim();
-                                        //  System.out.println("URL " + trimmedToken);
+
                                     }
 
                                     contador++;
 
                                 }
                                 contador = 0;
-                                if(UrlOrToken) {
-                                    String sql = "insert into token_url (barrel,token1,url) values(?,?,?)";
+
+
+                                if (UrlOrToken) {
+                                    String sql = "select count(*)  from token_url where token_url.token1 = ? and token_url.url = ?;";
                                     PreparedStatement stament = connection.prepareStatement(sql);
-                                    stament.setInt(1, id);
-                                    stament.setString(2, tokenID);
-                                    stament.setString(3, url);
-                                    stament.executeUpdate();
-                                }else{
-                                    String sql = "insert into url_url (barrel,url1,url2) values(?,?,?)";
-                                    PreparedStatement stament = connection.prepareStatement(sql);
-                                    stament.setInt(1, id);
-                                    stament.setString(2, tokenID);
-                                    stament.setString(3, url);
-                                    stament.executeUpdate();
+                                    stament.setString(1, tokenID);
+                                    stament.setString(2, url);
+
+                                    ResultSet rs = stament.executeQuery();
+                                    if (rs.next()) {
+
+                                        int a = rs.getInt(1);
+                                        if (a == 0) {
+                                            String sql2 = "insert into token_url (barrel,token1,url) values(?,?,?)";
+                                            PreparedStatement stament2 = connection.prepareStatement(sql2);
+                                            stament2.setInt(1, id);
+                                            stament2.setString(2, tokenID);
+                                            stament2.setString(3, url);
+                                            stament2.executeUpdate();
+                                        }
+                                    }
+                                } else {
+                                    String sql2 = "insert into url_url (barrel,url1,url2) values(?,?,?)";
+                                    PreparedStatement stament2 = connection.prepareStatement(sql2);
+                                    stament2.setInt(1, id);
+                                    stament2.setString(2, tokenID);
+                                    stament2.setString(3, url);
+                                    stament2.executeUpdate();
                                 }
+                            }
                         }
                     }
                 }
-                }
-                String sql = "insert into url_info (url,titulo,citacao) values(?,?,?)";
-                PreparedStatement stament = connection.prepareStatement(sql);
-                stament.setString(1, url);
-                stament.setString(2, titulo);
-                stament.setString(3, citacao);
-                stament.executeUpdate();
-
 
 
             }
@@ -110,6 +130,7 @@ public class MulticastClient extends Thread {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
+            assert socket != null;
             socket.close();
         }
     }

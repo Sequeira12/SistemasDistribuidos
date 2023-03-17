@@ -54,8 +54,9 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         ArrayList<String> connectados = new ArrayList<>();
         String[] news = token.split(" ");
 
+        String sql = "select distinct(url_url.url2),(select count(distinct(url1)) from url_url where url2 = token_url.url and url1 != token_url.url ) as url_count , url_info.titulo,url_info.citacao from token_url join url_url on token_url.url = url_url.url2 join  url_info on token_url.url = url_info.url where token_url.token1 IN (" + String.join(",", Arrays.stream(news).map(t -> "?").toArray(String[]::new)) + ") " + "and url1 != url2 order  by url_count desc";
 
-        String sql = "select distinct(url_url.url2), (select count(distinct(url1))  from url_url where url2 = token_url.url and url1 != token_url.url ) as url_count from token_url join url_url on token_url.url = url_url.url2 where token_url.token1 IN (" + String.join(",", Arrays.stream(news).map(t -> "?").toArray(String[]::new)) + ") " + " and url1 != url2 order  by url_count desc";
+        //String sql = "select distinct(url_url.url2), (select count(distinct(url1))  from url_url where url2 = token_url.url and url1 != token_url.url ) as url_count from token_url join url_url on token_url.url = url_url.url2 where token_url.token1 IN (" + String.join(",", Arrays.stream(news).map(t -> "?").toArray(String[]::new)) + ") " + " and url1 != url2 order  by url_count desc";
 
 
         PreparedStatement stament = connection.prepareStatement(sql);
@@ -69,7 +70,8 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         int conta = 0;
 
         while(rs.next()){
-            connectados.add(rs.getString(1));
+            String composta = "URL: " + rs.getString(1) + "\n\tTITULO: " + rs.getString(3) + "\n\tCITAÇÃO: " + rs.getString(4) + "\n";
+            connectados.add(composta);
             conta++;
         }
         if(conta==0){
@@ -96,8 +98,6 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
             ArrayList<String> arraypalavra = new ArrayList<String>();
             arraypalavra.add(El1);
             arraypalavra.add(El2);
-            System.out.println("IMIMIMIM");
-            String teste = "de | https://apps.uc.pt/courses/pt/index?designacao=&uno_sigla=&cic_tipo=TERCEIRO&submitform=Pesquisar#courses_list ; Ciências | https://apps.uc.pt/courses/pt/index?designacao=&uno_sigla=&cic_tipo=TERCEIRO&submitform=Pesquisar#courses_list ; Ambiente | https://apps.uc.pt/courses/pt/index?designacao=&uno_sigla=&cic_tipo=TERCEIRO&submitform=Pesquisar#courses_list ; do | https://apps.uc.pt/courses/pt/index?designacao=&uno_sigla=&cic_tipo=TERCEIRO&submitform=Pesquisar#courses_list ; Cursos | https://apps.uc.pt/courses/pt/index?designacao=&uno_sigla=&cic_tipo=TERCEIRO&submitform=Pesquisar#courses_list ; ";
 
             tokens_url.put("Coimbra", arraypalavra);
 

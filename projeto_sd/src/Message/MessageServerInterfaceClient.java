@@ -10,6 +10,7 @@ public class MessageServerInterfaceClient {
 
 	public static void Imprime10_10(ArrayList<String> links){
 		int conta = 0;
+		System.out.printf("Links Associados à sua procura: (PAGINA %d) \n",conta+1);
 		for(int i = 0; i < 10 && i < links.size(); i++){
 			System.out.printf(" - %s\n",links.get(i));
 		}
@@ -28,6 +29,10 @@ public class MessageServerInterfaceClient {
 			if(conta < 0){
 				conta = 0;
 			}
+			if(conta > links.size()/10){
+				conta--;
+			}
+			System.out.printf("Links Associados à sua procura: (PAGINA %d) \n",conta+1);
 			for(int i = 10 * conta; i < 10*(conta+1) && i < links.size(); i++){
 				System.out.printf(" - %s\n",links.get(i));
 			}
@@ -55,7 +60,7 @@ public class MessageServerInterfaceClient {
 			String url = "http://www.uc.pt";
 
 			Scanner scanner = new Scanner(System.in);
-			System.out.println("Digite um número:");
+			//System.out.println("Digite um número:");
 
 
 			System.out.println(h.sayHello());
@@ -70,11 +75,13 @@ public class MessageServerInterfaceClient {
 					String palavra = scanner2.nextLine();
 
 					ArrayList<String> linksAssociados = h.FindUrlWithToken(palavra);
-					System.out.println("Links Associados à sua procura:");
+
 					if(linksAssociados == null ){
+						System.out.println("Links Associados à sua procura:");
 						System.out.println("Sem resultados encontrados!!");
 					}else {
 						if( linksAssociados.get(0).compareTo("Sem Resultados") == 0){
+							System.out.println("Links Associados à sua procura:");
 							System.out.println("Barrels Indisponiveis!!");
 						}else {
 							Imprime10_10(linksAssociados);
