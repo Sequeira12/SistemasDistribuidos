@@ -22,6 +22,8 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
     public static ArrayList<String> StopWords = new ArrayList<String>();
       private static final long serialVersionUID = 1L;
     private IServerRemoteInterface server;
+
+    public static ArrayList<MulticastClient> mults = new ArrayList<MulticastClient>();
     public static HashMap<String, ArrayList<Element>> urls_ligacoes = new HashMap<String, ArrayList<Element>>();
 
     public static Connection connection = null;
@@ -81,6 +83,8 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         stament.close();
         return connectados;
     }
+
+  //  public void CriaConexaoMulti)
 
 
     // =========================================================

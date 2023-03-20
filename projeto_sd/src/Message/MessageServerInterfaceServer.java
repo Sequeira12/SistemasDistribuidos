@@ -6,13 +6,17 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Random;
 import java.util.ArrayList;
 
-public class MessageServerInterfaceServer extends UnicastRemoteObject implements MessageServerInterface, IServerRemoteInterface {
+public class MessageServerInterfaceServer extends UnicastRemoteObject implements MessageServerInterface, IServerRemoteInterface, ISearcheQueue {
 
     public static ArrayList<IClientRemoteInterface> Barrels = new ArrayList<>();
     public static IServerRemoteInterface Servidor;
+
+    public static ISearcheQueue QueueSearche;
+    public static ArrayList<Integer> Download = new ArrayList<>();
 
     public static IQueueRemoteInterface iq;
 
@@ -21,6 +25,21 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         super();
     }
 
+    public void SendInfoDownloaders(ArrayList<Integer> Download) {
+        int contador = 0;
+        for (int i = 0; i < Download.size(); i++) {
+            for (int j = 0; j < MessageServerInterfaceServer.Download.get(j); j++) {
+                if (!Objects.equals(Download.get(i), MessageServerInterfaceServer.Download.get(i))) {
+                    contador++;
+                }
+            }
+            if (contador == MessageServerInterfaceServer.Download.size()) {
+                MessageServerInterfaceServer.Download.add(Download.get(i));
+                //CHAMAR AQUI A TREAD DOS BARRELS COM O NOVO DOWNLOADER
+            }
+            contador = 0;
+        }
+    }
 
     public void registerClient(IClientRemoteInterface client) throws RemoteException {
         Barrels.add(client);
@@ -34,6 +53,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             try {
                 System.out.printf("Tamanho de Barrels Disponiveis %d\n", Barrels.size());
                 for (i = 0; i < Barrels.size(); i++) {
+
                     Barrels.get(i).Connected();
 
                 }
@@ -55,7 +75,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
     public void unregisterClient(int posicao) throws RemoteException {
         Barrels.remove(posicao);
-        for (int k = posicao; k < Barrels.size()-1; k++) {
+        for (int k = posicao; k < Barrels.size() - 1; k++) {
             Barrels.set(k, Barrels.get(k + 1));
             if (k == Barrels.size() - 1) {
                 Barrels.set(k, null);
@@ -118,6 +138,11 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             MessageServerInterfaceServer h = new MessageServerInterfaceServer();
             Registry r = LocateRegistry.createRegistry(7001);
             r.rebind("SD", h);
+
+
+            QueueSearche = (ISearcheQueue) LocateRegistry.getRegistry(7005).lookup("QS"); // LIGACAO RMI
+
+
 
 
             Servidor = new MessageServerInterfaceServer();

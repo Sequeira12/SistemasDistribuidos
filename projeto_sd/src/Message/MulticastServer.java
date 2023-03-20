@@ -5,6 +5,7 @@ import java.lang.reflect.Array;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,12 +17,17 @@ import java.io.IOException;
 
 public class MulticastServer extends Thread {
     private String MULTICAST_ADDRESS = "224.3.2.1";
-    private int PORT = 4321;
+    private int PORT;
     private long SLEEP_TIME = 5000;
 
 
     public MulticastServer() {
         super("Server " + (long) (Math.random() * 1000));
+    }
+
+    public void Myserver(int porta) {
+        PORT = porta;
+
     }
 
     public void run(String palavra) {
