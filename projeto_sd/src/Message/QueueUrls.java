@@ -12,6 +12,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
     //     public static BlockingQueue<String> Urls_To_Downloaders = new LinkedBlockingQueue<>();
     public static Queue<String> Urls_To_Downloaders = new ConcurrentLinkedQueue<>();
 
+    public static MulticastServer mult;
     public static ISearcheQueue Ligacao;
     public static ArrayList<IQueueRemoteInterface> DownloadersOn = new ArrayList<IQueueRemoteInterface>();
     public static ArrayList<Integer> DownloadersOnPORTA = new ArrayList<Integer>();
@@ -20,7 +21,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         super();
     }
 
-    public ArrayList<Integer> info(){
+    public ArrayList<Integer> info() {
         return DownloadersOnPORTA;
     }
 
@@ -29,7 +30,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         System.out.println("ENTROU\n");
         for (int i = 0; i < DownloadersOnPORTA.size(); i++) {
             if (DownloadersOnPORTA.get(i) == porta) {
-                System.out.println("ENTROU\n");
+
                 return false;
             }
             if (i == DownloadersOnPORTA.size() - 1) {
@@ -37,7 +38,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
                 DownloadersOn.add(iq);
                 System.out.println(Ligacao);
                 System.out.printf("DOWNALOADER PORTA: %d conectado!!\n", porta);
-              //  System.out.println(Ligacao);
+                //  System.out.println(Ligacao);
                 Ligacao.SendInfoDownloaders(DownloadersOnPORTA);
                 return true;
             }
@@ -47,7 +48,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
             DownloadersOn.add(iq);
 
             System.out.println(Ligacao);
-            System.out.printf("DOWNALOADER PORTA: %d conectado TAMANHO %d!!\n", porta,DownloadersOnPORTA.size());
+            System.out.printf("DOWNALOADER PORTA: %d conectado TAMANHO %d!!\n", porta, DownloadersOnPORTA.size());
             Ligacao.SendInfoDownloaders(DownloadersOnPORTA);
             System.out.println("MORRE AQUI\n");
             return true;

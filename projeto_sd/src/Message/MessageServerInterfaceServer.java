@@ -22,6 +22,8 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     public static IQueueRemoteInterface iq;
     public static ArrayList<IClientRemoteInterface> Barrels = new ArrayList<>();
 
+    public static ArrayList<Integer> BarrelsID = new ArrayList<>();
+
     public MessageServerInterfaceServer() throws RemoteException {
         super();
     }
@@ -33,10 +35,18 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
     }
 
-    public void registerClient(IClientRemoteInterface client) throws RemoteException {
+    public int registerClient(IClientRemoteInterface client,int id) throws RemoteException {
+        for(int i = 0; i < Barrels.size();i++){
+            if(BarrelsID.get(i).compareTo(id) == 0){
+                return -1;
+            }
+        }
         Barrels.add(client);
+        BarrelsID.add(id);
+
         System.out.printf("%d\n", Barrels.size());
         System.out.println("Barrel registrado no servidor.");
+        return Barrels.size();
     }
 
 
@@ -56,40 +66,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
                     Barrels.get(i).Connected();
 
                 }
-                if (Download2.size() != 0) {
-                    int contador = 0;
-                    System.out.println(Barrels.size());
-                    for (i = 0; i < Download2.size(); i++) {
-                        for (Integer download : Downloads) {
 
-                            if (!Objects.equals(Download2.get(i), download)) {
-                                contador++;
-                            }
-                        }
-                        if (contador == Downloads.size()) {
-                            Downloads.add(Download2.get(i));
-                            System.out.printf("AHHAHHHAHAHAHHAHAH %d\n", Barrels.size());
-                            for (int k = 0; k < Barrels.size(); k++) {
-                                System.out.println("FODA-SE\n");
-                                MulticastClient cliente = new MulticastClient();
-                                System.out.println("AHAHHAHA\n");
-                                Connection b = Barrels.get(i).conetor();
-                                System.out.println(b);
-                                System.out.println("IHIHHIHIHIHIHIHIHIHIH");
-                                cliente.myClient(Barrels.get(i).conetor(), 1, Download2.get(i));
-
-                                cliente.run();
-
-                            }
-                            //CHAMAR AQUI A TREAD DOS BARRELS COM O NOVO DOWNLOADER
-                        }
-                        contador = 0;
-                    }
-                    System.out.println("PORTAS ATIVAS");
-                    for (i = 0; i < Downloads.size(); i++) {
-                        System.out.printf("%d\n", Downloads.get(i));
-                    }
-                }
 
 
                 Thread.sleep(1000);
@@ -110,6 +87,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
     public void unregisterClient(int posicao) throws RemoteException {
         Barrels.remove(posicao);
+        BarrelsID.remove(posicao);
         for (int k = posicao; k < Barrels.size() - 1; k++) {
             Barrels.set(k, Barrels.get(k + 1));
             if (k == Barrels.size() - 1) {
