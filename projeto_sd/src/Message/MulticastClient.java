@@ -105,9 +105,9 @@ public class MulticastClient extends Thread {
                                     int contador2 = 0;
                                     for(String n : news){
                                         if(contador2 == 0){
-                                            token1 = n;
+                                            token1 = n.trim();
                                         }else{
-                                            url = n;
+                                            url = n.trim();
                                         }
                                         contador2++;
 
