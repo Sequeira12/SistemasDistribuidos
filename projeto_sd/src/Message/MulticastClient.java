@@ -80,10 +80,11 @@ public class MulticastClient extends Thread {
                             }else {
                                 String token1 = token.trim();
                                 if (UrlOrToken) {
-                                    String sql = "select count(*)  from token_url where token_url.token1 = ? and token_url.url = ?;";
+                                    String sql = "select count(*)  from token_url where token_url.token1 = ? and token_url.url = ? and barrel=?;";
                                     PreparedStatement stament = connection.prepareStatement(sql);
                                     stament.setString(1, token1);
                                     stament.setString(2, url);
+                                    stament.setInt(3, id);
 
                                     ResultSet rs = stament.executeQuery();
                                     if (rs.next()) {
@@ -96,6 +97,7 @@ public class MulticastClient extends Thread {
                                             stament2.setString(2, token1);
                                             stament2.setString(3, url);
                                             stament2.executeUpdate();
+                                            System.out.println("Inseriu " + Integer.toString(id) + " " + token1 + "\n");
                                         }
                                     }
                                 } else {

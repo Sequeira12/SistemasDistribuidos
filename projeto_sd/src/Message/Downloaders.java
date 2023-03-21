@@ -44,7 +44,12 @@ public class Downloaders {
 
             Document doc = Jsoup.connect(url).get();
             String titulo = doc.title();
-            String citacao = doc.text().substring(titulo.length(), titulo.length() + 50);
+            String citacao;
+            if(doc.text().length() < 50){
+                citacao = doc.text().substring(titulo.length(), doc.text().length());
+            }else{
+                citacao = doc.text().substring(titulo.length(), titulo.length() + 50);
+            }
             citacao += "...";
 
             StringTokenizer tokens = new StringTokenizer(doc.text());
