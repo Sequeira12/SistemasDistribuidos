@@ -5,6 +5,7 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Random;
@@ -12,37 +13,29 @@ import java.util.ArrayList;
 
 public class MessageServerInterfaceServer extends UnicastRemoteObject implements MessageServerInterface, IServerRemoteInterface, ISearcheQueue {
 
-    public static ArrayList<IClientRemoteInterface> Barrels = new ArrayList<>();
+
     public static IServerRemoteInterface Servidor;
-
     public static ISearcheQueue QueueSearche;
-    public static ArrayList<Integer> Download = new ArrayList<>();
+    public static ArrayList<Integer> Downloads = new ArrayList<>();
 
+    public static ArrayList<Integer> Download2 = new ArrayList<>();
     public static IQueueRemoteInterface iq;
-
+    public static ArrayList<IClientRemoteInterface> Barrels = new ArrayList<>();
 
     public MessageServerInterfaceServer() throws RemoteException {
         super();
     }
 
-    public void SendInfoDownloaders(ArrayList<Integer> Download) {
+
+    public void SendInfoDownloaders(ArrayList<Integer> Download) throws RemoteException {
         int contador = 0;
-        for (int i = 0; i < Download.size(); i++) {
-            for (int j = 0; j < MessageServerInterfaceServer.Download.get(j); j++) {
-                if (!Objects.equals(Download.get(i), MessageServerInterfaceServer.Download.get(i))) {
-                    contador++;
-                }
-            }
-            if (contador == MessageServerInterfaceServer.Download.size()) {
-                MessageServerInterfaceServer.Download.add(Download.get(i));
-                //CHAMAR AQUI A TREAD DOS BARRELS COM O NOVO DOWNLOADER
-            }
-            contador = 0;
-        }
+
+
     }
 
     public void registerClient(IClientRemoteInterface client) throws RemoteException {
         Barrels.add(client);
+        System.out.printf("%d\n", Barrels.size());
         System.out.println("Barrel registrado no servidor.");
     }
 
@@ -52,12 +45,54 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         while (true) {
             try {
                 System.out.printf("Tamanho de Barrels Disponiveis %d\n", Barrels.size());
+                //SendInfoDownloaders(Downloads);
+                if (iq.info() != null) {
+                    Download2 = iq.info();
+                }
+                System.out.println(Download2.size());
+
                 for (i = 0; i < Barrels.size(); i++) {
 
                     Barrels.get(i).Connected();
 
                 }
-                Thread.sleep(10000);
+                if (Download2.size() != 0) {
+                    int contador = 0;
+                    System.out.println(Barrels.size());
+                    for (i = 0; i < Download2.size(); i++) {
+                        for (Integer download : Downloads) {
+
+                            if (!Objects.equals(Download2.get(i), download)) {
+                                contador++;
+                            }
+                        }
+                        if (contador == Downloads.size()) {
+                            Downloads.add(Download2.get(i));
+                            System.out.printf("AHHAHHHAHAHAHHAHAH %d\n", Barrels.size());
+                            for (int k = 0; k < Barrels.size(); k++) {
+                                System.out.println("FODA-SE\n");
+                                MulticastClient cliente = new MulticastClient();
+                                System.out.println("AHAHHAHA\n");
+                                Connection b = Barrels.get(i).conetor();
+                                System.out.println(b);
+                                System.out.println("IHIHHIHIHIHIHIHIHIHIH");
+                                cliente.myClient(Barrels.get(i).conetor(), 1, Download2.get(i));
+
+                                cliente.run();
+
+                            }
+                            //CHAMAR AQUI A TREAD DOS BARRELS COM O NOVO DOWNLOADER
+                        }
+                        contador = 0;
+                    }
+                    System.out.println("PORTAS ATIVAS");
+                    for (i = 0; i < Downloads.size(); i++) {
+                        System.out.printf("%d\n", Downloads.get(i));
+                    }
+                }
+
+
+                Thread.sleep(1000);
 
 
             } catch (ServerException a) {
@@ -141,8 +176,6 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
 
             QueueSearche = (ISearcheQueue) LocateRegistry.getRegistry(7005).lookup("QS"); // LIGACAO RMI
-
-
 
 
             Servidor = new MessageServerInterfaceServer();

@@ -9,18 +9,21 @@ import java.util.Arrays;
 
 public class MulticastClient extends Thread {
     private String MULTICAST_ADDRESS = "224.3.2.1";
-    private int PORT = 4321;
+    private int PORT;
     Connection connection = null;
     int id;
 
-    public void myClient(Connection conn, int i) {
+    public void myClient(Connection conn, int i,int porta) {
+        System.out.println("AHAHAHHAHAHAHA SDDD MERDA\n");
         connection = conn;
         id = i;
+        PORT = porta;
     }
 
     public void run() {
         MulticastSocket socket = null;
         try {
+            System.out.printf("VAI LER NA PORTA %d\n",PORT);
             socket = new MulticastSocket(PORT);  // create socket and bind it
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);

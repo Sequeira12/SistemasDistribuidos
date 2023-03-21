@@ -20,22 +20,37 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         super();
     }
 
+    public ArrayList<Integer> info(){
+        return DownloadersOnPORTA;
+    }
 
+    public boolean ConnectDownload(IQueueRemoteInterface iq, int porta) throws RemoteException {
 
-
-
-    public boolean ConnectDownload(IQueueRemoteInterface iq,int porta) throws RemoteException {
-
+        System.out.println("ENTROU\n");
         for (int i = 0; i < DownloadersOnPORTA.size(); i++) {
             if (DownloadersOnPORTA.get(i) == porta) {
+                System.out.println("ENTROU\n");
                 return false;
             }
             if (i == DownloadersOnPORTA.size() - 1) {
                 DownloadersOnPORTA.add(porta);
                 DownloadersOn.add(iq);
+                System.out.println(Ligacao);
+                System.out.printf("DOWNALOADER PORTA: %d conectado!!\n", porta);
+              //  System.out.println(Ligacao);
                 Ligacao.SendInfoDownloaders(DownloadersOnPORTA);
                 return true;
             }
+        }
+        if (DownloadersOnPORTA.size() == 0) {
+            DownloadersOnPORTA.add(porta);
+            DownloadersOn.add(iq);
+
+            System.out.println(Ligacao);
+            System.out.printf("DOWNALOADER PORTA: %d conectado TAMANHO %d!!\n", porta,DownloadersOnPORTA.size());
+            Ligacao.SendInfoDownloaders(DownloadersOnPORTA);
+            System.out.println("MORRE AQUI\n");
+            return true;
         }
         return true;
 
@@ -62,9 +77,12 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
 
         QueueUrls h = new QueueUrls();
         Registry r = LocateRegistry.createRegistry(7003);
-        Ligacao = (ISearcheQueue) LocateRegistry.createRegistry(7005);
-
         r.rebind("QD", h);
+
+
+        Ligacao = new MessageServerInterfaceServer();
+        Registry r1 = LocateRegistry.createRegistry(7005);
+        r1.rebind("QS", Ligacao);
 
     }
 }

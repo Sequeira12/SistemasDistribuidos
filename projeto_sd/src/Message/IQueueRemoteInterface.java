@@ -8,4 +8,6 @@ public interface IQueueRemoteInterface extends Remote {
     void coloca(String e) throws RemoteException;
 
     boolean ConnectDownload(IQueueRemoteInterface iq,int porta) throws RemoteException;
+
+    ArrayList<Integer> info() throws RemoteException;
 }

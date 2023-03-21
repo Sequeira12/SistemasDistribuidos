@@ -36,6 +36,8 @@ public class Downloaders {
     public static List<String> StopWords = Arrays.asList(words);
     public static MulticastServer MulticastServer = new MulticastServer();
 
+    public static int porta;
+
     public static void SendInfo(String url, IQueueRemoteInterface iq) throws RemoteException {
         try {
 
@@ -65,9 +67,11 @@ public class Downloaders {
             String tamanho = Integer.toString(tamanhoInfo);
             String InfoTokenMulti = tamanho + Barra + "TOKEN";
             // info tamanho|TOKEN
-            MulticastServer.run(InfoTokenMulti);
+            MulticastServer.Myserver(InfoTokenMulti,porta);
+            MulticastServer.run();
             String fim = EnviaMulti.toString();
-            MulticastServer.run(fim);
+            MulticastServer.Myserver(InfoTokenMulti,porta);
+            MulticastServer.run();
 
 
 
@@ -85,9 +89,11 @@ public class Downloaders {
             String tamanhoURL = Integer.toString(tamanhoInfoUrls);
             String InfoUrlMulti = tamanhoURL + Barra + "URL";
             // info tamanho|TOKEN
-            MulticastServer.run(InfoUrlMulti);
+            MulticastServer.Myserver(InfoUrlMulti,porta);
+            MulticastServer.run();
             String fimUrl = EnviaMultiLinks.toString();
-            MulticastServer.run(fimUrl);
+            MulticastServer.Myserver(fimUrl,porta);
+            MulticastServer.run();
 
 
         } catch (IOException e) {
@@ -107,8 +113,13 @@ public class Downloaders {
             IQueueRemoteInterface iq = (IQueueRemoteInterface) LocateRegistry.getRegistry(7003).lookup("QD");
 
             MulticastServer MulticastServer = new MulticastServer();
-            iq.ConnectDownload(iq,4321);
-            MulticastServer.Myserver(4321);
+            boolean result = iq.ConnectDownload(iq,Integer.parseInt(args[0]));
+            if(!result){
+                System.exit(0);
+            }
+            porta = Integer.parseInt(args[0]);
+
+
             while (true) {
                 String t;
                 t = iq.retira();

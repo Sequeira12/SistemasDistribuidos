@@ -45,6 +45,10 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
             e.printStackTrace();
         }
     }
+    public Connection conetor (){
+        System.out.println("ccccc");
+        return connection;
+    }
 
     public boolean Connected() {
         return true;
@@ -84,7 +88,7 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         return connectados;
     }
 
-  //  public void CriaConexaoMulti)
+
 
 
     // =========================================================
@@ -108,9 +112,7 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
             Barrels clientObj = new Barrels();
             clientObj.connectToServer(clientObj);
 
-            MulticastClient cliente = new MulticastClient();
-            cliente.myClient(connection,1);
-            cliente.run();
+
 
 
         } catch (RemoteException re) {
