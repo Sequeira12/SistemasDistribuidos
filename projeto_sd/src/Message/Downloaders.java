@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.io.IOException;
 
 import java.rmi.Naming;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -28,7 +29,7 @@ import java.util.*;
 
 import java.util.concurrent.TimeUnit;
 
-public class Downloaders {
+public class Downloaders extends UnicastRemoteObject implements InterfaceDownloaders {
     private static final long serialVersionUID = 1L;
     public int id;
     //tokens -> urls
@@ -38,6 +39,14 @@ public class Downloaders {
     public static MulticastServer MulticastServer = new MulticastServer();
 
     public static int porta;
+
+    protected Downloaders() throws RemoteException {
+        super();
+    }
+
+    public boolean Connected(){
+        return true;
+    }
 
     public static void SendInfo(String url, IQueueRemoteInterface iq) throws RemoteException, SSLHandshakeException {
         try {
@@ -117,8 +126,10 @@ public class Downloaders {
         try {
             IQueueRemoteInterface iq = (IQueueRemoteInterface) LocateRegistry.getRegistry(7003).lookup("QD");
 
+            Downloaders a = new Downloaders();
             MulticastServer MulticastServer = new MulticastServer();
-            boolean result = iq.ConnectDownload(iq, Integer.parseInt(args[0]));
+            //iq.registerDownloader(a);
+            boolean result = iq.ConnectDownload(a, Integer.parseInt(args[0]));
             if (!result) {
                 System.exit(0);
             }

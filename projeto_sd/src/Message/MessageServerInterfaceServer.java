@@ -11,12 +11,11 @@ import java.util.ArrayList;
 
 public class MessageServerInterfaceServer extends UnicastRemoteObject implements MessageServerInterface, IServerRemoteInterface, ISearcheQueue {
 
-
     public static IServerRemoteInterface Servidor;
     public static ISearcheQueue QueueSearche;
-    public static ArrayList<Integer> Downloads = new ArrayList<>();
+    public static ArrayList<InterfaceDownloaders> Downloads = new ArrayList<>();
 
-    public static ArrayList<Integer> Download2 = new ArrayList<>();
+    public static ArrayList<InterfaceDownloaders> Download2 = new ArrayList<>();
     public static IQueueRemoteInterface iq;
     public static ArrayList<IClientRemoteInterface> Barrels = new ArrayList<>();
 
@@ -63,9 +62,18 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
                 System.out.printf("Barrels Disponiveis %d\n", Barrels.size());
                 System.out.printf("Clientes Disponiveis %d\n", Clientes.size());
                 System.out.printf("Downloaders Disponiveis %d\n\n", Download2.size());
-                //SendInfoDownloaders(Downloads);
+
                 if (iq.info() != null) {
-                    Download2 = iq.info();
+                    for(int f = 0; f < iq.info().size();f++){
+                        System.out.println(iq.info().get(f));
+                    }
+                    Downloads = iq.info(); // AQUI BEM
+                }
+                if(Downloads != Download2){
+                    Download2 = Downloads;
+                    for (int j = 0; j < Clientes.size(); j++) {
+                        Clientes.get(j).atualizaStatus(Barrels, Downloads);
+                    }
                 }
 
 
