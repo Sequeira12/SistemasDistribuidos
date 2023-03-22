@@ -40,6 +40,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
                 System.out.printf("DOWNALOADER PORTA: %d conectado!!\n", porta);
                 //  System.out.println(Ligacao);
                 Ligacao.SendInfoDownloaders(DownloadersOnPORTA);
+
                 return true;
             }
         }

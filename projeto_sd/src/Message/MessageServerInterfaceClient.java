@@ -28,6 +28,11 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
         Downloaders=d;
     }
 
+
+    public boolean Connected() throws RemoteException {
+        return true;
+    }
+
     public static int login;
 
     public static void Imprime10_10(ArrayList<String> links) {

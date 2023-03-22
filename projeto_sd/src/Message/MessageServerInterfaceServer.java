@@ -57,20 +57,26 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
 
     public void run() throws RemoteException {
-        int i = 0;
+        int i = 0,k=0;
         while (true) {
             try {
-                System.out.printf("Tamanho de Barrels Disponiveis %d\n", Barrels.size());
+                System.out.printf("Barrels Disponiveis %d\n", Barrels.size());
+                System.out.printf("Clientes Disponiveis %d\n", Clientes.size());
+                System.out.printf("Downloaders Disponiveis %d\n\n", Download2.size());
                 //SendInfoDownloaders(Downloads);
                 if (iq.info() != null) {
                     Download2 = iq.info();
                 }
-                System.out.println(Download2.size());
+
 
                 for (i = 0; i < Barrels.size(); i++) {
-
                     Barrels.get(i).Connected();
+                }
 
+
+
+                for (k = 0; k < Clientes.size(); k++) {
+                    Clientes.get(k).Connected();
                 }
 
 
@@ -81,9 +87,14 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
                 System.out.println("Server Exception \n");
             } catch (ConnectException a) {
                 // Se a conexão não existir retiro da lista
-                unregisterClient(i);
-                for(int j = 0; j<Clientes.size(); j++){
-                    Clientes.get(j).atualizaStatus(Barrels, Download2);
+                if(i != Barrels.size()) {
+                    unregisterBarrel(i);
+                    for (int j = 0; j < Clientes.size(); j++) {
+                        Clientes.get(j).atualizaStatus(Barrels, Download2);
+                    }
+                }
+                if(k != Clientes.size()){
+                    unregisterClient(k);
                 }
 
 
@@ -93,12 +104,13 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         }
     }
 
-    public void addClient(InterfaceClienteServer a){
+    public void addClient(InterfaceClienteServer a) throws RemoteException {
         Clientes.add(a);
-        System.out.println(Clientes.size());
+        System.out.println("Cliente ADICIONADO" + Clientes.size());
+        a.atualizaStatus(Barrels,Download2);
     }
 
-    public void unregisterClient(int posicao) throws RemoteException {
+    public void unregisterBarrel(int posicao) throws RemoteException {
         Barrels.remove(posicao);
         BarrelsID.remove(posicao);
         for (int k = posicao; k < Barrels.size() - 1; k++) {
@@ -109,6 +121,19 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             }
         }
         System.out.println("Barrel removido do servidor.");
+    }
+
+    public void unregisterClient(int posicao) throws RemoteException {
+        Clientes.remove(posicao);
+
+        for (int k = posicao; k < Clientes.size() - 1; k++) {
+            Clientes.set(k, Clientes.get(k + 1));
+            if (k == Clientes.size() - 1) {
+                Clientes.set(k, null);
+
+            }
+        }
+        System.out.println("Cliente removido do servidor.");
     }
 
 

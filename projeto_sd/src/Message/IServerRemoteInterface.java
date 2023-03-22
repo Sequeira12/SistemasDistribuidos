@@ -4,6 +4,6 @@ import java.rmi.RemoteException;
 
 public interface IServerRemoteInterface extends Remote {
     int registerClient(IClientRemoteInterface client, int id) throws RemoteException;
-    void unregisterClient(int posicao) throws RemoteException;
+    void unregisterBarrel(int posicao) throws RemoteException;
 
 }
