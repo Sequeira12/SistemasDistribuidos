@@ -4,4 +4,9 @@
 -
 
 
-/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/projetoSDeasy/out/production/projetoSDeasy:/Users/brunosequeira/IdeaProjects/projetoSDeasy/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/projetoSDeasy/SistemasDistribuidos/postgresql-42.5.4.jar Message.Downloaders
+
+/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=55194:/Applications/IntelliJ IDEA.app/Contents/bin -Dfile.encoding=UTF-8 -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.Barrels
+
+
+/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.Barrels 1999
+

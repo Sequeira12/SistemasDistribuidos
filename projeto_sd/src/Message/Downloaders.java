@@ -45,6 +45,7 @@ public class Downloaders {
             Document doc = Jsoup.connect(url).get();
             String titulo = doc.title();
             String citacao;
+            //DA ERRO NO LINK APPS.UC.PT
             if(doc.text().length() < 50){
                 citacao = doc.text().substring(titulo.length(), doc.text().length());
             }else{

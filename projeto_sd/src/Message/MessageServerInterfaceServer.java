@@ -5,9 +5,7 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Objects;
+import java.sql.*;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -22,7 +20,11 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     public static IQueueRemoteInterface iq;
     public static ArrayList<IClientRemoteInterface> Barrels = new ArrayList<>();
 
+    public static Connection connection;
     public static ArrayList<Integer> BarrelsID = new ArrayList<>();
+
+    public static ArrayList<InterfaceClienteServer> Clientes = new ArrayList<>();
+
 
     public MessageServerInterfaceServer() throws RemoteException {
         super();
@@ -32,8 +34,9 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     public void SendInfoDownloaders(ArrayList<Integer> Download) throws RemoteException {
         int contador = 0;
 
-
     }
+
+
 
     public int registerClient(IClientRemoteInterface client,int id) throws RemoteException {
         for(int i = 0; i < Barrels.size();i++){
@@ -43,7 +46,10 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         }
         Barrels.add(client);
         BarrelsID.add(id);
-
+        for(int j = 0; j<Clientes.size(); j++){
+            System.out.println("YAYAYAY");
+            Clientes.get(j).atualizaStatus(Barrels, Download2);
+        }
         System.out.printf("%d\n", Barrels.size());
         System.out.println("Barrel registrado no servidor.");
         return Barrels.size();
@@ -68,7 +74,6 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
                 }
 
 
-
                 Thread.sleep(1000);
 
 
@@ -77,6 +82,10 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             } catch (ConnectException a) {
                 // Se a conexão não existir retiro da lista
                 unregisterClient(i);
+                for(int j = 0; j<Clientes.size(); j++){
+                    Clientes.get(j).atualizaStatus(Barrels, Download2);
+                }
+
 
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -84,6 +93,10 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         }
     }
 
+    public void addClient(InterfaceClienteServer a){
+        Clientes.add(a);
+        System.out.println(Clientes.size());
+    }
 
     public void unregisterClient(int posicao) throws RemoteException {
         Barrels.remove(posicao);
@@ -99,7 +112,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     }
 
 
-    public ArrayList<String> FindUrlWithToken(String url) throws RemoteException, SQLException {
+    public ArrayList<String> FindUrlWithToken(String token) throws RemoteException, SQLException {
         ArrayList<String> connectados = new ArrayList<>();
         System.out.println(Barrels.size());
         if (Barrels.size() != 0) {
@@ -109,7 +122,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             int numero = gerador.nextInt((Barrels.size()));
             System.out.printf("Barrel que vai executar a Procura ---> %d\n", numero);
             if (Barrels.get(numero) != null) {
-                connectados = Barrels.get(numero).ProcuraToken(url);
+                connectados = Barrels.get(numero).ProcuraToken(token);
             }
         } else {
             String No = "Sem Resultados";
@@ -122,10 +135,77 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         iq.coloca(url);
     }
 
-    public String sayHello() throws RemoteException {
+    public String sayHello(int login) throws RemoteException {
+        if (login == 0) {
+            return "Bem-vindo\nEscolha as opções:\n1-Token para procurar\n2-URL para indexar\n3-Estatisticas\n0-exit\nObrigado!!\n";
+        } else {
+            return "Bem-vindo\nEscolha as opções:\n1-Token para procurar\n2-URL para indexar\n3-Estatisticas\n4-lista de páginas com ligação para uma página\n0-exit\nObrigado!!\n";
+        }
 
-        return "Bem-vindo\nEscolha as opções:\n1-Token para procurar\n2-URL para indexar\n0-exit\nObrigado!!\n";
     }
+
+    public ArrayList<String> listPagesConnectedtoAnotherPage(String url) throws SQLException, RemoteException {
+        ArrayList<String> connectados = new ArrayList<>();
+        System.out.println(Barrels.size());
+        if (Barrels.size() != 0) {
+            Random gerador = new Random();
+            int numero = gerador.nextInt((Barrels.size()));
+            System.out.printf("Barrel que vai executar a LISTAGEM DE URL ---> %d\n", numero);
+            if (Barrels.get(numero) != null) {
+                System.out.println("YAYAYAY");
+
+                connectados = Barrels.get(numero).listPage(url);
+
+                //connectados = Barrels.get(numero).listPage(url);
+            }
+        } else {
+            String No = "Sem Resultados";
+            connectados.add(No);
+        }
+        return connectados;
+    }
+
+    public boolean Register(String username, String password) throws SQLException {
+        String sql = "select count(*) from info_client where username = ? and pass =  ? ";
+        PreparedStatement stament = connection.prepareStatement(sql);
+        stament.setString(1, username);
+        stament.setString(2, password);
+        stament.execute();
+        ResultSet rs = stament.executeQuery();
+        if (rs.next()) {
+            int a = rs.getInt(1);
+            if (a == 0) {
+                sql = "insert into info_client (username,pass) values(?,?);";
+                stament = connection.prepareStatement(sql);
+                stament.setString(1, username);
+                stament.setString(2, password);
+                stament.executeUpdate();
+                return true;
+
+            }
+        }
+        return false;
+
+    }
+
+    public boolean Login(String username, String password) throws SQLException {
+        String sql = "select count(*) from info_client where username = ? and pass =  ? ;";
+        PreparedStatement stament = connection.prepareStatement(sql);
+        stament.setString(1, username);
+        stament.setString(2, password);
+        stament.execute();
+        ResultSet rs = stament.executeQuery();
+        if (rs.next()) {
+            int a = rs.getInt(1);
+            if (a == 1) {
+                return true;
+
+            }
+        }
+        return false;
+
+    }
+
 
     public String SendUrlQueue(String token) throws RemoteException {
 
@@ -144,7 +224,14 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
              * Fazer funcao aqui para que o barrels invoce para adicionar a porta dele a um arraylist de porta globais do servidor
              *
              */
+            String url = "jdbc:postgresql://localhost/sddb";
+            String username = "adminsd";
+            String password = "admin";
 
+
+            DriverManager.registerDriver(new org.postgresql.Driver());
+            connection = DriverManager.getConnection(url, username, password);
+            System.out.println("Connected to database");
 
             iq = (IQueueRemoteInterface) LocateRegistry.getRegistry(7003).lookup("QD");
 
@@ -166,6 +253,8 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         } catch (RemoteException re) {
             System.out.println("Exception in HelloImpl.main: " + re);
         } catch (MalformedURLException | NotBoundException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }

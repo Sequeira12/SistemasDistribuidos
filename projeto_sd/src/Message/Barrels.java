@@ -1,11 +1,7 @@
 package Message;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -13,7 +9,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 public class Barrels extends UnicastRemoteObject implements IClientRemoteInterface {
     /**
@@ -62,21 +57,18 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
 
     public ArrayList<String> ProcuraToken(String token) throws SQLException {
 
-
+        System.out.println("YAYAYdadadAY");
         ArrayList<String> connectados = new ArrayList<>();
         String[] news = token.split(" ");
 
         String sql = "select distinct(url_url.url2),(select count(distinct(url1)) from url_url where url2 = token_url.url and url1 != token_url.url ) as url_count , url_info.titulo,url_info.citacao from token_url join url_url on token_url.url = url_url.url2 join  url_info on token_url.url = url_info.url where token_url.token1 IN (" + String.join(",", Arrays.stream(news).map(t -> "?").toArray(String[]::new)) + ") " + "and url1 != url2 and token_url.barrel = ?  order  by url_count desc";
-
-        //String sql = "select distinct(url_url.url2), (select count(distinct(url1))  from url_url where url2 = token_url.url and url1 != token_url.url ) as url_count from token_url join url_url on token_url.url = url_url.url2 where token_url.token1 IN (" + String.join(",", Arrays.stream(news).map(t -> "?").toArray(String[]::new)) + ") " + " and url1 != url2 order  by url_count desc";
-
 
         PreparedStatement stament = connection.prepareStatement(sql);
         int i;
         for (i = 0; i < news.length; i++) {
             stament.setString(i + 1, news[i]);
         }
-        stament.setInt(i+1,id);
+        stament.setInt(i + 1, id);
 
         ResultSet rs = stament.executeQuery();
         System.out.printf("Procura da palavra: %s\n", token);
@@ -93,6 +85,34 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         rs.close();
         stament.close();
         return connectados;
+
+    }
+
+
+    public ArrayList<String> listPage(String url) throws RemoteException, SQLException {
+
+
+        ArrayList<String> connectados = new ArrayList<>();
+        String sql = "select distinct(url1) from url_url where url2 = ? and barrel = ?;";
+        PreparedStatement stament = connection.prepareStatement(sql);
+        stament.setString(1, url);
+        stament.setInt(2, id);
+        ResultSet rs = stament.executeQuery();
+        int conta = 0;
+
+        while (rs.next()) {
+            String composta = "Ligação: " + rs.getString(1) + "\n";
+            connectados.add(composta);
+            conta++;
+        }
+        if (conta == 0) {
+            connectados = null;
+        }
+        rs.close();
+        stament.close();
+        return connectados;
+
+
     }
 
 
