@@ -165,15 +165,22 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     }
 
     public HashMap<Integer, String> PedidoHash(int a,int id) throws RemoteException, SQLException {
-        String verifica = "select barrel as conta from token_url group by barrel order by count(token1) DESC limit 1";
+        if(Barrels.size()==0) return null;
+        String verifica = "select barrel as conta from token_url group by barrel order by count(token1) DESC";
         PreparedStatement stm = connection.prepareStatement(verifica);
         ResultSet resultado = stm.executeQuery();
         int barrel=0;
         if(resultado.next()){
             barrel=resultado.getInt(1);
+            int p = BarrelsID.indexOf(barrel);
+            if(p!=-1) {
+                if (barrel != id && Barrels.get(p).Connected()) {
+                    return Barrels.get(p).sendHash(a);
+                }
+            }
         }
 
-        return Barrels.get(BarrelsID.indexOf(barrel)).sendHash(a);
+        return null;
     }
 
     public void unregisterClient(int posicao) throws RemoteException {

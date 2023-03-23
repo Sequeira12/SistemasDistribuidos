@@ -15,7 +15,7 @@ public class MulticastClient extends Thread {
     int id;
 
 
-    HashMap<Integer,String> info = new HashMap<>();
+    HashMap<Integer,String> info = null;
     int contaHash;
 
     public synchronized void myClient(Connection conn, int i,HashMap<Integer,String> info1, int conta) {
@@ -23,6 +23,7 @@ public class MulticastClient extends Thread {
         id = i;
         info=info1;
         contaHash=conta;
+        System.out.println("Tamanho da hash recebida: " + info1.size());
         run();
     }
 
@@ -78,8 +79,8 @@ public class MulticastClient extends Thread {
                                 titulo = news[0];
                                 citacao = news[1];
                                 url = news[2];
+                                conta2++;
                             }
-                            conta2++;
 
 
                             if (conta2 == 1 && UrlOrToken) {
