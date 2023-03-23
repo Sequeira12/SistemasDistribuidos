@@ -31,10 +31,11 @@ public class MulticastServer extends Thread {
     public synchronized void Myserver(String palavraS,String PalavraFinal) {
         palavra = palavraS;
         palavraFim = PalavraFinal;
+        run();
 
     }
 
-    public synchronized void run() {
+    public void run() {
         MulticastSocket socket = null;
         long counter = 0;
 

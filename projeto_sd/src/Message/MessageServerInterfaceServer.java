@@ -62,14 +62,15 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, id);
         ResultSet s = statement.executeQuery();
-
-        sql = "INSERT INTO token_url (barrel, token1, url) SELECT ?, token1, url FROM token_url WHERE barrel = (SELECT barrel FROM token_url GROUP BY barrel ORDER BY COUNT(token1) DESC LIMIT 1) and token1 not in (select token1 from token_url where barrel = ? );";
-
-        //sql = "INSERT INTO token_url (barrel, token1, url) SELECT ?, token1, url FROM token_url WHERE barrel = (SELECT barrel FROM token_url GROUP BY barrel ORDER BY COUNT(token1) DESC LIMIT 1);";
-        PreparedStatement statement2 = connection.prepareStatement(sql);
-        statement2.setInt(1, id);
-        statement2.setInt(2, id);
-        statement2.executeUpdate();
+        for (int i = 0; i < 5; i++) {
+            sql = "INSERT INTO token_url (barrel, token1, url) select ?, token1,url from token_url where barrel = (select barrel as conta from token_url group by barrel order by count(token1) DESC limit 1) except select ?,token1,url from token_url where barrel = ?";
+            //sql = "INSERT INTO token_url (barrel, token1, url) SELECT ?, token1, url FROM token_url WHERE barrel = (SELECT barrel FROM token_url GROUP BY barrel ORDER BY COUNT(token1) DESC LIMIT 1);";
+            PreparedStatement statement2 = connection.prepareStatement(sql);
+            statement2.setInt(1, id);
+            statement2.setInt(2, id);
+            statement2.setInt(3, id);
+            int a = statement2.executeUpdate();
+        }
         System.out.println("Informação adicionada ao Barrel " + id);
 
 
@@ -172,22 +173,27 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
 
     public ArrayList<String> FindUrlWithToken(String token) throws RemoteException, SQLException {
-        ArrayList<String> connectados = new ArrayList<>();
-        System.out.println(Barrels.size());
-        if (Barrels.size() != 0) {
+
+        try {
+            ArrayList<String> connectados = new ArrayList<>();
+            System.out.println(Barrels.size());
+            if (Barrels.size() != 0) {
 
 
-            Random gerador = new Random();
-            int numero = gerador.nextInt((Barrels.size()));
-            System.out.printf("Barrel que vai executar a Procura ---> %d\n", numero);
-            if (Barrels.get(numero) != null) {
-                connectados = Barrels.get(numero).ProcuraToken(token);
+                Random gerador = new Random();
+                int numero = gerador.nextInt((Barrels.size()));
+                System.out.printf("Barrel que vai executar a Procura ---> %d\n", numero);
+                if (Barrels.get(numero) != null) {
+                    connectados = Barrels.get(numero).ProcuraToken(token);
+                }
+            } else {
+                String No = "Sem Resultados";
+                connectados.add(No);
             }
-        } else {
-            String No = "Sem Resultados";
-            connectados.add(No);
+            return connectados;
+        } catch (RemoteException a) {
+            return null;
         }
-        return connectados;
     }
 
     public void SendUrltoQueue(String url) throws RemoteException {

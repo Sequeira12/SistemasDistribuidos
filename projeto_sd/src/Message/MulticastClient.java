@@ -13,17 +13,17 @@ public class MulticastClient extends Thread {
     Connection connection = null;
     int id;
 
-    public void myClient(Connection conn, int i) {
+    public synchronized void myClient(Connection conn, int i) {
 
         connection = conn;
         id = i;
+        run();
 
     }
-
     public void run() {
         MulticastSocket socket = null;
         try {
-            System.out.printf("VAI LER NA PORTA %d com id %d\n",PORT,id);
+            System.out.printf("VAI LER NA PORTA %d com id %d\n", PORT, id);
             socket = new MulticastSocket(PORT);  // create socket and bind it
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
@@ -35,7 +35,7 @@ public class MulticastClient extends Thread {
                 String messageTamanho = new String(packet.getData(), 0, packet.getLength());
 
                 String[] urltoken = messageTamanho.split(" \\| ");
-                System.out.printf("\n\n%s %s\n\n", urltoken[0],urltoken[1]);
+                System.out.printf("\n\n%s %s\n\n", urltoken[0], urltoken[1]);
                 if (urltoken[1].compareTo("TOKEN") == 0) {
                     UrlOrToken = true;
                 } else {
@@ -50,7 +50,7 @@ public class MulticastClient extends Thread {
                 System.out.println(messageFinal);
 
                 int conta2 = 0;
-                String citacao = null, titulo = null, url = null;
+                String citacao = null, titulo = null, url = null, Url2 = null;;
                 ;
                 // divide a string em tokens usando o caractere "|"
                 if (messageFinal.contains(" ;")) {
@@ -60,7 +60,7 @@ public class MulticastClient extends Thread {
 
                         if (token != null) {
 
-                            if(conta2 == 0 && UrlOrToken){
+                            if (conta2 == 0 && UrlOrToken) {
                                 String[] news = token.split(" \\| ");
                                 titulo = news[0];
                                 citacao = news[1];
@@ -77,7 +77,7 @@ public class MulticastClient extends Thread {
                                 stament.setString(3, citacao);
                                 stament.executeUpdate();
                                 conta2++;
-                            }else {
+                            } else {
                                 String token1 = token.trim();
                                 if (UrlOrToken) {
                                     String sql = "select count(*)  from token_url where token_url.token1 = ? and token_url.url = ? and barrel=?;";
@@ -102,25 +102,20 @@ public class MulticastClient extends Thread {
                                     }
                                 } else {
 
-                                    String[] news = token.split("\\|");
+                                    if (conta2 > 0) {
 
-                                    int contador2 = 0;
-                                    for(String n : news){
-                                        if(contador2 == 0){
-                                            token1 = n.trim();
-                                        }else{
-                                            url = n.trim();
-                                        }
-                                        contador2++;
-
-
+                                        Url2 = token;
+                                        String sql2 = "insert into url_url (barrel,url1,url2) values(?,?,?)";
+                                        PreparedStatement stament2 = connection.prepareStatement(sql2);
+                                        stament2.setInt(1, id);
+                                        stament2.setString(2, url);
+                                        stament2.setString(3, Url2);
+                                        stament2.executeUpdate();
+                                        conta2++;
+                                    } else {
+                                        url = token;
+                                        conta2++;
                                     }
-                                    String sql2 = "insert into url_url (barrel,url1,url2) values(?,?,?)";
-                                    PreparedStatement stament2 = connection.prepareStatement(sql2);
-                                    stament2.setInt(1, id);
-                                    stament2.setString(2, token1);
-                                    stament2.setString(3, url);
-                                    stament2.executeUpdate();
                                 }
                             }
                         }

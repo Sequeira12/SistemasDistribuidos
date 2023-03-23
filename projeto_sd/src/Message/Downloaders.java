@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.rmi.registry.LocateRegistry;
 
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -44,7 +45,7 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
         super();
     }
 
-    public boolean Connected(){
+    public boolean Connected() {
         return true;
     }
 
@@ -55,10 +56,15 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             String titulo = doc.title();
             String citacao;
             //DA ERRO NO LINK APPS.UC.PT
-            if(doc.text().length() < 50 && doc.text().length() != titulo.length()){
-                citacao = doc.text().substring(titulo.length()+1, doc.text().length());
-            }else{
-                citacao = doc.text().substring(titulo.length()+1, titulo.length() + 50);
+            if (doc.text().length() < 50 && doc.text().length() != titulo.length()) {
+                citacao = doc.text().substring(titulo.length() + 1, doc.text().length());
+            } else {
+                if (doc.text().length() - titulo.length() + 1 > 50) {
+                    citacao = doc.text().substring(titulo.length() + 1, titulo.length() + 50);
+                } else {
+                    citacao = doc.text().substring(titulo.length() + 1, doc.text().length() );
+
+                }
             }
             citacao += "...";
 
@@ -86,16 +92,16 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             // info tamanho|TOKEN
             String fim = EnviaMulti.toString();
             MulticastServer.Myserver(InfoTokenMulti, fim);
-            MulticastServer.run();
 
 
             // CENA DOS URLS
             StringBuilder EnviaMultiLinks = new StringBuilder();
             Elements links = doc.select("a[href]");
+            EnviaMultiLinks.append(url).append(Ponto);
             for (Element link : links) {
 
-                EnviaMultiLinks.append(url).append(Barra).append(link.attr("abs:href")).append(Ponto);
-                // System.out.println(link.text() + "\n" + link.attr("abs:href") + "\n");
+                EnviaMultiLinks.append(link.attr("abs:href")).append(Ponto);
+
                 iq.coloca(link.attr("abs:href"));
             }
 
@@ -105,13 +111,16 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             // info tamanho|TOKEN
             String fimUrl = EnviaMultiLinks.toString();
             MulticastServer.Myserver(InfoUrlMulti, fimUrl);
-            MulticastServer.run();
 
 
+        } catch (HttpStatusException a) {
+            System.out.println("Site indisponivel (BOTS)");
         } catch (SSLHandshakeException e) {
             System.out.println("Site indisponivel");
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            System.out.println("Site deformado");
         }
     }
 
