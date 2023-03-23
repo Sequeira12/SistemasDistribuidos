@@ -55,10 +55,10 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             String titulo = doc.title();
             String citacao;
             //DA ERRO NO LINK APPS.UC.PT
-            if(doc.text().length() < 50){
-                citacao = doc.text().substring(titulo.length(), doc.text().length());
+            if(doc.text().length() < 50 && doc.text().length() != titulo.length()){
+                citacao = doc.text().substring(titulo.length()+1, doc.text().length());
             }else{
-                citacao = doc.text().substring(titulo.length(), titulo.length() + 50);
+                citacao = doc.text().substring(titulo.length()+1, titulo.length() + 50);
             }
             citacao += "...";
 

@@ -14,7 +14,7 @@ public class MulticastClient extends Thread {
     int id;
 
     public void myClient(Connection conn, int i) {
-        System.out.println("AHAHAHHAHAHAHA SDDD MERDA\n");
+
         connection = conn;
         id = i;
 

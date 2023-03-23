@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.RemoteObject;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -14,38 +15,45 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
     public static ArrayList<IClientRemoteInterface> Barrels = new ArrayList<>();
     public static ArrayList<InterfaceDownloaders> Downloaders = new ArrayList<>();
 
+    public static MessageServerInterface h;
     public static int login;
+
     protected MessageServerInterfaceClient() throws RemoteException {
         super();
     }
 
-    public static void showStatus() throws NoSuchObjectException {
+    public static void showStatus() throws RemoteException, SQLException {
+        System.out.println("|   ESTATISTICAS   |");
         System.out.println("Número de barrels ativos: ");
         for (int i = 0; i < Barrels.size(); i++) {
-            String endpoint  = RemoteObject.toStub(Barrels.get(i)).toString();
+            String endpoint = RemoteObject.toStub(Barrels.get(i)).toString();
             // Extrai o IP e a porta do endpoint
             String[] endpointParts = endpoint.split(":");
 
             String ip = endpointParts[2].substring(1);
-            String porta = endpointParts[3].substring(0,endpointParts[3].lastIndexOf("]"));
+            String porta = endpointParts[3].substring(0, endpointParts[3].lastIndexOf("]"));
 
             // Exibe o IP e a porta do endpoint
-            System.out.println((i + 1) +  " - IP: " + ip + " Porta: " + porta);
+            System.out.println((i + 1) + " - IP: " + ip + " Porta: " + porta);
 
         }
+        System.out.println();
         System.out.println("Número de Downloaders ativos: ");
         for (int i = 0; i < Downloaders.size(); i++) {
-            String endpoint  = RemoteObject.toStub(Downloaders.get(i)).toString();
+            String endpoint = RemoteObject.toStub(Downloaders.get(i)).toString();
             // Extrai o IP e a porta do endpoint
             String[] endpointParts = endpoint.split(":");
 
             String ip = endpointParts[2].substring(1);
-            String porta = endpointParts[3].substring(0,endpointParts[3].lastIndexOf("]"));
+            String porta = endpointParts[3].substring(0, endpointParts[3].lastIndexOf("]"));
 
             // Exibe o IP e a porta do endpoint
-            System.out.println((i + 1) +  " - IP: " + ip + " Porta: " + porta);
+            System.out.println((i + 1) + " - IP: " + ip + " Porta: " + porta);
         }
-        System.out.println("\n");
+        System.out.println();
+        System.out.println(h.VerificaTop10());
+
+
     }
 
     public void atualizaStatus(ArrayList<IClientRemoteInterface> b, ArrayList<InterfaceDownloaders> d) {
@@ -104,7 +112,7 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
 
         try {
 
-            MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
+            h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
 
             MessageServerInterfaceClient a = new MessageServerInterfaceClient();
             h.addClient(a);

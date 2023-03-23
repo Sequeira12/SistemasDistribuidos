@@ -35,18 +35,48 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
     }
 
+    public String VerificaTop10() throws RemoteException, SQLException {
+        StringBuilder top10;
+        top10 = new StringBuilder("TOP 10 PESQUISAS!!!!\n");
+        String sql = "select token1, sum(contador) as soma from (select distinct(token1),barrel,contador from token_url where contador > 0 group by token1,barrel,contador) as Counter group by token1 order by soma DESC limit 10;";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        ResultSet rs = statement.executeQuery();
+        int pos = 1;
+        while (rs.next()) {
+            top10.append(pos).append(" - ").append(rs.getString(1)).append(" --> ").append(rs.getInt(2)).append("\n");
+            pos++;
+        }
+
+        return top10.toString();
+
+    }
 
 
-    public int registerClient(IClientRemoteInterface client,int id) throws RemoteException {
-        for(int i = 0; i < Barrels.size();i++){
-            if(BarrelsID.get(i).compareTo(id) == 0){
+    public int registerClient(IClientRemoteInterface client, int id) throws RemoteException, SQLException {
+        for (int i = 0; i < Barrels.size(); i++) {
+            if (BarrelsID.get(i).compareTo(id) == 0) {
                 return -1;
             }
         }
+        String sql = "select count(*) from token_url where barrel = ?;";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setInt(1, id);
+        ResultSet s = statement.executeQuery();
+
+        sql = "INSERT INTO token_url (barrel, token1, url) SELECT ?, token1, url FROM token_url WHERE barrel = (SELECT barrel FROM token_url GROUP BY barrel ORDER BY COUNT(token1) DESC LIMIT 1) and token1 not in (select token1 from token_url where barrel = ? );";
+
+        //sql = "INSERT INTO token_url (barrel, token1, url) SELECT ?, token1, url FROM token_url WHERE barrel = (SELECT barrel FROM token_url GROUP BY barrel ORDER BY COUNT(token1) DESC LIMIT 1);";
+        PreparedStatement statement2 = connection.prepareStatement(sql);
+        statement2.setInt(1, id);
+        statement2.setInt(2, id);
+        statement2.executeUpdate();
+        System.out.println("Informação adicionada ao Barrel " + id);
+
+
         Barrels.add(client);
         BarrelsID.add(id);
-        for(int j = 0; j<Clientes.size(); j++){
-            System.out.println("YAYAYAY");
+        for (int j = 0; j < Clientes.size(); j++) {
+
             Clientes.get(j).atualizaStatus(Barrels, Download2);
         }
         System.out.printf("%d\n", Barrels.size());
@@ -56,21 +86,18 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
 
     public void run() throws RemoteException {
-        int i = 0,k=0;
+        int i = 0, k = 0;
         while (true) {
             try {
                 System.out.printf("Barrels Disponiveis %d\n", Barrels.size());
                 System.out.printf("Clientes Disponiveis %d\n", Clientes.size());
                 System.out.printf("Downloaders Disponiveis %d\n\n", Download2.size());
-
                 if (iq.info() != null) {
-                    for(int f = 0; f < iq.info().size();f++){
-                        System.out.println(iq.info().get(f));
-                    }
-                    Downloads = iq.info(); // AQUI BEM
+                    Downloads = iq.info();
                 }
-                if(Downloads != Download2){
+                if (Downloads != Download2) {
                     Download2 = Downloads;
+
                     for (int j = 0; j < Clientes.size(); j++) {
                         Clientes.get(j).atualizaStatus(Barrels, Downloads);
                     }
@@ -80,7 +107,6 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
                 for (i = 0; i < Barrels.size(); i++) {
                     Barrels.get(i).Connected();
                 }
-
 
 
                 for (k = 0; k < Clientes.size(); k++) {
@@ -95,13 +121,13 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
                 System.out.println("Server Exception \n");
             } catch (ConnectException a) {
                 // Se a conexão não existir retiro da lista
-                if(i != Barrels.size()) {
+                if (i != Barrels.size()) {
                     unregisterBarrel(i);
                     for (int j = 0; j < Clientes.size(); j++) {
                         Clientes.get(j).atualizaStatus(Barrels, Download2);
                     }
                 }
-                if(k != Clientes.size()){
+                if (k != Clientes.size()) {
                     unregisterClient(k);
                 }
 
@@ -115,7 +141,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     public void addClient(InterfaceClienteServer a) throws RemoteException {
         Clientes.add(a);
         System.out.println("Cliente ADICIONADO" + Clientes.size());
-        a.atualizaStatus(Barrels,Download2);
+        a.atualizaStatus(Barrels, Download2);
     }
 
     public void unregisterBarrel(int posicao) throws RemoteException {
@@ -185,7 +211,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             int numero = gerador.nextInt((Barrels.size()));
             System.out.printf("Barrel que vai executar a LISTAGEM DE URL ---> %d\n", numero);
             if (Barrels.get(numero) != null) {
-                System.out.println("YAYAYAY");
+
 
                 connectados = Barrels.get(numero).listPage(url);
 
@@ -226,7 +252,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         PreparedStatement stament = connection.prepareStatement(sql);
         stament.setString(1, username);
         stament.setString(2, password);
-        stament.execute();
+
         ResultSet rs = stament.executeQuery();
         if (rs.next()) {
             int a = rs.getInt(1);

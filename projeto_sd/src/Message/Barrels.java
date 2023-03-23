@@ -47,7 +47,7 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
     }
 
     public Connection conetor() {
-        System.out.println("ccccc");
+
         return connection;
     }
 
@@ -57,20 +57,29 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
 
     public ArrayList<String> ProcuraToken(String token) throws SQLException {
 
-        System.out.println("YAYAYdadadAY");
+
         ArrayList<String> connectados = new ArrayList<>();
         String[] news = token.split(" ");
 
         String sql = "select distinct(url_url.url2),(select count(distinct(url1)) from url_url where url2 = token_url.url and url1 != token_url.url ) as url_count , url_info.titulo,url_info.citacao from token_url join url_url on token_url.url = url_url.url2 join  url_info on token_url.url = url_info.url where token_url.token1 IN (" + String.join(",", Arrays.stream(news).map(t -> "?").toArray(String[]::new)) + ") " + "and url1 != url2 and token_url.barrel = ?  order  by url_count desc";
 
+        String updateContador = "update token_url SET contador = contador + 1 where token1 = ? and barrel = ?;";
         PreparedStatement stament = connection.prepareStatement(sql);
+        PreparedStatement statementUpdate = connection.prepareStatement(updateContador);
         int i;
+        System.out.println(news.length);
         for (i = 0; i < news.length; i++) {
             stament.setString(i + 1, news[i]);
+            statementUpdate.setString(1,news[i]);
+            statementUpdate.setInt(2,id);
+            int rs2 = statementUpdate.executeUpdate();
+
         }
         stament.setInt(i + 1, id);
 
         ResultSet rs = stament.executeQuery();
+
+
         System.out.printf("Procura da palavra: %s\n", token);
         int conta = 0;
 

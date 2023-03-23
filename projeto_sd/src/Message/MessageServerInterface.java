@@ -22,5 +22,7 @@ public interface MessageServerInterface extends Remote, IServerRemoteInterface {
 
     ArrayList<String> listPagesConnectedtoAnotherPage(String url) throws SQLException, RemoteException;
 
+    String VerificaTop10() throws RemoteException,SQLException;
+
 
 }
