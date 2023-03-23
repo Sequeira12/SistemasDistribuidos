@@ -6,6 +6,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
 import java.sql.*;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -62,17 +63,22 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, id);
         ResultSet s = statement.executeQuery();
-        for (int i = 0; i < 5; i++) {
-            sql = "INSERT INTO token_url (barrel, token1, url) select ?, token1,url from token_url where barrel = (select barrel as conta from token_url group by barrel order by count(token1) DESC limit 1) except select ?,token1,url from token_url where barrel = ?";
-            //sql = "INSERT INTO token_url (barrel, token1, url) SELECT ?, token1, url FROM token_url WHERE barrel = (SELECT barrel FROM token_url GROUP BY barrel ORDER BY COUNT(token1) DESC LIMIT 1);";
-            PreparedStatement statement2 = connection.prepareStatement(sql);
-            statement2.setInt(1, id);
-            statement2.setInt(2, id);
-            statement2.setInt(3, id);
-            int a = statement2.executeUpdate();
+        int valor = 0;
+        if(s.next()){
+            valor = s.getInt(1);
         }
-        System.out.println("Informação adicionada ao Barrel " + id);
-
+        if(valor==0){
+            for (int i = 0; i < 5; i++) {
+                sql = "INSERT INTO token_url (barrel, token1, url) select ?, token1,url from token_url where barrel = (select barrel as conta from token_url group by barrel order by count(token1) DESC limit 1) except select ?,token1,url from token_url where barrel = ?";
+                //sql = "INSERT INTO token_url (barrel, token1, url) SELECT ?, token1, url FROM token_url WHERE barrel = (SELECT barrel FROM token_url GROUP BY barrel ORDER BY COUNT(token1) DESC LIMIT 1);";
+                PreparedStatement statement2 = connection.prepareStatement(sql);
+                statement2.setInt(1, id);
+                statement2.setInt(2, id);
+                statement2.setInt(3, id);
+                int a = statement2.executeUpdate();
+            }
+            System.out.println("Informação adicionada ao Barrel " + id);
+        }
 
         Barrels.add(client);
         BarrelsID.add(id);
@@ -82,7 +88,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         }
         System.out.printf("%d\n", Barrels.size());
         System.out.println("Barrel registrado no servidor.");
-        return Barrels.size();
+        return valor;
     }
 
 
@@ -156,6 +162,18 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             }
         }
         System.out.println("Barrel removido do servidor.");
+    }
+
+    public HashMap<Integer, String> PedidoHash(int a,int id) throws RemoteException, SQLException {
+        String verifica = "select barrel as conta from token_url group by barrel order by count(token1) DESC limit 1";
+        PreparedStatement stm = connection.prepareStatement(verifica);
+        ResultSet resultado = stm.executeQuery();
+        int barrel=0;
+        if(resultado.next()){
+            barrel=resultado.getInt(1);
+        }
+
+        return Barrels.get(BarrelsID.indexOf(barrel)).sendHash(a);
     }
 
     public void unregisterClient(int posicao) throws RemoteException {

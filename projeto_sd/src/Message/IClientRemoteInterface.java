@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface IClientRemoteInterface extends Remote {
 
@@ -12,6 +13,7 @@ public interface IClientRemoteInterface extends Remote {
     ArrayList<String> ProcuraToken(String url) throws RemoteException, SQLException;
 
     boolean Connected() throws RemoteException;
+    HashMap<Integer,String> sendHash(int a) throws RemoteException;
 
     Connection conetor() throws RemoteException;
 

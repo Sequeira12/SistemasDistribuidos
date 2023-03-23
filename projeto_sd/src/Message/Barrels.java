@@ -6,9 +6,7 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 public class Barrels extends UnicastRemoteObject implements IClientRemoteInterface {
     /**
@@ -16,15 +14,15 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
      */
     public static ArrayList<String> StopWords = new ArrayList<String>();
     private static final long serialVersionUID = 1L;
-    private IServerRemoteInterface server;
+    public static IServerRemoteInterface server;
 
     public static ArrayList<MulticastClient> mults = new ArrayList<MulticastClient>();
     public static HashMap<String, ArrayList<Element>> urls_ligacoes = new HashMap<String, ArrayList<Element>>();
 
     public static Connection connection = null;
     public static int id;
-
-    public static HashMap<String, ArrayList<String>> tokens_url = new HashMap<String, ArrayList<String>>();
+    static MulticastClient client = new MulticastClient();
+    public static HashMap<Integer, String> hashmapas = new HashMap<>();
 
     public Barrels() throws RemoteException {
         super();
@@ -124,6 +122,23 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
 
     }
 
+    public HashMap<Integer,String> sendHash(int a){
+        HashMap<Integer,String> aux = new HashMap<>();
+        HashMap<Integer,String> aux1=client.sendHashtoBarrels();
+        Iterator<Map.Entry<Integer, String>> it = aux1.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry mapElemet = (Map.Entry)it.next();
+            int first= (int) mapElemet.getKey();
+            for(int i = 0; i<first-a; i++){
+                 mapElemet = (Map.Entry)it.next();
+            }
+            aux.put((Integer) mapElemet.getKey(), (String) mapElemet.getValue());
+        }
+        aux.put(0,"FDS");
+        return aux;
+    }
+
+
 
     // =========================================================
     public static void main(String args[]) throws SQLException {
@@ -144,11 +159,33 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
             if (a == -1) {
                 return;
             }
-            MulticastClient client = new MulticastClient();
-            client.myClient(connection, id);
 
+            String verifica = "Select count(distinct(url)) from token_url where barrel = ?";
+            PreparedStatement stm = connection.prepareStatement(verifica);
+            stm.setInt(1,id);
+            ResultSet resultado = stm.executeQuery();
+            int conta=0;
+            if(resultado.next()){
+                conta=resultado.getInt(1);
+            }
+            if(a==0){
+                client.myClient(connection, id, hashmapas, conta);
+            }
+            else{
+                Iterator it = server.PedidoHash(a,id).entrySet().iterator();
+                int contaOutro=0;
+                while(it.hasNext()){
+                    Map.Entry mapElemet = (Map.Entry)it.next();
+                    int first= (int) mapElemet.getKey();
+                    for(int i = 0; i<first-a; i++){
+                        mapElemet = (Map.Entry)it.next();
+                    }
+                    contaOutro= (int) mapElemet.getKey();
+                    hashmapas.put(contaOutro, (String) mapElemet.getValue());
 
-
+                }
+                client.myClient(connection, id, hashmapas, contaOutro+1);
+            }
         } catch (RemoteException re) {
 
             System.out.println("Exception in HelloImpl.main: " + re);

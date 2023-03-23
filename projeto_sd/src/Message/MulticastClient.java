@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.sql.*;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class MulticastClient extends Thread {
     private String MULTICAST_ADDRESS = "224.3.2.1";
@@ -13,19 +14,31 @@ public class MulticastClient extends Thread {
     Connection connection = null;
     int id;
 
-    public synchronized void myClient(Connection conn, int i) {
 
+    HashMap<Integer,String> info = new HashMap<>();
+    int contaHash;
+
+    public synchronized void myClient(Connection conn, int i,HashMap<Integer,String> info1, int conta) {
         connection = conn;
         id = i;
+        info=info1;
+        contaHash=conta;
         run();
-
     }
+
+    public HashMap<Integer,String> sendHashtoBarrels(){
+        return info;
+    }
+
     public void run() {
         MulticastSocket socket = null;
         try {
             System.out.printf("VAI LER NA PORTA %d com id %d\n", PORT, id);
             socket = new MulticastSocket(PORT);  // create socket and bind it
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+
+
+
             socket.joinGroup(group);
             while (true) {
                 boolean UrlOrToken;
@@ -121,8 +134,8 @@ public class MulticastClient extends Thread {
                         }
                     }
                 }
-
-
+                info.put(contaHash,messageFinal);
+                contaHash++;
             }
         } catch (IOException e) {
             e.printStackTrace();

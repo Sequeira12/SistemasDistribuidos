@@ -4,4 +4,61 @@
 -
 
 
-/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/projetoSDeasy/out/production/projetoSDeasy:/Users/brunosequeira/IdeaProjects/projetoSDeasy/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/projetoSDeasy/SistemasDistribuidos/postgresql-42.5.4.jar Message.Downloaders
+
+/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=55194:/Applications/IntelliJ IDEA.app/Contents/bin -Dfile.encoding=UTF-8 -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.Barrels
+
+
+/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.Barrels 1999
+
+
+
+
+
+tell application "Terminal"
+
+
+	activate
+
+	do script "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.QueueUrls" in window 1
+
+
+
+	activate
+	do script "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.MessageServerInterfaceServer" in window 2
+
+
+
+	delay (1)
+
+	do script "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.Downloaders 9999" in window 3
+
+
+
+	delay (1)
+	do script "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.Downloaders 9999" in window 4
+	delay (1)
+
+
+
+
+
+	do script "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.Barrels 1234" in window 5
+
+	delay (1)
+
+
+
+	do script "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.Barrels 1236" in window 6
+	delay (1)
+
+
+
+	do script "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.Barrels 1235" in window 7
+
+	delay (1)
+	do script "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java  -classpath /Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/out/production/PROJETOSDEASYYYY:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/jsoup-1.15.4.jar:/Users/brunosequeira/IdeaProjects/PROJETOSDEASYYYY/SistemasDistribuidos/postgresql-42.5.4.jar Message.MessageServerInterfaceClient" in window 8
+
+
+
+
+end tell
