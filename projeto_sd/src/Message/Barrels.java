@@ -1,7 +1,5 @@
 package Message;
 
-import org.jsoup.nodes.Element;
-
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -12,16 +10,14 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
     /**
      *
      */
-    public static ArrayList<String> StopWords = new ArrayList<String>();
-    private static final long serialVersionUID = 1L;
-    public static IServerRemoteInterface server;
 
-    public static ArrayList<MulticastClient> mults = new ArrayList<MulticastClient>();
-    public static HashMap<String, ArrayList<Element>> urls_ligacoes = new HashMap<String, ArrayList<Element>>();
+
+    public static int conta, a;
+    public static IServerRemoteInterface server;
 
     public static Connection connection = null;
     public static int id;
-    static MulticastClient client = new MulticastClient();
+    public static MulticastClient client = new MulticastClient();
     public static HashMap<Integer, String> hashmapas = new HashMap<>();
 
     public Barrels() throws RemoteException {
@@ -68,8 +64,8 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         System.out.println(news.length);
         for (i = 0; i < news.length; i++) {
             stament.setString(i + 1, news[i]);
-            statementUpdate.setString(1,news[i]);
-            statementUpdate.setInt(2,id);
+            statementUpdate.setString(1, news[i]);
+            statementUpdate.setInt(2, id);
             int rs2 = statementUpdate.executeUpdate();
 
         }
@@ -122,37 +118,51 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
 
     }
 
-    public HashMap<Integer,String> sendHash(int a){
-        HashMap<Integer,String> aux = new HashMap<>();
-        HashMap<Integer,String> aux1=client.sendHashtoBarrels();
-        Iterator<Map.Entry<Integer, String>> it = aux1.entrySet().iterator();
-        while(it.hasNext()){
-            Map.Entry mapElemet = (Map.Entry)it.next();
-            int first= (int) mapElemet.getKey();
-            System.out.println(first-a);
-            for(int i = 0; i<first-a; i++){
-                 mapElemet = (Map.Entry)it.next();
+
+    public HashMap<Integer, String> sendHash(int a) {
+        System.out.println("RECEBI O A COM VALOR DE " + a);
+        HashMap<Integer, String> aux = new HashMap<>();
+
+        int last = 0;
+        for (Map.Entry<Integer, String> entry : client.sendHashtoBarrels().entrySet()) {
+            Integer novo = entry.getKey();
+
+            if (novo >= a) {
+                System.out.println(novo + "  " + a);
+                System.out.println(novo);
+                aux.put(novo, entry.getValue());
             }
-            aux.put((Integer) mapElemet.getKey(), (String) mapElemet.getValue());
+            last = novo;
         }
+        System.out.println("TA FEITO COM " + last);
+
+
         return aux;
     }
 
 
     public static void colocaHashBd(boolean UrlOrToken, String messageFinal) throws SQLException {
+        System.out.println("\n\n\n\n\n\n\n\nCOLOOOOCOOOOOOOOO\n\n\n");
         int conta2 = 0;
-        String citacao = null, titulo = null, url = null, Url2 = null;;
-        ;
+        String citacao = null, titulo = null, url = null, Url2 = null;
+
+
         // divide a string em tokens usando o caractere "|"
         if (messageFinal.contains(" ;")) {
             String[] tokens = messageFinal.split(" ;");
-
+            String[] ne2 = tokens[0].split(" \\| ");
+            if (ne2.length == 3) {
+                UrlOrToken = true;
+            } else {
+                UrlOrToken = false;
+            }
             for (String token : tokens) {
 
                 if (token != null) {
 
                     if (conta2 == 0 && UrlOrToken) {
                         String[] news = token.split(" \\| ");
+                        System.out.println("\n\n\n" + news[0] + news.length + "\n\n\n");
                         titulo = news[0];
                         citacao = news[1];
                         url = news[2];
@@ -191,6 +201,7 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
                                     System.out.println("Inseriu " + Integer.toString(id) + " " + token1 + "\n");
                                 }
                             }
+                            conta2++;
                         } else {
 
                             if (conta2 > 0) {
@@ -208,13 +219,39 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
                                 conta2++;
                             }
                         }
+                        conta2++;
                     }
                 }
             }
         }
     }
 
+    public static void run() throws SQLException, RemoteException {
 
+        System.out.println("aqui");
+        HashMap<Integer, String> auxi = server.PedidoHash(a, id);
+
+        if (auxi == null) {
+            System.out.println("aqui1");
+            client.myClient(connection, id, hashmapas, 0);
+        } else {
+            System.out.println("aqui2");
+            System.out.println("conta: " + conta);
+            System.out.println("tamanho que deu pa colocar " + auxi.size());
+            int lastKey = 0;
+            for (Map.Entry<Integer, String> entry : auxi.entrySet()) {
+                colocaHashBd(true, entry.getValue());
+                lastKey = entry.getKey();
+            }
+            int contador = lastKey++;
+
+            System.out.println("SENDO A MERD DO CONTADOR " + contador);
+            conta = contador++;
+            client.myClient(connection, id, hashmapas, conta);
+
+
+        }
+    }
 
 
     // =========================================================
@@ -232,60 +269,27 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         try {
 
             Barrels clientObj = new Barrels();
-            int a = clientObj.connectToServer(clientObj, id);
+            a = clientObj.connectToServer(clientObj, id);
             if (a == -1) {
                 return;
             }
 
             String verifica = "Select count(distinct(url)) from token_url where barrel = ?";
             PreparedStatement stm = connection.prepareStatement(verifica);
-            stm.setInt(1,id);
+            stm.setInt(1, id);
             ResultSet resultado = stm.executeQuery();
-            int conta=0;
-            if(resultado.next()){
-                conta=resultado.getInt(1);
-            }
-            if(a==0){
-                client.myClient(connection, id, hashmapas, conta);
-            }
-            else {
-                System.out.println("aqui");
-                HashMap<Integer,String> auxi = server.PedidoHash(a, id);
-                if (auxi == null) {
-                    System.out.println("aqui1");
-                    client.myClient(connection, id, hashmapas, 0);
-                } else {
-                    System.out.println("aqui2");
-                    System.out.println("conta: "  + conta);
-                    Iterator<Map.Entry<Integer, String>> it = auxi.entrySet().iterator();
-                    int contaOutro = 0;
-                    int i = 0;
-                    while (it.hasNext()) {
-                        Map.Entry mapElemet = (Map.Entry) it.next();
-                        if(i>=conta*2) {
-                            int first = (int) mapElemet.getKey();
-                            contaOutro = (int) mapElemet.getKey();
-                            hashmapas.put(contaOutro, (String) mapElemet.getValue());
-                        }
-                        i++;
 
-                    }
-                    if(hashmapas.size()!=0){
-                        Iterator<Map.Entry<Integer, String>> ite = hashmapas.entrySet().iterator();
-                        while (ite.hasNext()) {
-                            Map.Entry mapElemet = (Map.Entry) ite.next();
-                            int index = (int) mapElemet.getKey();
-                            System.out.println(index + " " + mapElemet.getValue());
-                            if(index%2==0){
-                                colocaHashBd(true, (String) mapElemet.getValue());
-                            }
-                            else{
-                                colocaHashBd(false, (String) mapElemet.getValue());
-                            }
-                        }
-                    }
-                    client.myClient(connection, id, hashmapas, contaOutro + 1);
-                }
+            if (resultado.next()) {
+                conta = resultado.getInt(1);
+            }
+            System.out.println("O VALOR DE A --> " + a);
+            a *= 2;
+            System.out.println(a);
+            if (a != 0) {
+                run();
+                client.myClient(connection, id, hashmapas, conta);
+            } else {
+                client.myClient(connection, id, hashmapas, conta);
             }
         } catch (RemoteException re) {
 

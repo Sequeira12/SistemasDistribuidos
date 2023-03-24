@@ -7,6 +7,7 @@ import java.net.MulticastSocket;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MulticastClient extends Thread {
     private String MULTICAST_ADDRESS = "224.3.2.1";
@@ -15,19 +16,33 @@ public class MulticastClient extends Thread {
     int id;
 
 
-    HashMap<Integer,String> info = null;
+    static HashMap<Integer, String> info = null;
     int contaHash;
 
-    public synchronized void myClient(Connection conn, int i,HashMap<Integer,String> info1, int conta) {
+    public synchronized void myClient(Connection conn, int i, HashMap<Integer, String> info1, int conta) {
         connection = conn;
         id = i;
-        info=info1;
-        contaHash=conta;
-        System.out.println("Tamanho da hash recebida: " + info1.size());
+        info = info1;
+        contaHash = conta;
+        System.out.println("Tamanho da hash recebida: " + contaHash);
         run();
     }
 
-    public HashMap<Integer,String> sendHashtoBarrels(){
+    public static void MudaInfo(int conta) {
+        HashMap<Integer, String> modifica = new HashMap<>();
+        if (info != null) {
+            for (Map.Entry<Integer, String> entry : info.entrySet()) {
+                Integer novaChave = entry.getKey() + conta;  // modificar a chave como desejado
+                String valor = entry.getValue();
+                modifica.put(novaChave, valor);
+            }
+            info.clear();
+            info.putAll(modifica);
+        }
+
+    }
+
+    public HashMap<Integer, String> sendHashtoBarrels() {
         return info;
     }
 
@@ -37,7 +52,6 @@ public class MulticastClient extends Thread {
             System.out.printf("VAI LER NA PORTA %d com id %d\n", PORT, id);
             socket = new MulticastSocket(PORT);  // create socket and bind it
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-
 
 
             socket.joinGroup(group);
@@ -64,7 +78,8 @@ public class MulticastClient extends Thread {
                 System.out.println(messageFinal);
 
                 int conta2 = 0;
-                String citacao = null, titulo = null, url = null, Url2 = null;;
+                String citacao = null, titulo = null, url = null, Url2 = null;
+                ;
                 ;
                 // divide a string em tokens usando o caractere "|"
                 if (messageFinal.contains(" ;")) {
@@ -135,7 +150,7 @@ public class MulticastClient extends Thread {
                         }
                     }
                 }
-                info.put(contaHash,messageFinal);
+                info.put(contaHash, messageFinal);
                 contaHash++;
             }
         } catch (IOException e) {

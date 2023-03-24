@@ -59,7 +59,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
                 return -1;
             }
         }
-        String sql = "select count(*) from token_url where barrel = ?;";
+        String sql = "select count(distinct(url)) from token_url where barrel = ?;";
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, id);
         ResultSet s = statement.executeQuery();
@@ -68,6 +68,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             valor = s.getInt(1);
         }
         if(valor==0){
+            System.out.println("SUPOSTAMENTE");
             for (int i = 0; i < 5; i++) {
                 sql = "INSERT INTO token_url (barrel, token1, url) select ?, token1,url from token_url where barrel = (select barrel as conta from token_url group by barrel order by count(token1) DESC limit 1) except select ?,token1,url from token_url where barrel = ?";
                 //sql = "INSERT INTO token_url (barrel, token1, url) SELECT ?, token1, url FROM token_url WHERE barrel = (SELECT barrel FROM token_url GROUP BY barrel ORDER BY COUNT(token1) DESC LIMIT 1);";
@@ -154,13 +155,13 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     public void unregisterBarrel(int posicao) throws RemoteException {
         Barrels.remove(posicao);
         BarrelsID.remove(posicao);
-        for (int k = posicao; k < Barrels.size() - 1; k++) {
+        /*for (int k = posicao; k < Barrels.size() - 1; k++) {
             Barrels.set(k, Barrels.get(k + 1));
             if (k == Barrels.size() - 1) {
                 Barrels.set(k, null);
 
             }
-        }
+        }*/
         System.out.println("Barrel removido do servidor.");
     }
 
@@ -172,14 +173,17 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         int barrel=0;
         if(resultado.next()){
             barrel=resultado.getInt(1);
+
+            System.out.println("\n\n\nBARREL" + barrel + "\n\n");
             int p = BarrelsID.indexOf(barrel);
             if(p!=-1) {
                 if (barrel != id && Barrels.get(p).Connected()) {
+                    System.out.println("JA FEZ CRLH");
                     return Barrels.get(p).sendHash(a);
                 }
             }
         }
-
+        System.out.println("SEM BARRELLLLLL");
         return null;
     }
 
