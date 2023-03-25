@@ -224,6 +224,7 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
                 }
             }
         }
+        connection.commit();
     }
 
     public static void run() throws SQLException, RemoteException {
@@ -265,6 +266,7 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
 
         DriverManager.registerDriver(new org.postgresql.Driver());
         connection = DriverManager.getConnection(url, username, password);
+        connection.setAutoCommit(false);
         System.out.println("Connected to database");
         try {
 

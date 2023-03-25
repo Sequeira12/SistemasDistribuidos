@@ -19,8 +19,9 @@ public class MulticastClient extends Thread {
     static HashMap<Integer, String> info = null;
     int contaHash;
 
-    public synchronized void myClient(Connection conn, int i, HashMap<Integer, String> info1, int conta) {
+    public synchronized void myClient(Connection conn, int i, HashMap<Integer, String> info1, int conta) throws SQLException {
         connection = conn;
+        connection.setAutoCommit(false);
         id = i;
         info = info1;
         contaHash = conta;
@@ -150,6 +151,7 @@ public class MulticastClient extends Thread {
                         }
                     }
                 }
+                connection.commit();
                 info.put(contaHash, messageFinal);
                 contaHash++;
             }
