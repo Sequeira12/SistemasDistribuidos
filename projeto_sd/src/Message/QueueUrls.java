@@ -1,5 +1,6 @@
 package Message;
 
+import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.net.MalformedURLException;
@@ -11,15 +12,12 @@ import java.rmi.server.*;
 public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterface {
     //     public static BlockingQueue<String> Urls_To_Downloaders = new LinkedBlockingQueue<>();
     public static Queue<String> Urls_To_Downloaders = new ConcurrentLinkedQueue<>();
-
-    public static MulticastServer mult;
     public static ISearcheQueue Ligacao;
-    public static ArrayList<IQueueRemoteInterface> DownloadersOn = new ArrayList<IQueueRemoteInterface>();
     public static ArrayList<Integer> DownloadersOnPORTA = new ArrayList<Integer>();
 
     public static ArrayList<InterfaceDownloaders> Downloaders = new ArrayList<>();
 
-
+    public static Connection connection = null;
 
     public QueueUrls() throws RemoteException {
         super();
@@ -32,17 +30,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
 
         DownloadersOnPORTA.remove(posicao);
 
-        for (int k = posicao; k < DownloadersOnPORTA.size() - 1; k++) {
-            DownloadersOnPORTA.set(k, DownloadersOnPORTA.get(k + 1));
 
-            Downloaders.set(k, Downloaders.get(k + 1));
-
-            if (k == DownloadersOnPORTA.size() - 1) {
-                DownloadersOnPORTA.set(k, null);
-                Downloaders.set(k, null);
-
-            }
-        }
         System.out.printf("Downloader com porta %d removido do servidor.\n", porta);
     }
 
@@ -82,7 +70,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
 
     }
 
-    public void run() {
+    public void run() throws RemoteException, SQLException {
         int i = 0;
 
         while (true) {
@@ -94,16 +82,39 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
 
                 Thread.sleep(1000);
             } catch (RemoteException e) {
-                try {
-                    unregisterDownloader(i);
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
+
+                int porta = DownloadersOnPORTA.get(i);
+
+                System.out.println("O URL QUE SAIU FOI O " + porta);
+
+                String sql = "select url from Queue_url where barrel = ? and executed = false;";
+
+                PreparedStatement stmt = connection.prepareStatement(sql);
+                stmt.setInt(1, porta);
+                ResultSet rs = stmt.executeQuery();
+                String ul = null;
+                if (rs.next()) {
+                    ul = rs.getString(1);
+
+                }
+                if (ul != null) {
+
+                    sql = "update Queue_url set barrel = null, executed = null where barrel = ?";
+                    stmt = connection.prepareStatement(sql);
+                    stmt.setInt(1, porta);
+                    stmt.executeUpdate();
+                    System.out.println("Colocou o url -> " + ul + " na Fila de URLS(NAO O EXECUTOU POR COMPLETO)");
+                    coloca(ul, 0);
                 }
 
+
+                unregisterDownloader(i);
                 System.out.println("Downloader Retirado");
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
             }
+
+
         }
     }
 
@@ -118,14 +129,37 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         return ret;
     }
 
-    public synchronized void coloca(String e) {
+    public synchronized void coloca(String e, int i) throws SQLException {
         Urls_To_Downloaders.add(e);
+        if (i == 1) {
+            String sql = "select count(*) from Queue_url where url = ?;";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, e);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                if (rs.getInt(1) == 0) {
+                    sql = "insert into Queue_url (url) values(?);";
+                    stmt = connection.prepareStatement(sql);
+                    stmt.setString(1, e);
+                    stmt.executeUpdate();
+                }
+            }
+        }
+
+
         System.out.println("URL adicionado");
     }
 
-    public static void main(String[] args) throws RemoteException {
+    public static void main(String[] args) throws RemoteException, SQLException {
 
         //Urls_To_Downloaders.add("https://www.uc.pt");
+        String url = "jdbc:postgresql://localhost/sddb";
+        String username = "adminsd";
+        String password = "admin";
+
+        DriverManager.registerDriver(new org.postgresql.Driver());
+        connection = DriverManager.getConnection(url, username, password);
+
 
         QueueUrls h = new QueueUrls();
         Registry r = LocateRegistry.createRegistry(7003);
@@ -136,6 +170,13 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         Registry r1 = LocateRegistry.createRegistry(7005);
         r1.rebind("QS", Ligacao);
         h.run();
-
+        String sql = "select url from Queue_url where barrel is null and executed is null;";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            String ul = rs.getString("url");
+            // Processar o URL aqui, por exemplo:
+            Urls_To_Downloaders.add(ul);
+        }
     }
 }

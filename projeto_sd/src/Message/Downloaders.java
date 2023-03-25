@@ -8,11 +8,7 @@ import java.io.IOException;
 
 import java.rmi.Naming;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.rmi.registry.LocateRegistry;
 
 import org.jsoup.HttpStatusException;
@@ -49,7 +45,7 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
         return true;
     }
 
-    public static void SendInfo(String url, IQueueRemoteInterface iq) throws RemoteException, SSLHandshakeException {
+    public static void SendInfo(String url, IQueueRemoteInterface iq) throws RemoteException, SSLHandshakeException, SQLException {
         try {
 
             Document doc = Jsoup.connect(url).get();
@@ -98,12 +94,14 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             StringBuilder EnviaMultiLinks = new StringBuilder();
             Elements links = doc.select("a[href]");
             EnviaMultiLinks.append(url).append(Ponto);
+            connection.setAutoCommit(false);
             for (Element link : links) {
 
                 EnviaMultiLinks.append(link.attr("abs:href")).append(Ponto);
 
-                iq.coloca(link.attr("abs:href"));
+                iq.coloca(link.attr("abs:href"),1);
             }
+
 
             int tamanhoInfoUrls = EnviaMultiLinks.length();
             String tamanhoURL = Integer.toString(tamanhoInfoUrls);
@@ -111,16 +109,31 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             // info tamanho|TOKEN
             String fimUrl = EnviaMultiLinks.toString();
             MulticastServer.Myserver(InfoUrlMulti, fimUrl);
+            String sql = "update Queue_url set executed = true where url = ? and barrel = ? and executed = false;";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1,url);
+            statement.setInt(2,porta);
+            statement.executeUpdate();
+            connection.commit();
+            System.out.println("IMPRIMEEE");
 
 
         } catch (HttpStatusException a) {
             System.out.println("Site indisponivel (BOTS)");
         } catch (SSLHandshakeException e) {
+            String sql = "update Queue_url set executed = true where url = ? and barrel = ? and executed = false;";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1,url);
+            statement.setInt(2,porta);
+            statement.executeUpdate();
+
             System.out.println("Site indisponivel");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
             System.out.println("Site deformado");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -149,6 +162,12 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
                 String t;
                 t = iq.retira();
                 if (t != null) {
+                    String sql = "update Queue_url set barrel = ?, executed = false where barrel is null and executed is null and url = ?;";
+                    PreparedStatement stmt = connection.prepareStatement(sql);
+                    stmt.setInt(1,porta);
+                    stmt.setString(2,t);
+                    stmt.executeUpdate();
+
                     System.out.println(t);
                     SendInfo(t, iq);
                 }

@@ -13,7 +13,7 @@ public interface MessageServerInterface extends Remote, IServerRemoteInterface {
 
     String sayHello(int login) throws RemoteException;
 
-    void SendUrltoQueue(String url) throws RemoteException;
+    void SendUrltoQueue(String url) throws RemoteException, SQLException;
 
     void addClient(InterfaceClienteServer a) throws RemoteException;
     boolean Register(String username, String password) throws RemoteException, SQLException;

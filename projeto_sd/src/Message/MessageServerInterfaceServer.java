@@ -225,8 +225,8 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         }
     }
 
-    public void SendUrltoQueue(String url) throws RemoteException {
-        iq.coloca(url);
+    public void SendUrltoQueue(String url) throws RemoteException, SQLException {
+        iq.coloca(url, 1);
     }
 
     public String sayHello(int login) throws RemoteException {

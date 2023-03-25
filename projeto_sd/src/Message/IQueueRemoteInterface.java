@@ -2,12 +2,13 @@ package Message;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface IQueueRemoteInterface extends Remote {
     String retira() throws RemoteException;
 
-    void coloca(String e) throws RemoteException;
+    void coloca(String e, int i) throws RemoteException, SQLException;
 
     void unregisterDownloader(int posicao) throws RemoteException;
 
