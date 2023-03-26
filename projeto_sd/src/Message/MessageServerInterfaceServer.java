@@ -82,6 +82,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         }
 
         Barrels.add(client);
+        iq.atualizaNumeroBarrels(Barrels.size());
         BarrelsID.add(id);
         for (int j = 0; j < Clientes.size(); j++) {
 
@@ -155,6 +156,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     public void unregisterBarrel(int posicao) throws RemoteException {
         Barrels.remove(posicao);
         BarrelsID.remove(posicao);
+        iq.atualizaNumeroBarrels(Barrels.size());
         /*for (int k = posicao; k < Barrels.size() - 1; k++) {
             Barrels.set(k, Barrels.get(k + 1));
             if (k == Barrels.size() - 1) {

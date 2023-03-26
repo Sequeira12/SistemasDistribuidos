@@ -15,6 +15,8 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
     public static ISearcheQueue Ligacao;
     public static ArrayList<Integer> DownloadersOnPORTA = new ArrayList<Integer>();
 
+    int numeroBarrels=0;
+
     public static ArrayList<InterfaceDownloaders> Downloaders = new ArrayList<>();
 
     public static Connection connection = null;
@@ -23,6 +25,14 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         super();
     }
 
+
+    public void atualizaNumeroBarrels(int n){
+        numeroBarrels=n;
+    }
+
+    public int giveNumeroBarrels(){
+        return numeroBarrels;
+    }
 
     public void unregisterDownloader(int posicao) throws RemoteException {
         int porta = DownloadersOnPORTA.get(posicao);

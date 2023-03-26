@@ -15,5 +15,9 @@ public interface IQueueRemoteInterface extends Remote {
 
     boolean ConnectDownload(InterfaceDownloaders iq, int porta) throws RemoteException;
 
+    void atualizaNumeroBarrels(int n) throws RemoteException;
+
+    int giveNumeroBarrels() throws RemoteException;
+
     ArrayList<InterfaceDownloaders> info() throws RemoteException;
 }

@@ -1,30 +1,19 @@
 package Message;
 
-
-import java.net.MulticastSocket;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.io.IOException;
-
-import java.rmi.Naming;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.rmi.registry.LocateRegistry;
-
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
 import javax.net.ssl.SSLHandshakeException;
-import java.io.IOException;
-
 import java.rmi.RemoteException;
-
 import java.util.*;
-
 import java.util.concurrent.TimeUnit;
+
 
 public class Downloaders extends UnicastRemoteObject implements InterfaceDownloaders {
     private static final long serialVersionUID = 1L;
@@ -35,6 +24,9 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
     public static List<String> StopWords = Arrays.asList(words);
     public static MulticastServer MulticastServer = new MulticastServer();
 
+
+    public static String mensagemTokens, mensagemUrls;
+
     public static int porta;
 
     protected Downloaders() throws RemoteException {
@@ -44,6 +36,16 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
     public boolean Connected() {
         return true;
     }
+
+
+    public static void SendInfoAgain(){
+        String Barra = " | ";
+        String InfoTokenMulti = mensagemTokens.length() + Barra + "TOKEN";
+        String InfoUrlMulti = mensagemUrls.length() + Barra + "URL";
+        MulticastServer.Myserver(InfoTokenMulti, mensagemTokens);
+        MulticastServer.Myserver(InfoUrlMulti, mensagemUrls);
+    }
+
 
     public static void SendInfo(String url, IQueueRemoteInterface iq) throws RemoteException, SSLHandshakeException, SQLException {
         try {
@@ -88,6 +90,7 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             // info tamanho|TOKEN
             String fim = EnviaMulti.toString();
             MulticastServer.Myserver(InfoTokenMulti, fim);
+            mensagemTokens = fim;
 
 
             // CENA DOS URLS
@@ -108,6 +111,7 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             String InfoUrlMulti = tamanhoURL + Barra + "URL";
             // info tamanho|TOKEN
             String fimUrl = EnviaMultiLinks.toString();
+            mensagemUrls = fimUrl;
             MulticastServer.Myserver(InfoUrlMulti, fimUrl);
             String sql = "update Queue_url set executed = true where url = ? and barrel = ? and executed = false;";
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -167,9 +171,15 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
                     stmt.setInt(1,porta);
                     stmt.setString(2,t);
                     stmt.executeUpdate();
-
+                    int barrelsBefore = iq.giveNumeroBarrels();
                     System.out.println(t);
                     SendInfo(t, iq);
+                    TimeUnit.SECONDS.sleep(5);
+                    int barrelsAfter = iq.giveNumeroBarrels();
+                    if(barrelsAfter>barrelsBefore){
+                        System.out.println("ALGO DE ERRADO NAO ESTA CERTO " + barrelsBefore + " " + barrelsAfter);
+                        SendInfoAgain();
+                    }
                 }
 
                 System.out.println(t);
