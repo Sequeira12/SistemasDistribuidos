@@ -67,7 +67,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         if(s.next()){
             valor = s.getInt(1);
         }
-        if(valor==0){
+        if(valor==0 || Barrels.size() == 0){
             System.out.println("SUPOSTAMENTE");
             for (int i = 0; i < 5; i++) {
                 sql = "INSERT INTO token_url (barrel, token1, url) select ?, token1,url from token_url where barrel = (select barrel as conta from token_url group by barrel order by count(token1) DESC limit 1) except select ?,token1,url from token_url where barrel = ?";

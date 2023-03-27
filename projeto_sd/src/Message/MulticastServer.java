@@ -35,7 +35,7 @@ public class MulticastServer extends Thread {
 
     }
 
-    public void run() {
+    public synchronized void run() {
         MulticastSocket socket = null;
         long counter = 0;
 

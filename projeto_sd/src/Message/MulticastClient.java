@@ -21,12 +21,23 @@ public class MulticastClient extends Thread {
 
     public synchronized void myClient(Connection conn, int i, HashMap<Integer, String> info1, int conta) throws SQLException {
         connection = conn;
-        connection.setAutoCommit(false);
+
         id = i;
         info = info1;
-        contaHash = conta;
+        String sql = "select count(distinct(url)) from token_url group by barrel order by count(url) DESC limit 1;";
+        PreparedStatement sql2 = connection.prepareStatement(sql);
+        ResultSet urls = sql2.executeQuery();
+        int num = 0;
+        if(urls.next()){
+            num = urls.getInt(1);
+            contaHash = num * 2;
+        }
+
+        connection.setAutoCommit(false);
+
         System.out.println("Tamanho da hash recebida: " + contaHash);
-        run();
+
+
     }
 
     public static void MudaInfo(int conta) {
@@ -47,7 +58,7 @@ public class MulticastClient extends Thread {
         return info;
     }
 
-    public void run() {
+    public synchronized void run() {
         MulticastSocket socket = null;
         try {
             System.out.printf("VAI LER NA PORTA %d com id %d\n", PORT, id);

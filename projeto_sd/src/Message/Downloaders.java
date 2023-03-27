@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.rmi.registry.LocateRegistry;
+
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
 import javax.net.ssl.SSLHandshakeException;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -38,7 +40,7 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
     }
 
 
-    public static void SendInfoAgain(){
+    public static void SendInfoAgain() {
         String Barra = " | ";
         String InfoTokenMulti = mensagemTokens.length() + Barra + "TOKEN";
         String InfoUrlMulti = mensagemUrls.length() + Barra + "URL";
@@ -54,13 +56,15 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             String titulo = doc.title();
             String citacao;
             //DA ERRO NO LINK APPS.UC.PT
+            System.out.println(doc.text().length() + "  " + doc.title().length());
+
             if (doc.text().length() < 50 && doc.text().length() != titulo.length()) {
                 citacao = doc.text().substring(titulo.length() + 1, doc.text().length());
             } else {
                 if (doc.text().length() - titulo.length() + 1 > 50) {
-                    citacao = doc.text().substring(titulo.length() + 1, titulo.length() + 50);
+                    citacao = doc.text().substring(titulo.length(), titulo.length() + 50);
                 } else {
-                    citacao = doc.text().substring(titulo.length() + 1, doc.text().length() );
+                    citacao = doc.text().substring(titulo.length(), doc.text().length());
 
                 }
             }
@@ -102,7 +106,7 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
 
                 EnviaMultiLinks.append(link.attr("abs:href")).append(Ponto);
 
-                iq.coloca(link.attr("abs:href"),1);
+                iq.coloca(link.attr("abs:href"), 1);
             }
 
 
@@ -115,8 +119,8 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             MulticastServer.Myserver(InfoUrlMulti, fimUrl);
             String sql = "update Queue_url set executed = true where url = ? and barrel = ? and executed = false;";
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1,url);
-            statement.setInt(2,porta);
+            statement.setString(1, url);
+            statement.setInt(2, porta);
             statement.executeUpdate();
             connection.commit();
             System.out.println("IMPRIMEEE");
@@ -127,8 +131,8 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
         } catch (SSLHandshakeException e) {
             String sql = "update Queue_url set executed = true where url = ? and barrel = ? and executed = false;";
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1,url);
-            statement.setInt(2,porta);
+            statement.setString(1, url);
+            statement.setInt(2, porta);
             statement.executeUpdate();
 
             System.out.println("Site indisponivel");
@@ -168,15 +172,15 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
                 if (t != null) {
                     String sql = "update Queue_url set barrel = ?, executed = false where barrel is null and executed is null and url = ?;";
                     PreparedStatement stmt = connection.prepareStatement(sql);
-                    stmt.setInt(1,porta);
-                    stmt.setString(2,t);
+                    stmt.setInt(1, porta);
+                    stmt.setString(2, t);
                     stmt.executeUpdate();
                     int barrelsBefore = iq.giveNumeroBarrels();
                     System.out.println(t);
                     SendInfo(t, iq);
-                    TimeUnit.SECONDS.sleep(5);
+                   // TimeUnit.SECONDS.sleep(3);
                     int barrelsAfter = iq.giveNumeroBarrels();
-                    if(barrelsAfter>barrelsBefore){
+                    if (barrelsAfter > barrelsBefore) {
                         System.out.println("ALGO DE ERRADO NAO ESTA CERTO " + barrelsBefore + " " + barrelsAfter);
                         SendInfoAgain();
                     }
