@@ -170,6 +170,15 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         DriverManager.registerDriver(new org.postgresql.Driver());
         connection = DriverManager.getConnection(url, username, password);
 
+        String sql = "select url from Queue_url where barrel is null and executed is null;";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            System.out.println("HEYYYY");
+            String ul = rs.getString("url");
+            // Processar o URL aqui, por exemplo:
+            Urls_To_Downloaders.add(ul);
+        }
 
         QueueUrls h = new QueueUrls();
         Registry r = LocateRegistry.createRegistry(7003);
@@ -180,13 +189,6 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         Registry r1 = LocateRegistry.createRegistry(7005);
         r1.rebind("QS", Ligacao);
         h.run();
-        String sql = "select url from Queue_url where barrel is null and executed is null;";
-        PreparedStatement stmt = connection.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-            String ul = rs.getString("url");
-            // Processar o URL aqui, por exemplo:
-            Urls_To_Downloaders.add(ul);
-        }
+
     }
 }
