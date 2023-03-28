@@ -70,12 +70,30 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
     public static void Imprime10_10(ArrayList<String> links) {
         int conta = 0;
         System.out.printf("Links Associados à sua procura: (PAGINA %d) \n", conta + 1);
-        for (int i = 0; i < 10 && i < links.size(); i++) {
-            System.out.printf(" - %s\n", links.get(i));
-        }
-        System.out.println("Digite '+' se quer ir para a seguinte\nDigite '-' se deseja ir para a anterior\nDigite 0 se quer terminar a pesquisa");
-        Scanner client = new Scanner(System.in);
+        for (int i = 0; i < 10 && i < links.size() / 2; i++) {
+            System.out.printf(" (%d) - %s \n", (i + 1), links.get(i * 2));
 
+
+        }
+        if (login == 1) {
+            for (int i = 0; i < 10 && i < links.size() / 2; i++) {
+
+                System.out.printf(" (%d) - %s \n", (i + 1), links.get(i * 2));
+            }
+        } else {
+            for (int i = 0; i < 10  && i < links.size(); i++) {
+
+                System.out.printf(" (%d) - %s \n", (i + 1), links.get(i));
+            }
+        }
+        if (login == 1) {
+            System.out.println("Digite o nº do url que deseja ver as ligações\nDigite '+' se quer ir para a seguinte\nDigite '-' se deseja ir para a anterior\nDigite 0 se quer terminar a pesquisa");
+        } else {
+            System.out.println("Digite '+' se quer ir para a seguinte\nDigite '-' se deseja ir para a anterior\nDigite 0 se quer terminar a pesquisa");
+        }
+        Scanner client = new Scanner(System.in);
+        int numMin, numMax;
+        int num = -1;
         while (client.hasNextLine()) {
             String s = client.nextLine();
             if (s.compareTo("+") == 0) {
@@ -84,19 +102,44 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
                 conta--;
             } else if (s.compareTo("0") == 0) {
                 break;
+            } else {
+                num = Integer.parseInt(s);
             }
             if (conta < 0) {
                 conta = 0;
             }
-            if (conta > links.size() / 10) {
+            if (conta > (links.size() / 2) / 10) {
                 conta--;
             }
-            System.out.printf("Links Associados à sua procura: (PAGINA %d) \n", conta + 1);
-            for (int i = 10 * conta; i < 10 * (conta + 1) && i < links.size(); i++) {
-                System.out.printf(" - %s\n", links.get(i));
-            }
-            System.out.println("Digite '+' se quer ir para a seguinte\nDigite '-' se deseja ir para a anterior\nDigite 0 se quer terminar a pesquisa\n");
+            numMin = 10 * conta;
+            numMax = 10 * (conta + 1);
+            if (num > numMin && num < numMax && login == 1) {
+                System.out.println("RESULTADO DAS LIGAÇÕES!!");
+                System.out.println(links.get(num + (num - 1)));
+                System.out.println("Digite qualquer tecla se quer ver a restante pesquisa\n");
+                client.hasNextLine();
+                client.nextLine();
 
+            }
+
+            System.out.printf("\nLinks Associados à sua procura: (PAGINA %d) \n", conta + 1);
+            if (login == 1) {
+                for (int i = 10 * conta; i < 10 * (conta + 1) && i < links.size() / 2; i++) {
+
+                    System.out.printf(" (%d) - %s \n", (i + 1), links.get(i * 2));
+                }
+            } else {
+                for (int i = 10 * conta; i < 10 * (conta + 1) && i < links.size(); i++) {
+
+                    System.out.printf(" (%d) - %s \n", (i + 1), links.get(i));
+                }
+            }
+
+            if (login == 1) {
+                System.out.println("Digite o nº do url que deseja ver as ligações\nDigite '+' se quer ir para a seguinte\nDigite '-' se deseja ir para a anterior\nDigite 0 se quer terminar a pesquisa");
+            } else {
+                System.out.println("Digite '+' se quer ir para a seguinte\nDigite '-' se deseja ir para a anterior\nDigite 0 se quer terminar a pesquisa");
+            }
         }
 
 
@@ -128,18 +171,18 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
                     while (Existe) {
                         String nome = null, pass = null;
                         Scanner nova = new Scanner(System.in);
-                        System.out.println("LOGIN:\nColoque o seu Usename:");
+                        System.out.println("LOGIN:\nColoque o seu Username:");
                         if (nova.hasNextLine()) {
 
                             nome = nova.nextLine();
                         }
                         Scanner nova2 = new Scanner(System.in);
-                        System.out.println("Coloque a pass");
+                        System.out.println("Coloque a pass: ");
                         if (nova2.hasNextLine()) {
                             pass = nova2.nextLine();
                         }
                         if (h.Login(nome, pass)) {
-                            System.out.println("Login realizado com Sucesso!!!");
+                            System.out.println("Login realizado com Sucesso!!!\n");
                             Existe = false;
                         }
                     }
@@ -149,18 +192,18 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
                     while (Existe) {
                         String nome = null, pass = null;
                         Scanner nova = new Scanner(System.in);
-                        System.out.println("REGISTO:\nColoque o seu Usename:");
+                        System.out.println("REGISTO:\nColoque o seu Username:");
                         if (nova.hasNextLine()) {
 
                             nome = nova.nextLine();
                         }
                         Scanner nova2 = new Scanner(System.in);
-                        System.out.println("Coloque a pass");
+                        System.out.println("Coloque a password: ");
                         if (nova2.hasNextLine()) {
                             pass = nova2.nextLine();
                         }
                         if (h.Register(nome, pass)) {
-                            System.out.println("Registo realizado com Sucesso!!!");
+                            System.out.println("Registo realizado com Sucesso!!\n");
                             Existe = false;
                         }
                     }
@@ -182,7 +225,7 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
                     Scanner scanner2 = new Scanner(System.in);
                     String palavra = scanner2.nextLine();
 
-                    ArrayList<String> linksAssociados = h.FindUrlWithToken(palavra,login);
+                    ArrayList<String> linksAssociados = h.FindUrlWithToken(palavra, login);
 
                     if (linksAssociados == null) {
                         System.out.println("Links Associados à sua procura:");
@@ -209,16 +252,16 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
                     System.out.println("COLOQUE O SITE:");
                     Scanner scanner2 = new Scanner(System.in);
                     String palavra = scanner2.nextLine();
-                    ArrayList<String> linksAssociados = h.listPagesConnectedtoAnotherPage(palavra);
+                    String linksAssociados = h.listPagesConnectedtoAnotherPage(palavra);
                     if (linksAssociados == null) {
                         System.out.println("Links Associados à sua procura:");
                         System.out.println("Sem resultados encontrados!!");
                     } else {
-                        if (linksAssociados.get(0).compareTo("Sem Resultados") == 0) {
+                        if (linksAssociados.compareTo("Sem Resultados") == 0) {
                             System.out.println("Links Associados à sua procura:");
                             System.out.println("Barrels Indisponiveis!!");
                         } else {
-                            Imprime10_10(linksAssociados);
+                            System.out.println(linksAssociados);
 
                         }
                     }
@@ -231,7 +274,7 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
                 System.out.println("\nDigite um número:");
             }
         } catch (Exception e) {
-            System.out.println("Exception in main: PUTAAAA " + e);
+            System.out.println("Exception in main: " + e);
             e.printStackTrace();
         }
 

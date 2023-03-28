@@ -241,8 +241,8 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
     }
 
-    public ArrayList<String> listPagesConnectedtoAnotherPage(String url) throws SQLException, RemoteException {
-        ArrayList<String> connectados = new ArrayList<>();
+    public String listPagesConnectedtoAnotherPage(String url) throws SQLException, RemoteException {
+        String connectados = null;
         System.out.println(Barrels.size());
         if (Barrels.size() != 0) {
             Random gerador = new Random();
@@ -256,8 +256,8 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
                 //connectados = Barrels.get(numero).listPage(url);
             }
         } else {
-            String No = "Sem Resultados";
-            connectados.add(No);
+            connectados = "Sem Resultados";
+
         }
         return connectados;
     }

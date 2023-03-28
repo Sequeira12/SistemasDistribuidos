@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public interface IClientRemoteInterface extends Remote {
 
-    ArrayList<String> listPage(String url) throws RemoteException, SQLException;
+    String listPage(String url) throws RemoteException, SQLException;
     ArrayList<String> ProcuraToken(String url, int logado) throws RemoteException, SQLException;
 
     boolean Connected() throws RemoteException;

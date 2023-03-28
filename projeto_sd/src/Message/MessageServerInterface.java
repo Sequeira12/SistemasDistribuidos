@@ -20,7 +20,7 @@ public interface MessageServerInterface extends Remote, IServerRemoteInterface {
 
     boolean Login(String username, String password) throws RemoteException, SQLException;
 
-    ArrayList<String> listPagesConnectedtoAnotherPage(String url) throws SQLException, RemoteException;
+    String listPagesConnectedtoAnotherPage(String url) throws SQLException, RemoteException;
 
     String VerificaTop10() throws RemoteException,SQLException;
 

@@ -78,15 +78,13 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         int conta = 0;
 
         while (rs.next()) {
-            StringBuilder composta = new StringBuilder("URL: " + rs.getString(1) + "\n\tTITULO: " + rs.getString(3) + "\n\tCITAÇÃO: " + rs.getString(4) + "\n");
+
+            connectados.add("URL: " + rs.getString(1) + "\n\tTITULO: " + rs.getString(3) + "\n\tCITAÇÃO: " + rs.getString(4) + "\n");
             if(logado==1){
-                ArrayList<String> conected = listPage(rs.getString(1));
-                for (String s : conected){
-                    String s2 = "  " + s +"\n";
-                    composta.append(s2);
-                }
+                String connected = listPage(rs.getString(1));
+                connectados.add(connected);
             }
-            connectados.add(composta.toString());
+
 
             conta++;
         }
@@ -101,11 +99,11 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
     }
 
 
-    public ArrayList<String> listPage(String url) throws RemoteException, SQLException {
+    public String listPage(String url) throws RemoteException, SQLException {
 
 
-        ArrayList<String> connectados = new ArrayList<>();
-        String sql = "select distinct(url1) from url_url where url2 = ? and barrel = ?;";
+        StringBuilder connectados = new StringBuilder();
+        String sql = "select distinct(url1) from url_url where url2 = ? and barrel = ? and url2 != url1;";
         PreparedStatement stament = connection.prepareStatement(sql);
         stament.setString(1, url);
         stament.setInt(2, id);
@@ -114,15 +112,15 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
 
         while (rs.next()) {
             String composta = "Ligação: " + rs.getString(1) + "\n";
-            connectados.add(composta);
+            connectados.append(composta);
             conta++;
         }
         if (conta == 0) {
-            connectados = null;
+            connectados = new StringBuilder("Sem resultados");
         }
         rs.close();
         stament.close();
-        return connectados;
+        return connectados.toString();
 
 
     }
