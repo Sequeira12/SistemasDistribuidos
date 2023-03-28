@@ -49,8 +49,8 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         return true;
     }
 
-    public ArrayList<String> ProcuraToken(String token) throws SQLException {
-
+    public ArrayList<String> ProcuraToken(String token,int logado) throws SQLException, RemoteException {
+        connection.setAutoCommit(true);
 
         ArrayList<String> connectados = new ArrayList<>();
         String[] news = token.split(" ");
@@ -78,8 +78,16 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         int conta = 0;
 
         while (rs.next()) {
-            String composta = "URL: " + rs.getString(1) + "\n\tTITULO: " + rs.getString(3) + "\n\tCITAÇÃO: " + rs.getString(4) + "\n";
-            connectados.add(composta);
+            StringBuilder composta = new StringBuilder("URL: " + rs.getString(1) + "\n\tTITULO: " + rs.getString(3) + "\n\tCITAÇÃO: " + rs.getString(4) + "\n");
+            if(logado==1){
+                ArrayList<String> conected = listPage(rs.getString(1));
+                for (String s : conected){
+                    String s2 = "  " + s +"\n";
+                    composta.append(s2);
+                }
+            }
+            connectados.add(composta.toString());
+
             conta++;
         }
         if (conta == 0) {
@@ -87,6 +95,7 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         }
         rs.close();
         stament.close();
+        connection.setAutoCommit(false);
         return connectados;
 
     }

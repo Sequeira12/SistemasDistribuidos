@@ -9,7 +9,7 @@ public interface MessageServerInterface extends Remote, IServerRemoteInterface {
 
     String SendUrlQueue(String token) throws RemoteException;
 
-    ArrayList<String> FindUrlWithToken(String url) throws RemoteException, SQLException;
+    ArrayList<String> FindUrlWithToken(String url, int logado) throws RemoteException, SQLException;
 
     String sayHello(int login) throws RemoteException;
 

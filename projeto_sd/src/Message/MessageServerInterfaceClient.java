@@ -182,7 +182,7 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
                     Scanner scanner2 = new Scanner(System.in);
                     String palavra = scanner2.nextLine();
 
-                    ArrayList<String> linksAssociados = h.FindUrlWithToken(palavra);
+                    ArrayList<String> linksAssociados = h.FindUrlWithToken(palavra,login);
 
                     if (linksAssociados == null) {
                         System.out.println("Links Associados à sua procura:");

@@ -123,8 +123,8 @@ public class MulticastClient extends Thread {
                                 if (UrlOrToken) {
                                     String sql = "select count(*)  from token_url where token_url.token1 = ? and token_url.url = ? and barrel=?;";
                                     PreparedStatement stament = connection.prepareStatement(sql);
-                                    stament.setString(1, token1);
-                                    stament.setString(2, url);
+                                    stament.setString(1, token1.trim());
+                                    stament.setString(2, url.trim());
                                     stament.setInt(3, id);
 
                                     ResultSet rs = stament.executeQuery();
@@ -135,8 +135,8 @@ public class MulticastClient extends Thread {
                                             String sql2 = "insert into token_url (barrel,token1,url) values(?,?,?)";
                                             PreparedStatement stament2 = connection.prepareStatement(sql2);
                                             stament2.setInt(1, id);
-                                            stament2.setString(2, token1);
-                                            stament2.setString(3, url);
+                                            stament2.setString(2, token1.trim());
+                                            stament2.setString(3, url.trim());
                                             stament2.executeUpdate();
                                             System.out.println("Inseriu " + Integer.toString(id) + " " + token1 + "\n");
                                         }
@@ -149,8 +149,8 @@ public class MulticastClient extends Thread {
                                         String sql2 = "insert into url_url (barrel,url1,url2) values(?,?,?)";
                                         PreparedStatement stament2 = connection.prepareStatement(sql2);
                                         stament2.setInt(1, id);
-                                        stament2.setString(2, url);
-                                        stament2.setString(3, Url2);
+                                        stament2.setString(2, url.trim());
+                                        stament2.setString(3, Url2.trim());
                                         stament2.executeUpdate();
                                         conta2++;
                                     } else {

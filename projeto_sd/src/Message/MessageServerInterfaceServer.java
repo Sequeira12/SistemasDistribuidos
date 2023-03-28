@@ -203,7 +203,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     }
 
 
-    public ArrayList<String> FindUrlWithToken(String token) throws RemoteException, SQLException {
+    public ArrayList<String> FindUrlWithToken(String token, int logado) throws RemoteException, SQLException {
 
         try {
             ArrayList<String> connectados = new ArrayList<>();
@@ -215,7 +215,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
                 int numero = gerador.nextInt((Barrels.size()));
                 System.out.printf("Barrel que vai executar a Procura ---> %d\n", numero);
                 if (Barrels.get(numero) != null) {
-                    connectados = Barrels.get(numero).ProcuraToken(token);
+                    connectados = Barrels.get(numero).ProcuraToken(token, logado);
                 }
             } else {
                 String No = "Sem Resultados";
@@ -223,7 +223,8 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             }
             return connectados;
         } catch (RemoteException a) {
-            return null;
+            System.out.println("fodeu-se");
+            return FindUrlWithToken(token,logado);
         }
     }
 
