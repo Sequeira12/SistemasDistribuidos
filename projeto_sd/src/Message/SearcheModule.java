@@ -12,7 +12,7 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class MessageServerInterfaceServer extends UnicastRemoteObject implements MessageServerInterface, IServerRemoteInterface, ISearcheQueue {
+public class SearcheModule extends UnicastRemoteObject implements MessageServerInterface, IServerRemoteInterface, ISearcheQueue {
 
     public static IServerRemoteInterface Servidor;
     public static ISearcheQueue QueueSearche;
@@ -20,14 +20,14 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
     public static ArrayList<InterfaceDownloaders> Download2 = new ArrayList<>();
     public static IQueueRemoteInterface iq;
-    public static ArrayList<IClientRemoteInterface> Barrels = new ArrayList<>();
+    public static ArrayList<IBarrelRemoteInterface> Barrels = new ArrayList<>();
     public static Connection connection;
     public static ArrayList<Integer> BarrelsID = new ArrayList<>();
 
     public static ArrayList<InterfaceClienteServer> Clientes = new ArrayList<>();
 
 
-    public MessageServerInterfaceServer() throws RemoteException {
+    public SearcheModule() throws RemoteException {
         super();
     }
 
@@ -48,7 +48,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     }
 
 
-    public int registerClient(IClientRemoteInterface client, int id) throws RemoteException, SQLException {
+    public int registerClient(IBarrelRemoteInterface client, int id) throws RemoteException, SQLException {
         for (int i = 0; i < Barrels.size(); i++) {
             if (BarrelsID.get(i).compareTo(id) == 0) {
                 return -1;
@@ -117,7 +117,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             }
 
 
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(2);
 
 
         } catch (ServerException a) {
@@ -329,7 +329,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
             iq = (IQueueRemoteInterface) LocateRegistry.getRegistry(7003).lookup("QD");
 
-            MessageServerInterfaceServer h = new MessageServerInterfaceServer();
+            SearcheModule h = new SearcheModule();
             Registry r = LocateRegistry.createRegistry(7001);
             r.rebind("SD", h);
 
@@ -337,7 +337,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             QueueSearche = (ISearcheQueue) LocateRegistry.getRegistry(7005).lookup("QS"); // LIGACAO RMI
 
 
-            Servidor = new MessageServerInterfaceServer();
+            Servidor = new SearcheModule();
             java.rmi.registry.LocateRegistry.createRegistry(1099);
             java.rmi.Naming.rebind("ServerObject", Servidor);
             System.out.println("Servidor pronto para receber chamadas remotas.");

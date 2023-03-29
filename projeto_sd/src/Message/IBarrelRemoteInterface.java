@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public interface IClientRemoteInterface extends Remote {
+public interface IBarrelRemoteInterface extends Remote {
 
     String listPage(String url) throws RemoteException, SQLException;
     ArrayList<String> ProcuraToken(String url, int logado) throws RemoteException, SQLException;

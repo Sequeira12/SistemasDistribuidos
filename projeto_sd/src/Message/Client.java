@@ -1,6 +1,5 @@
 package Message;
 
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.RemoteObject;
@@ -9,16 +8,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class MessageServerInterfaceClient extends UnicastRemoteObject implements InterfaceClienteServer {
+public class Client extends UnicastRemoteObject implements InterfaceClienteServer {
 
 
-    public static ArrayList<IClientRemoteInterface> Barrels = new ArrayList<>();
+    public static ArrayList<IBarrelRemoteInterface> Barrels = new ArrayList<>();
     public static ArrayList<InterfaceDownloaders> Downloaders = new ArrayList<>();
 
     public static MessageServerInterface h;
     public static int login;
+    private static Client a;
 
-    protected MessageServerInterfaceClient() throws RemoteException {
+    protected Client() throws RemoteException {
         super();
     }
 
@@ -56,7 +56,7 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
 
     }
 
-    public void atualizaStatus(ArrayList<IClientRemoteInterface> b, ArrayList<InterfaceDownloaders> d) {
+    public void atualizaStatus(ArrayList<IBarrelRemoteInterface> b, ArrayList<InterfaceDownloaders> d) {
         Barrels = b;
         Downloaders = d;
     }
@@ -157,7 +157,7 @@ public class MessageServerInterfaceClient extends UnicastRemoteObject implements
 
             h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
 
-            MessageServerInterfaceClient a = new MessageServerInterfaceClient();
+            Client a = new Client();
             h.addClient(a);
 
             Scanner scanner = new Scanner(System.in);

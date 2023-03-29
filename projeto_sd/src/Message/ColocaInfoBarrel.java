@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class ColocaInfoBarrel extends Thread {
 
@@ -154,5 +155,9 @@ public class ColocaInfoBarrel extends Thread {
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
+        catch (NoSuchElementException e) {
+            System.out.print("");
+        }
+
     }
 }

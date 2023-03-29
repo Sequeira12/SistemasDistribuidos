@@ -6,7 +6,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.util.*;
 
-public class Barrels extends UnicastRemoteObject implements IClientRemoteInterface {
+public class Barrels extends UnicastRemoteObject implements IBarrelRemoteInterface {
     /**
      *
      */
@@ -26,7 +26,7 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         super();
     }
 
-    public int connectToServer(IClientRemoteInterface client, int id) {
+    public int connectToServer(IBarrelRemoteInterface client, int id) {
         try {
             int valor;
             server = (IServerRemoteInterface) Naming.lookup("ServerObject");

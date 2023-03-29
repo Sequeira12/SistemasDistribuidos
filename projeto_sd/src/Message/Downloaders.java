@@ -168,8 +168,10 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
 
             while (true) {
                 String t;
+
                 if(iq.giveNumeroBarrels() != 0) {
                     t = iq.retira();
+
                     if (t != null) {
                         String sql = "update Queue_url set barrel = ?, executed = false where barrel is null and executed is null and url = ?;";
                         PreparedStatement stmt = connection.prepareStatement(sql);
@@ -181,6 +183,14 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
                         SendInfo(t, iq);
                         // TimeUnit.SECONDS.sleep(3);
                         int barrelsAfter = iq.giveNumeroBarrels();
+                        if(barrelsAfter == 0){
+                            sql = "update Queue_url set executed = null and barrel = null where url = ? and barrel = ? and executed = false;";
+                            PreparedStatement statement = connection.prepareStatement(sql);
+                            statement.setString(1, url);
+                            statement.setInt(2, porta);
+                            statement.executeUpdate();
+                            iq.coloca(t,0);
+                        }
                         if (barrelsAfter > barrelsBefore) {
                             System.out.println("ALGO DE ERRADO NAO ESTA CERTO " + barrelsBefore + " " + barrelsAfter);
                             SendInfoAgain();

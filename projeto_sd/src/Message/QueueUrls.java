@@ -184,7 +184,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         r.rebind("QD", h);
 
 
-        Ligacao = new MessageServerInterfaceServer();
+        Ligacao = new SearcheModule();
         Registry r1 = LocateRegistry.createRegistry(7005);
         r1.rebind("QS", Ligacao);
         h.run();
