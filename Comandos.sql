@@ -47,15 +47,3 @@ CREATE INDEX ON url_url (url1);
 CREATE INDEX ON url_url (url2);
 CREATE INDEX ON url_info (url);
 ------------------------------------------------------------------------------------------------------------------------
-
-
--- Conta Tokens de todos os barrels:
-
-select barrel as conta, count(distinct(token1))
-from token_url group by barrel order by count(token1) DESC;
-
-
-delete from Queue_url;
-delete from token_url;
-delete from url_url;
-delete from url_info;
