@@ -31,7 +31,7 @@ public class MulticastServer extends Thread {
     public synchronized void Myserver(String palavraS,String PalavraFinal) {
         palavra = palavraS;
         palavraFim = PalavraFinal;
-        this.start();
+        run();
 
     }
 
