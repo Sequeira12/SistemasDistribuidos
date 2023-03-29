@@ -7,8 +7,10 @@ import java.rmi.registry.Registry;
 import java.rmi.server.*;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class MessageServerInterfaceServer extends UnicastRemoteObject implements MessageServerInterface, IServerRemoteInterface, ISearcheQueue {
 
@@ -19,7 +21,6 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     public static ArrayList<InterfaceDownloaders> Download2 = new ArrayList<>();
     public static IQueueRemoteInterface iq;
     public static ArrayList<IClientRemoteInterface> Barrels = new ArrayList<>();
-
     public static Connection connection;
     public static ArrayList<Integer> BarrelsID = new ArrayList<>();
 
@@ -28,12 +29,6 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
     public MessageServerInterfaceServer() throws RemoteException {
         super();
-    }
-
-
-    public void SendInfoDownloaders(ArrayList<Integer> Download) throws RemoteException {
-        int contador = 0;
-
     }
 
     public String VerificaTop10() throws RemoteException, SQLException {
@@ -64,86 +59,84 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         statement.setInt(1, id);
         ResultSet s = statement.executeQuery();
         int valor = 0;
-        if(s.next()){
+        if (s.next()) {
             valor = s.getInt(1);
         }
-        if(valor==0 || Barrels.size() == 0){
-            System.out.println("SUPOSTAMENTE");
-            for (int i = 0; i < 5; i++) {
-                sql = "INSERT INTO token_url (barrel, token1, url) select ?, token1,url from token_url where barrel = (select barrel as conta from token_url group by barrel order by count(token1) DESC limit 1) except select ?,token1,url from token_url where barrel = ?";
-                //sql = "INSERT INTO token_url (barrel, token1, url) SELECT ?, token1, url FROM token_url WHERE barrel = (SELECT barrel FROM token_url GROUP BY barrel ORDER BY COUNT(token1) DESC LIMIT 1);";
-                PreparedStatement statement2 = connection.prepareStatement(sql);
-                statement2.setInt(1, id);
-                statement2.setInt(2, id);
-                statement2.setInt(3, id);
-                int a = statement2.executeUpdate();
-            }
-            System.out.println("Informação adicionada ao Barrel " + id);
+
+
+        if (valor == 0 || Barrels.size() == 0) {
+
+
+            sql = "INSERT INTO token_url (barrel, token1, url) select ?, token1,url from token_url where barrel = (select barrel as conta from token_url group by barrel order by count(token1) DESC limit 1) except select ?,token1,url from token_url where barrel = ?";
+            PreparedStatement statement2 = connection.prepareStatement(sql);
+            statement2.setInt(1, id);
+            statement2.setInt(2, id);
+            statement2.setInt(3, id);
+            statement2.executeUpdate();
+
+            System.out.println("Informação adicionada ao Barrel (TOTAL/DIFERENCA) " + id);
         }
 
         Barrels.add(client);
         iq.atualizaNumeroBarrels(Barrels.size());
         BarrelsID.add(id);
-        for (int j = 0; j < Clientes.size(); j++) {
-
-            Clientes.get(j).atualizaStatus(Barrels, Download2);
+        for (InterfaceClienteServer cliente : Clientes) {
+            cliente.atualizaStatus(Barrels, Download2);
         }
-        System.out.printf("%d\n", Barrels.size());
+
         System.out.println("Barrel registrado no servidor.");
         return valor;
     }
 
 
-    public void run() throws RemoteException {
+    public void verificaDisponiveis() throws RemoteException {
         int i = 0, k = 0;
-        while (true) {
-            try {
-                System.out.printf("Barrels Disponiveis %d\n", Barrels.size());
-                System.out.printf("Clientes Disponiveis %d\n", Clientes.size());
-                System.out.printf("Downloaders Disponiveis %d\n\n", Download2.size());
-                if (iq.info() != null) {
-                    Downloads = iq.info();
-                }
-                if (Downloads != Download2) {
-                    Download2 = Downloads;
-
-                    for (int j = 0; j < Clientes.size(); j++) {
-                        Clientes.get(j).atualizaStatus(Barrels, Downloads);
-                    }
-                }
-
-
-                for (i = 0; i < Barrels.size(); i++) {
-                    Barrels.get(i).Connected();
-                }
-
-
-                for (k = 0; k < Clientes.size(); k++) {
-                    Clientes.get(k).Connected();
-                }
-
-
-                Thread.sleep(1000);
-
-
-            } catch (ServerException a) {
-                System.out.println("Server Exception \n");
-            } catch (ConnectException a) {
-                // Se a conexão não existir retiro da lista
-                if (i != Barrels.size()) {
-                    unregisterBarrel(i);
-                    for (int j = 0; j < Clientes.size(); j++) {
-                        Clientes.get(j).atualizaStatus(Barrels, Download2);
-                    }
-                }
-                if (k != Clientes.size()) {
-                    unregisterClient(k);
-                }
-
-
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        while (true) try {
+            System.out.printf("Barrels Disponiveis %d\n", Barrels.size());
+            System.out.printf("Clientes Disponiveis %d\n", Clientes.size());
+            System.out.printf("Downloaders Disponiveis %d\n\n", Download2.size());
+            if (iq.info() != null) {
+                Downloads = iq.info();
             }
+            if (Downloads != Download2) {
+                Download2 = Downloads;
+
+                for (InterfaceClienteServer cliente : Clientes) {
+                    cliente.atualizaStatus(Barrels, Downloads);
+                }
+            }
+
+
+            for (i = 0; i < Barrels.size(); i++) {
+                Barrels.get(i).Connected();
+            }
+
+
+            for (k = 0; k < Clientes.size(); k++) {
+                Clientes.get(k).Connected();
+            }
+
+
+            TimeUnit.SECONDS.sleep(10);
+
+
+        } catch (ServerException a) {
+            System.out.println("Server Exception \n");
+        } catch (ConnectException a) {
+            // Se a conexão não existir retiro da lista
+            if (i != Barrels.size()) {
+                unregisterBarrel(i);
+                for (int j = 0; j < Clientes.size(); j++) {
+                    Clientes.get(j).atualizaStatus(Barrels, Download2);
+                }
+            }
+            if (k != Clientes.size()) {
+                unregisterClient(k);
+            }
+
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -157,48 +150,54 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
         Barrels.remove(posicao);
         BarrelsID.remove(posicao);
         iq.atualizaNumeroBarrels(Barrels.size());
-        /*for (int k = posicao; k < Barrels.size() - 1; k++) {
-            Barrels.set(k, Barrels.get(k + 1));
-            if (k == Barrels.size() - 1) {
-                Barrels.set(k, null);
 
-            }
-        }*/
         System.out.println("Barrel removido do servidor.");
     }
 
-    public HashMap<Integer, String> PedidoHash(int a,int id) throws RemoteException, SQLException {
-        if(Barrels.size()==0) return null;
-        String verifica = "select barrel as conta from token_url group by barrel order by count(token1) DESC";
+    public HashMap<Integer, String> PedidoHash(int a, int id) throws RemoteException, SQLException {
+        if (Barrels.size() == 0) return null;
+        String verifica = "select barrel as conta,count(distinct(url)) from token_url group by barrel order by count(token1),count(distinct(url)) DESC";
         PreparedStatement stm = connection.prepareStatement(verifica);
         ResultSet resultado = stm.executeQuery();
-        int barrel=0;
-        if(resultado.next()){
-            barrel=resultado.getInt(1);
+        int barrel = 0;
+        int valorMaximo = 0;
+        int contador = 0;
+        while (resultado.next()) {
+            if (contador == 0) valorMaximo = resultado.getInt(2);
+            contador++;
+            barrel = resultado.getInt(1);
 
-            System.out.println("\n\n\nBARREL" + barrel + "\n\n");
+
             int p = BarrelsID.indexOf(barrel);
-            if(p!=-1) {
+            if (p != -1) {
                 if (barrel != id && Barrels.get(p).Connected()) {
-                    System.out.println("JA FEZ CRLH");
-                    return Barrels.get(p).sendHash(a);
+
+                    HashMap<Integer, String> aux = Barrels.get(p).sendHash(a);
+                    Map.Entry<Integer, String> firstEntry = aux.entrySet().iterator().next();
+
+
+                    if (firstEntry.getKey() == a) {
+                        System.out.println("\n\n\nBARREL que vai enviar a informação " + barrel + "\n\n");
+                        return aux;
+                    }
+
                 }
             }
         }
-        System.out.println("SEM BARRELLLLLL");
+        String sql = "INSERT INTO token_url (barrel, token1, url) select ?, token1,url from token_url where barrel = (select barrel as conta from token_url group by barrel order by count(token1) DESC limit 1) except select ?,token1,url from token_url where barrel = ?";
+        PreparedStatement statement2 = connection.prepareStatement(sql);
+        statement2.setInt(1, id);
+        statement2.setInt(2, id);
+        statement2.setInt(3, id);
+        statement2.executeUpdate();
+
+
+        System.out.println("(Barrels disponiveis sem a informação total -> informação colocada)\n");
         return null;
     }
 
     public void unregisterClient(int posicao) throws RemoteException {
         Clientes.remove(posicao);
-
-        for (int k = posicao; k < Clientes.size() - 1; k++) {
-            Clientes.set(k, Clientes.get(k + 1));
-            if (k == Clientes.size() - 1) {
-                Clientes.set(k, null);
-
-            }
-        }
         System.out.println("Cliente removido do servidor.");
     }
 
@@ -214,8 +213,12 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
                 Random gerador = new Random();
                 int numero = gerador.nextInt((Barrels.size()));
                 System.out.printf("Barrel que vai executar a Procura ---> %d\n", numero);
+
+
                 if (Barrels.get(numero) != null) {
+
                     connectados = Barrels.get(numero).ProcuraToken(token, logado);
+
                 }
             } else {
                 String No = "Sem Resultados";
@@ -223,14 +226,12 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             }
             return connectados;
         } catch (RemoteException a) {
-            System.out.println("fodeu-se");
-            return FindUrlWithToken(token,logado);
+
+            return FindUrlWithToken(token, logado);
         }
     }
 
-    public void SendUrltoQueue(String url) throws RemoteException, SQLException {
-        iq.coloca(url, 1);
-    }
+
 
     public String sayHello(int login) throws RemoteException {
         if (login == 0) {
@@ -252,8 +253,6 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
 
 
                 connectados = Barrels.get(numero).listPage(url);
-
-                //connectados = Barrels.get(numero).listPage(url);
             }
         } else {
             connectados = "Sem Resultados";
@@ -278,7 +277,6 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
                 stament.setString(2, password);
                 stament.executeUpdate();
                 return true;
-
             }
         }
         return false;
@@ -304,11 +302,10 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
     }
 
 
-    public String SendUrlQueue(String token) throws RemoteException {
-
-        return null;
-        //return mensagem;
+    public void SendUrltoQueue(String url) throws RemoteException, SQLException {
+        iq.coloca(url, 1);
     }
+
 
     // =========================================================
     public static void main(String args[]) {
@@ -344,7 +341,7 @@ public class MessageServerInterfaceServer extends UnicastRemoteObject implements
             java.rmi.registry.LocateRegistry.createRegistry(1099);
             java.rmi.Naming.rebind("ServerObject", Servidor);
             System.out.println("Servidor pronto para receber chamadas remotas.");
-            h.run();
+            h.verificaDisponiveis();
 
 
         } catch (RemoteException re) {

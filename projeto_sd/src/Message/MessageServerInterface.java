@@ -6,15 +6,11 @@ import java.util.ArrayList;
 
 public interface MessageServerInterface extends Remote, IServerRemoteInterface {
 
-
-    String SendUrlQueue(String token) throws RemoteException;
+    void SendUrltoQueue(String url) throws RemoteException, SQLException;
 
     ArrayList<String> FindUrlWithToken(String url, int logado) throws RemoteException, SQLException;
 
     String sayHello(int login) throws RemoteException;
-
-    void SendUrltoQueue(String url) throws RemoteException, SQLException;
-
     void addClient(InterfaceClienteServer a) throws RemoteException;
     boolean Register(String username, String password) throws RemoteException, SQLException;
 

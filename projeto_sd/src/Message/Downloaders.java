@@ -168,25 +168,28 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
 
             while (true) {
                 String t;
-                t = iq.retira();
-                if (t != null) {
-                    String sql = "update Queue_url set barrel = ?, executed = false where barrel is null and executed is null and url = ?;";
-                    PreparedStatement stmt = connection.prepareStatement(sql);
-                    stmt.setInt(1, porta);
-                    stmt.setString(2, t);
-                    stmt.executeUpdate();
-                    int barrelsBefore = iq.giveNumeroBarrels();
-                    System.out.println(t);
-                    SendInfo(t, iq);
-                   // TimeUnit.SECONDS.sleep(3);
-                    int barrelsAfter = iq.giveNumeroBarrels();
-                    if (barrelsAfter > barrelsBefore) {
-                        System.out.println("ALGO DE ERRADO NAO ESTA CERTO " + barrelsBefore + " " + barrelsAfter);
-                        SendInfoAgain();
+                if(iq.giveNumeroBarrels() != 0) {
+                    t = iq.retira();
+                    if (t != null) {
+                        String sql = "update Queue_url set barrel = ?, executed = false where barrel is null and executed is null and url = ?;";
+                        PreparedStatement stmt = connection.prepareStatement(sql);
+                        stmt.setInt(1, porta);
+                        stmt.setString(2, t);
+                        stmt.executeUpdate();
+                        int barrelsBefore = iq.giveNumeroBarrels();
+                        System.out.println(t);
+                        SendInfo(t, iq);
+                        // TimeUnit.SECONDS.sleep(3);
+                        int barrelsAfter = iq.giveNumeroBarrels();
+                        if (barrelsAfter > barrelsBefore) {
+                            System.out.println("ALGO DE ERRADO NAO ESTA CERTO " + barrelsBefore + " " + barrelsAfter);
+                            SendInfoAgain();
+                        }
                     }
+                    System.out.println(t);
                 }
 
-                System.out.println(t);
+
 
                 TimeUnit.SECONDS.sleep(10);
             }

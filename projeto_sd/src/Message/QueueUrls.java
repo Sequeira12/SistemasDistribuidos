@@ -25,7 +25,6 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         super();
     }
 
-
     public void atualizaNumeroBarrels(int n){
         numeroBarrels=n;
     }
@@ -61,7 +60,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
 
                 System.out.printf("DOWNALOADER PORTA: %d conectado!!\n", porta);
                 DownloadersOnPORTA.add(porta);
-                Ligacao.SendInfoDownloaders(DownloadersOnPORTA);
+
                 Downloaders.add(iq);
 
                 return true;
@@ -71,7 +70,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
             DownloadersOnPORTA.add(porta);
             System.out.println(Ligacao);
             System.out.printf("DOWNALOADER PORTA: %d conectado TAMANHO %d!!\n", porta, DownloadersOnPORTA.size());
-            Ligacao.SendInfoDownloaders(DownloadersOnPORTA);
+
             Downloaders.add(iq);
 
             return true;

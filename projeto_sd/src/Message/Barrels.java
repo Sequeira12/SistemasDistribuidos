@@ -13,6 +13,8 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
 
 
     public static int conta, a;
+
+    public static boolean livre;
     public static IServerRemoteInterface server;
 
     public static Connection connection = null;
@@ -163,6 +165,7 @@ public class Barrels extends UnicastRemoteObject implements IClientRemoteInterfa
         connection.setAutoCommit(false);
         System.out.println("Connected to database");
         try {
+            livre = true;
 
             Barrels clientObj = new Barrels();
             a = clientObj.connectToServer(clientObj, id);
