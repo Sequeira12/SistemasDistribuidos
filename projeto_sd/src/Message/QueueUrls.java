@@ -3,11 +3,11 @@ package Message;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
+import java.util.concurrent.TimeUnit;
 
 public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterface {
     //     public static BlockingQueue<String> Urls_To_Downloaders = new LinkedBlockingQueue<>();
@@ -79,7 +79,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
 
     }
 
-    public void run() throws RemoteException, SQLException {
+    public void Verifica() throws RemoteException, SQLException {
         int i = 0;
 
         while (true) {
@@ -89,7 +89,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
                     Downloaders.get(i).Connected();
                 }
 
-                Thread.sleep(1000);
+                TimeUnit.SECONDS.sleep(2);
             } catch (RemoteException e) {
 
                 int porta = DownloadersOnPORTA.get(i);
@@ -173,7 +173,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         PreparedStatement stmt = connection.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
-            System.out.println("HEYYYY");
+
             String ul = rs.getString("url");
             // Processar o URL aqui, por exemplo:
             Urls_To_Downloaders.add(ul);
@@ -187,7 +187,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         Ligacao = new SearcheModule();
         Registry r1 = LocateRegistry.createRegistry(7005);
         r1.rebind("QS", Ligacao);
-        h.run();
+        h.Verifica();
 
     }
 }

@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class SearcheModule extends UnicastRemoteObject implements MessageServerInterface, IServerRemoteInterface, ISearcheQueue {
 
     public static IServerRemoteInterface Servidor;
-    public static ISearcheQueue QueueSearche;
+
     public static ArrayList<InterfaceDownloaders> Downloads = new ArrayList<>();
 
     public static ArrayList<InterfaceDownloaders> Download2 = new ArrayList<>();
@@ -196,7 +196,7 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
         return null;
     }
 
-    public void unregisterClient(int posicao) throws RemoteException {
+    public static void unregisterClient(int posicao) throws RemoteException {
         Clientes.remove(posicao);
         System.out.println("Cliente removido do servidor.");
     }
@@ -334,7 +334,7 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
             r.rebind("SD", h);
 
 
-            QueueSearche = (ISearcheQueue) LocateRegistry.getRegistry(7005).lookup("QS"); // LIGACAO RMI
+
 
 
             Servidor = new SearcheModule();
