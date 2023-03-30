@@ -1,5 +1,8 @@
 package Message;
 
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
+
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.RemoteObject;
@@ -7,12 +10,18 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class Client extends UnicastRemoteObject implements InterfaceClienteServer {
 
 
+    public static boolean Estat = true;
     public static ArrayList<IBarrelRemoteInterface> Barrels = new ArrayList<>();
     public static ArrayList<InterfaceDownloaders> Downloaders = new ArrayList<>();
+
+
+    public static ArrayList<IBarrelRemoteInterface> BarrelsAnt = new ArrayList<>();
+    public static ArrayList<InterfaceDownloaders> DownloadersAnt = new ArrayList<>();
 
     public static MessageServerInterface h;
     public static int login;
@@ -71,6 +80,42 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
         Barrels = b;
         Downloaders = d;
     }
+
+    /**
+     * Show status in Real-time
+     * @throws RemoteException
+     * @throws SQLException
+     */
+    public static void Estatistica() throws SQLException, RemoteException {
+        int contador = 0;
+        while(Estat){
+            if(contador == 0){
+                showStatus();
+                System.out.println("Para voltar ao Menu clique em ^Z"+ "\n");
+            }
+
+            if((Barrels.size() != BarrelsAnt.size() || Downloaders.size()!= DownloadersAnt.size()) && contador > 0){
+                try {
+                    showStatus();
+                    System.out.println("Para voltar ao Menu clique em ^Z"+ "\n");
+                } catch (SQLException | RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+                BarrelsAnt = Barrels;
+                DownloadersAnt = Downloaders;
+
+            }
+            contador++;
+
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+
 
     /**
      * Verifies if the client is still active
@@ -172,7 +217,13 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
 		System.getProperties().put("java.security.policy", "policy.all");
 		System.setSecurityManager(new RMISecurityManager());
 		*/
+        Signal.handle(new Signal("TSTP"), new SignalHandler() {
 
+            @Override
+            public void handle(Signal sig) {
+                Estat = false;
+            }
+        });
         try {
 
             h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
@@ -265,7 +316,8 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
                     String palavra = scanner2.nextLine();
                     h.SendUrltoQueue(palavra);
                 } else if (numero == 3) {
-                    showStatus();
+                    Estat = true;
+                    Estatistica();
 
 
                 } else if (numero == 4 && login == 1) {
