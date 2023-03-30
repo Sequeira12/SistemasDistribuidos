@@ -88,11 +88,7 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
     public static void Imprime10_10(ArrayList<String> links) {
         int conta = 0;
         System.out.printf("Links Associados à sua procura: (PAGINA %d) \n", conta + 1);
-        for (int i = 0; i < 10 && i < links.size() / 2; i++) {
-            System.out.printf(" (%d) - %s \n", (i + 1), links.get(i * 2));
 
-
-        }
         if (login == 1) {
             for (int i = 0; i < 10 && i < links.size() / 2; i++) {
 
@@ -126,7 +122,10 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
             if (conta < 0) {
                 conta = 0;
             }
-            if (conta > (links.size() / 2) / 10) {
+            if (conta > (links.size() / 2) / 10 && login==1) {
+                conta--;
+            }
+            if (conta > (links.size()) / 10 && login==0) {
                 conta--;
             }
             numMin = 10 * conta;
