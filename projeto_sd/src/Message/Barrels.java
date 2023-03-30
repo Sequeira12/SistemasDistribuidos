@@ -7,10 +7,6 @@ import java.sql.*;
 import java.util.*;
 
 public class Barrels extends UnicastRemoteObject implements IBarrelRemoteInterface {
-    /**
-     *
-     */
-
 
     public static int conta, a;
 
@@ -26,6 +22,12 @@ public class Barrels extends UnicastRemoteObject implements IBarrelRemoteInterfa
         super();
     }
 
+    /**
+     * Function responsible to connect the barrel to the search module
+     * @param client barrel a conectar
+     * @param id id do barrel
+     * @return
+     */
     public int connectToServer(IBarrelRemoteInterface client, int id) {
         try {
             int valor;
@@ -42,15 +44,23 @@ public class Barrels extends UnicastRemoteObject implements IBarrelRemoteInterfa
         return -1;
     }
 
-    public Connection conetor() {
-
-        return connection;
-    }
-
+    /**
+     * Function that verifies if the barrel is still online
+     * @return true if the barrel is connected
+     */
     public boolean Connected() {
         return true;
     }
 
+    /**
+     * Function that finds the urls (1) where we can find a certain token
+     * If the user is looged in, he can also see the links that point to the first urls (1)
+     * @param token token to find
+     * @param logado 1 if is a logged in client 0 if not
+     * @return arraylist of links + links that point to the first one where the token is located
+     * @throws SQLException
+     * @throws RemoteException
+     */
     public ArrayList<String> ProcuraToken(String token,int logado) throws SQLException, RemoteException {
         connection.setAutoCommit(true);
 
@@ -100,7 +110,13 @@ public class Barrels extends UnicastRemoteObject implements IBarrelRemoteInterfa
 
     }
 
-
+    /**
+     * Function that, given an url, returns a string of urls that have a connection to the link given
+     * @param url url to search
+     * @return a string that includes every url that point to the url given by the client
+     * @throws RemoteException
+     * @throws SQLException
+     */
     public String listPage(String url) throws RemoteException, SQLException {
 
 
@@ -127,7 +143,11 @@ public class Barrels extends UnicastRemoteObject implements IBarrelRemoteInterfa
 
     }
 
-
+    /**
+     * Function that returns a hashmap with the information that another barrel needs
+     * @param a numember of urls already procecced of the barrel that is requesting the information
+     * @return hashmap
+     */
     public HashMap<Integer, String> sendHash(int a) {
         System.out.println("RECEBI O A COM VALOR DE " + a);
         HashMap<Integer, String> aux = new HashMap<>();
@@ -150,7 +170,13 @@ public class Barrels extends UnicastRemoteObject implements IBarrelRemoteInterfa
     }
 
 
-
+    /**
+     * Function that connects the barrel to the database. If it is a new barrel, it will fill his database with the
+     * information that the others already have. If it is not new, it will request a hashmap with the information that
+     * he dont have.
+     * @param args
+     * @throws SQLException
+     */
     // =========================================================
     public static void main(String args[]) throws SQLException {
         String url = "jdbc:postgresql://localhost/sddb";
@@ -170,7 +196,8 @@ public class Barrels extends UnicastRemoteObject implements IBarrelRemoteInterfa
             Barrels clientObj = new Barrels();
             a = clientObj.connectToServer(clientObj, id);
             if (a == -1) {
-                return;
+                System.out.println("Id ocupado");
+                System.exit(0);
             }
 
             String verifica = "Select count(distinct(url)) from token_url where barrel = ?";
@@ -187,7 +214,7 @@ public class Barrels extends UnicastRemoteObject implements IBarrelRemoteInterfa
 
             if (a != 0) {
                 ColocaInfoBarrel m = new ColocaInfoBarrel();
-                m.Info(server, connection, hashmapas, id, client,a);
+                m.Info(server, connection, hashmapas, id,a);
                 client.myClient(connection, id, hashmapas, a);
                 m.start();
                 client.start();

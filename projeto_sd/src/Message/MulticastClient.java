@@ -19,6 +19,14 @@ public class MulticastClient extends Thread {
     static HashMap<Integer, String> info = null;
     int contaHash;
 
+    /**
+     * constructor for the multicast client
+     * @param conn connection to the database
+     * @param i id of the client
+     * @param info1 hashmap with the information
+     * @param conta
+     * @throws SQLException
+     */
     public synchronized void myClient(Connection conn, int i, HashMap<Integer, String> info1, int conta) throws SQLException {
         connection = conn;
 
@@ -40,24 +48,18 @@ public class MulticastClient extends Thread {
 
     }
 
-    public static void MudaInfo(int conta) {
-        HashMap<Integer, String> modifica = new HashMap<>();
-        if (info != null) {
-            for (Map.Entry<Integer, String> entry : info.entrySet()) {
-                Integer novaChave = entry.getKey() + conta;  // modificar a chave como desejado
-                String valor = entry.getValue();
-                modifica.put(novaChave, valor);
-            }
-            info.clear();
-            info.putAll(modifica);
-        }
-
-    }
-
+    /**
+     * function that returns the hashmap with the information
+     * @return hashmap with the information that a barrel needs
+     */
     public HashMap<Integer, String> sendHashtoBarrels() {
         return info;
     }
 
+
+    /**
+     * responsible to update the database and read the information given by the downloaders
+     */
     public synchronized void run() {
         MulticastSocket socket = null;
         try {

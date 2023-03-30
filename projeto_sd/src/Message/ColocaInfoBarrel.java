@@ -24,7 +24,17 @@ public class ColocaInfoBarrel extends Thread {
     public static MulticastClient client = new MulticastClient();
 
     public static HashMap<Integer, String> hashmapas = new HashMap<>();
-    public void Info(IServerRemoteInterface server1,Connection conn, HashMap<Integer, String> info1, int i,MulticastClient client,int num) throws SQLException {
+
+    /**
+     * constructor
+     * @param server1 server
+     * @param conn connection to the db
+     * @param info1 hashmap with information
+     * @param i barrel id
+     * @param num number of urls already processed
+     * @throws SQLException
+     */
+    public void Info(IServerRemoteInterface server1,Connection conn, HashMap<Integer, String> info1, int i,int num) throws SQLException {
         connection = conn;
         connection.setAutoCommit(false);
         id = i;
@@ -32,10 +42,14 @@ public class ColocaInfoBarrel extends Thread {
         server = server1;
         a = num;
 
-
     }
 
-
+    /**
+     * function that inserts a message in the database of a barrel
+     * @param UrlOrToken if it is an url message or a token message
+     * @param messageFinal message to be inserted in the database
+     * @throws SQLException
+     */
     public static void colocaHashBd(boolean UrlOrToken, String messageFinal) throws SQLException {
         System.out.println("\n\n\n\n\n\n\n\nCOLOOOOCOOOOOOOOO\n\n\n");
         int conta2 = 0;
@@ -122,6 +136,9 @@ public class ColocaInfoBarrel extends Thread {
         connection.commit();
     }
 
+    /**
+     * thread that requests a hashmap with the information that the barrel needs to the search module
+     */
     public void run() {
         System.out.println("aqui");
         HashMap<Integer, String> auxi = null;
@@ -144,7 +161,6 @@ public class ColocaInfoBarrel extends Thread {
             }
             int contador = lastKey++;
 
-            System.out.println("SENDO A MERD DO CONTADOR " + contador);
             conta = contador++;
 
 

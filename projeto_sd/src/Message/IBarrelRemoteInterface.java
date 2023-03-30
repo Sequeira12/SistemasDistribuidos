@@ -15,7 +15,4 @@ public interface IBarrelRemoteInterface extends Remote {
     boolean Connected() throws RemoteException;
     HashMap<Integer,String> sendHash(int a) throws RemoteException;
 
-    Connection conetor() throws RemoteException;
-
-
 }

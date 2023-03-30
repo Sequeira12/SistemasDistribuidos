@@ -35,11 +35,18 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
         super();
     }
 
+    /**
+     * funcion that verifies if a downloader is still connected
+     * @return true if connected
+     */
     public boolean Connected() {
         return true;
     }
 
 
+    /**
+     * function that resends the multicast messages if needed.
+     */
     public static void SendInfoAgain() {
         String Barra = " | ";
         String InfoTokenMulti = mensagemTokens.length() + Barra + "TOKEN";
@@ -49,6 +56,14 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
     }
 
 
+    /**
+     * Function that given an url gets his information using jsoup and sends it via multicast to the barrels
+     * @param url that needs to be procecced
+     * @param iq interface queue
+     * @throws RemoteException
+     * @throws SSLHandshakeException
+     * @throws SQLException
+     */
     public static void SendInfo(String url, IQueueRemoteInterface iq) throws RemoteException, SSLHandshakeException, SQLException {
         try {
 
@@ -145,6 +160,11 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
         }
     }
 
+    /**
+     * main function that connects the downloader to the database and the queue, and gets urls from the queue to process
+     * @param args
+     * @throws SQLException
+     */
     public static void main(String args[]) throws SQLException {
         String url = "jdbc:postgresql://localhost/sddb";
         String username = "adminsd";

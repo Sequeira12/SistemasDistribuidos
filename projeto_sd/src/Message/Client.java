@@ -22,6 +22,12 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
         super();
     }
 
+
+    /**
+     * Function used to show the barrels and downloaders information and top 10 searches
+     * @throws RemoteException
+     * @throws SQLException
+     */
     public static void showStatus() throws RemoteException, SQLException {
         System.out.println("|   ESTATISTICAS   |");
         System.out.println("Número de barrels ativos: ");
@@ -56,17 +62,29 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
 
     }
 
+    /**
+     * Update arrayList of Barrels and Downloaders on the client side
+     * @param b arraylist of barrels
+     * @param d arraylist of downloaders
+     */
     public void atualizaStatus(ArrayList<IBarrelRemoteInterface> b, ArrayList<InterfaceDownloaders> d) {
         Barrels = b;
         Downloaders = d;
     }
 
-
+    /**
+     * Verifies if the client is still active
+     * @return
+     * @throws RemoteException
+     */
     public boolean Connected() throws RemoteException {
         return true;
     }
 
-
+    /**
+     * Function that displays an arraylist of links in groups of ten
+     * @param links arraylist of links to be displayed
+     */
     public static void Imprime10_10(ArrayList<String> links) {
         int conta = 0;
         System.out.printf("Links Associados à sua procura: (PAGINA %d) \n", conta + 1);
@@ -145,7 +163,10 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
 
     }
 
-
+    /**
+     * Makes the connection to Search Module and displays to the client every option he has
+     * @param args none
+     */
     public static void main(String args[]) {
 
 		/* This might be necessary if you ever need to download classes:

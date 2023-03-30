@@ -9,7 +9,10 @@ import java.rmi.registry.Registry;
 import java.rmi.server.*;
 import java.util.concurrent.TimeUnit;
 
+
+
 public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterface {
+
     //     public static BlockingQueue<String> Urls_To_Downloaders = new LinkedBlockingQueue<>();
     public static Queue<String> Urls_To_Downloaders = new ConcurrentLinkedQueue<>();
     public static ISearcheQueue Ligacao;
@@ -47,7 +50,13 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         return Downloaders;
     }
 
-
+    /**
+     * connects a downloader to the queue
+     * @param iq interface downloaders
+     * @param porta of the downloader
+     * @return true if sucessfull
+     * @throws RemoteException
+     */
     public boolean ConnectDownload(InterfaceDownloaders iq, int porta) throws RemoteException {
 
         System.out.println("ENTROU\n");
@@ -79,6 +88,11 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
 
     }
 
+    /**
+     *
+     * @throws RemoteException
+     * @throws SQLException
+     */
     public void Verifica() throws RemoteException, SQLException {
         int i = 0;
 
@@ -127,7 +141,10 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         }
     }
 
-
+    /**
+     * gets the next url to be processed by some downloader
+     * @return the url
+     */
     public synchronized String retira() {
         String ret = null;
         if (!Urls_To_Downloaders.isEmpty()) {
@@ -138,6 +155,12 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         return ret;
     }
 
+    /**
+     * insert a new url in the queue
+     * @param e string to be inserted
+     * @param i if url is there or not
+     * @throws SQLException
+     */
     public synchronized void coloca(String e, int i) throws SQLException {
         Urls_To_Downloaders.add(e);
         if (i == 1) {
@@ -159,6 +182,12 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         System.out.println("URL adicionado");
     }
 
+    /**
+     * connects to database and connects to the search module
+     * @param args
+     * @throws RemoteException
+     * @throws SQLException
+     */
     public static void main(String[] args) throws RemoteException, SQLException {
 
         //Urls_To_Downloaders.add("https://www.uc.pt");

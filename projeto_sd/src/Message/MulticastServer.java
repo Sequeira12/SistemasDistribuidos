@@ -23,11 +23,20 @@ public class MulticastServer extends Thread {
     public String palavra;
     public String palavraFim;
 
-
+    /**
+     * constructor1
+     */
     public MulticastServer() {
         super("Server " + (long) (Math.random() * 1000));
     }
 
+
+    /**
+     * function that gets the type of message that he needs to send and the message itself. It also calls the funtion
+     * to send the message
+     * @param palavraS size and type of the message
+     * @param PalavraFinal message
+     */
     public synchronized void Myserver(String palavraS,String PalavraFinal) {
         palavra = palavraS;
         palavraFim = PalavraFinal;
@@ -35,6 +44,9 @@ public class MulticastServer extends Thread {
 
     }
 
+    /**
+     * function that sends the information to the multicast client
+     */
     public synchronized void run() {
         MulticastSocket socket = null;
         long counter = 0;

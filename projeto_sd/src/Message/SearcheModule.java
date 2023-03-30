@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+
 public class SearcheModule extends UnicastRemoteObject implements MessageServerInterface, IServerRemoteInterface, ISearcheQueue {
 
     public static IServerRemoteInterface Servidor;
@@ -31,6 +32,12 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
         super();
     }
 
+    /**
+     * function that gets the top 10 tokens researched
+     * @return string with the top 10 tokens researched
+     * @throws RemoteException
+     * @throws SQLException
+     */
     public String VerificaTop10() throws RemoteException, SQLException {
         StringBuilder top10;
         top10 = new StringBuilder("TOP 10 PESQUISAS!!!!\n");
@@ -47,7 +54,15 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
 
     }
 
-
+    /**
+     * Function that register the barrel that is connecting and fills his database with the information that other barrels
+     * have if the barrel is new or if he is the only one connected
+     * @param client barrel that is going to connect
+     * @param id barrel id
+     * @return -1 if the connection could not be made
+     * @throws RemoteException
+     * @throws SQLException
+     */
     public int registerClient(IBarrelRemoteInterface client, int id) throws RemoteException, SQLException {
         for (int i = 0; i < Barrels.size(); i++) {
             if (BarrelsID.get(i).compareTo(id) == 0) {
@@ -88,7 +103,10 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
         return valor;
     }
 
-
+    /**
+     * verifies how many clients, barrels and downloaders are online
+     * @throws RemoteException
+     */
     public void verificaDisponiveis() throws RemoteException {
         int i = 0, k = 0;
         while (true) try {
@@ -140,12 +158,23 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
         }
     }
 
+    /**
+     * Function that adds a new client to the arraylist of clients and gives to that client the number of downloaders
+     * and barrels for his status
+     * @param a new client
+     * @throws RemoteException
+     */
     public void addClient(InterfaceClienteServer a) throws RemoteException {
         Clientes.add(a);
         System.out.println("Cliente ADICIONADO" + Clientes.size());
         a.atualizaStatus(Barrels, Download2);
     }
 
+    /**
+     * function that removes the barrel that disconnected from the arraylist of clients
+     * @param posicao position in the arraylist of barrels
+     * @throws RemoteException
+     */
     public void unregisterBarrel(int posicao) throws RemoteException {
         Barrels.remove(posicao);
         BarrelsID.remove(posicao);
@@ -154,6 +183,15 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
         System.out.println("Barrel removido do servidor.");
     }
 
+
+    /**
+     *
+     * @param a
+     * @param id
+     * @return
+     * @throws RemoteException
+     * @throws SQLException
+     */
     public HashMap<Integer, String> PedidoHash(int a, int id) throws RemoteException, SQLException {
         if (Barrels.size() == 0) return null;
         String verifica = "select barrel as conta,count(distinct(url)) from token_url group by barrel order by count(token1),count(distinct(url)) DESC";
@@ -196,12 +234,26 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
         return null;
     }
 
+
+    /**
+     * function that removes the client that disconnected from the arraylist of clients
+     * @param posicao position in the arraylist to remove
+     * @throws RemoteException
+     */
     public static void unregisterClient(int posicao) throws RemoteException {
         Clientes.remove(posicao);
         System.out.println("Cliente removido do servidor.");
     }
 
 
+    /**
+     * Funtion that returns an arraylist of urls where the token can be find
+     * @param token token to find
+     * @param logado if the user is logged in
+     * @return arraylist of urls where the token can be find
+     * @throws RemoteException
+     * @throws SQLException
+     */
     public ArrayList<String> FindUrlWithToken(String token, int logado) throws RemoteException, SQLException {
 
         try {
@@ -232,7 +284,12 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
     }
 
 
-
+    /**
+     * says hello to the new user
+     * @param login if user is loogged in
+     * @return string with the hello message
+     * @throws RemoteException
+     */
     public String sayHello(int login) throws RemoteException {
         if (login == 0) {
             return "Bem-vindo\nEscolha as opções:\n1-Token para procurar\n2-URL para indexar\n3-Estatisticas\n0-exit\nObrigado!!\n";
@@ -242,6 +299,13 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
 
     }
 
+    /**
+     * function that list the urls that connect to an url given by the user
+     * @param url url to process
+     * @return a string with the list of urls connected to another page
+     * @throws SQLException
+     * @throws RemoteException
+     */
     public String listPagesConnectedtoAnotherPage(String url) throws SQLException, RemoteException {
         String connectados = null;
         System.out.println(Barrels.size());
@@ -261,6 +325,13 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
         return connectados;
     }
 
+    /**
+     * registers a new client
+     * @param username of the client
+     * @param password of the client
+     * @return true if sucessfull
+     * @throws SQLException
+     */
     public boolean Register(String username, String password) throws SQLException {
         String sql = "select count(*) from info_client where username = ? and pass =  ? ";
         PreparedStatement stament = connection.prepareStatement(sql);
@@ -283,6 +354,13 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
 
     }
 
+    /**
+     * login a new user
+     * @param username of the client
+     * @param password of the client
+     * @return true if sucessfull
+     * @throws SQLException
+     */
     public boolean Login(String username, String password) throws SQLException {
         String sql = "select count(*) from info_client where username = ? and pass =  ? ;";
         PreparedStatement stament = connection.prepareStatement(sql);
@@ -301,12 +379,20 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
 
     }
 
-
+    /**
+     * funcion that puts a new url given by the user in the queue to be processed
+     * @param url url to send to the queue
+     * @throws RemoteException
+     * @throws SQLException
+     */
     public void SendUrltoQueue(String url) throws RemoteException, SQLException {
         iq.coloca(url, 1);
     }
 
-
+    /**
+     * connects the search module to the database and connects the search module to the queue
+     * @param args
+     */
     // =========================================================
     public static void main(String args[]) {
 
