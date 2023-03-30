@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterface {
 
-    //     public static BlockingQueue<String> Urls_To_Downloaders = new LinkedBlockingQueue<>();
     public static Queue<String> Urls_To_Downloaders = new ConcurrentLinkedQueue<>();
     public static ISearcheQueue Ligacao;
     public static ArrayList<Integer> DownloadersOnPORTA = new ArrayList<Integer>();
@@ -89,7 +88,7 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
     }
 
     /**
-     *
+     * checks how many downloaders are online
      * @throws RemoteException
      * @throws SQLException
      */
@@ -190,7 +189,6 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
      */
     public static void main(String[] args) throws RemoteException, SQLException {
 
-        //Urls_To_Downloaders.add("https://www.uc.pt");
         String url = "jdbc:postgresql://localhost/sddb";
         String username = "adminsd";
         String password = "admin";
@@ -204,7 +202,6 @@ public class QueueUrls extends UnicastRemoteObject implements IQueueRemoteInterf
         while (rs.next()) {
 
             String ul = rs.getString("url");
-            // Processar o URL aqui, por exemplo:
             Urls_To_Downloaders.add(ul);
         }
 

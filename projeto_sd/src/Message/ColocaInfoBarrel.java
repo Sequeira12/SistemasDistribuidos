@@ -1,9 +1,5 @@
 package Message;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -51,7 +47,6 @@ public class ColocaInfoBarrel extends Thread {
      * @throws SQLException
      */
     public static void colocaHashBd(boolean UrlOrToken, String messageFinal) throws SQLException {
-        System.out.println("\n\n\n\n\n\n\n\nCOLOOOOCOOOOOOOOO\n\n\n");
         int conta2 = 0;
         String citacao = null, titulo = null, url = null, Url2 = null;
 
@@ -140,7 +135,6 @@ public class ColocaInfoBarrel extends Thread {
      * thread that requests a hashmap with the information that the barrel needs to the search module
      */
     public void run() {
-        System.out.println("aqui");
         HashMap<Integer, String> auxi = null;
         try{
 
@@ -148,10 +142,8 @@ public class ColocaInfoBarrel extends Thread {
 
 
         if (auxi == null) {
-            System.out.println("aqui1");
             client.myClient(connection, id, hashmapas, 0);
         } else {
-            System.out.println("aqui2");
             System.out.println("conta: " + conta);
             System.out.println("tamanho que deu pa colocar " + auxi.size());
             int lastKey = 0;

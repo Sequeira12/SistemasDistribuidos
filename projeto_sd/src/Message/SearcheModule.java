@@ -185,9 +185,9 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
 
 
     /**
-     *
-     * @param a
-     * @param id
+     * requests a hashmap to a barrel available with the information that another barrel needs
+     * @param a start
+     * @param id barrel id
      * @return
      * @throws RemoteException
      * @throws SQLException

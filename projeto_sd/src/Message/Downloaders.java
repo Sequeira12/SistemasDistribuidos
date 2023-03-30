@@ -70,7 +70,7 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             Document doc = Jsoup.connect(url).get();
             String titulo = doc.title();
             String citacao;
-            //DA ERRO NO LINK APPS.UC.PT
+
             System.out.println(doc.text().length() + "  " + doc.title().length());
 
             if (doc.text().length() < 50 && doc.text().length() != titulo.length()) {
@@ -100,7 +100,7 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
                 }
 
             }
-            //      titullo | citacao | url ; palavra ; palavra ; palavra ;
+            //      titulo | citacao | url ; palavra ; palavra ; palavra ;
 
             // CENA DOS TOKENS
             int tamanhoInfo = EnviaMulti.length();
@@ -138,7 +138,6 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
             statement.setInt(2, porta);
             statement.executeUpdate();
             connection.commit();
-            System.out.println("IMPRIMEEE");
 
 
         } catch (HttpStatusException a) {
@@ -201,7 +200,6 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
                         int barrelsBefore = iq.giveNumeroBarrels();
                         System.out.println(t);
                         SendInfo(t, iq);
-                        // TimeUnit.SECONDS.sleep(3);
                         int barrelsAfter = iq.giveNumeroBarrels();
                         if(barrelsAfter == 0){
                             sql = "update Queue_url set executed = null and barrel = null where url = ? and barrel = ? and executed = false;";
@@ -212,15 +210,12 @@ public class Downloaders extends UnicastRemoteObject implements InterfaceDownloa
                             iq.coloca(t,0);
                         }
                         if (barrelsAfter > barrelsBefore) {
-                            System.out.println("ALGO DE ERRADO NAO ESTA CERTO " + barrelsBefore + " " + barrelsAfter);
+                            System.out.println("Vou enviar de novo " + barrelsBefore + " " + barrelsAfter);
                             SendInfoAgain();
                         }
                     }
                     System.out.println(t);
                 }
-
-
-
                 TimeUnit.SECONDS.sleep(10);
             }
         } catch (Exception e) {

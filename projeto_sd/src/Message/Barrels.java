@@ -79,11 +79,8 @@ public class Barrels extends UnicastRemoteObject implements IBarrelRemoteInterfa
             news_nova1[i]=news_nova.get(i);
         }
 
-        //String sql = "select distinct(url_url.url2),(select count(distinct(url1)) from url_url where url2 = token_url.url and url1 != token_url.url ) as url_count , url_info.titulo,url_info.citacao from token_url join url_url on token_url.url = url_url.url2 join  url_info on token_url.url = url_info.url where token_url.token1 IN (" + String.join(",", Arrays.stream(news).map(t -> "?").toArray(String[]::new)) + ") " + "and url1 != url2 and token_url.barrel = ?  order  by url_count desc";
-        //String sql = "SELECT i.url, i.titulo, i.citacao FROM url_info i INNER JOIN token_url t ON i.url = t.url WHERE t.token1 IN (" + String.join(",", Arrays.stream(news_nova1).map(t -> "?").toArray(String[]::new)) + ") " + "and t.barrel = ? GROUP BY i.url, i.titulo, i.citacao HAVING COUNT(DISTINCT token1) >= ?";
         String sql= "SELECT i.url, i.titulo, i.citacao ,COUNT(DISTINCT l.url1) FROM url_info i INNER JOIN token_url t ON i.url = t.url LEFT JOIN url_url l ON i.url = l.url2 WHERE l.url1!=l.url2 and t.token1 IN (" + String.join(",", Arrays.stream(news_nova1).map(t -> "?").toArray(String[]::new)) + ") " + " and t.barrel = ? GROUP BY i.url, i.titulo, i.citacao HAVING COUNT(DISTINCT t.token1) >= ? ORDER BY COUNT(DISTINCT l.url1) DESC";
 
-        System.out.println(sql);
         String updateContador = "update token_url SET contador = contador + 1 where token1 = ? and barrel = ?;";
         PreparedStatement stament = connection.prepareStatement(sql);
         PreparedStatement statementUpdate = connection.prepareStatement(updateContador);

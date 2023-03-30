@@ -5,9 +5,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.sql.*;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
+
 
 public class MulticastClient extends Thread {
     private String MULTICAST_ADDRESS = "224.3.2.1";

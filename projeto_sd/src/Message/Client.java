@@ -2,7 +2,6 @@ package Message;
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
-
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.RemoteObject;
@@ -11,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
+
 
 public class Client extends UnicastRemoteObject implements InterfaceClienteServer {
 
@@ -25,7 +25,6 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
 
     public static MessageServerInterface h;
     public static int login;
-    private static Client a;
 
     protected Client() throws RemoteException {
         super();

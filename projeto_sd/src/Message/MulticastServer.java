@@ -1,19 +1,10 @@
 package Message;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
 
-
-import java.net.MulticastSocket;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.io.IOException;
 
 public class MulticastServer extends Thread {
     private String MULTICAST_ADDRESS = "224.3.2.1";
