@@ -2,7 +2,7 @@
 
 Antes de correr este programa é necessário realizar alguns passos, nomeadamente a preparação da base de dados e a configuração dos ficheiros jar e alguns pré-requisitos:
 Pré-requisitos:
- - Java jdk 19 (windows 11), jdk 17(macOs) (versões com que testamos)
+ - Java jdk 19 (windows 11), jdk 17(macOs) (versões com que testamos) com Language level 11
  - PostgreSQL
  - IntelliJ
 

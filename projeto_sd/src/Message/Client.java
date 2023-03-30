@@ -91,13 +91,13 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
         while(Estat){
             if(contador == 0){
                 showStatus();
-                System.out.println("Para voltar ao Menu clique em ^Z"+ "\n");
+                System.out.println("Para voltar ao Menu clique em ^C"+ "\n");
             }
 
             if((Barrels.size() != BarrelsAnt.size() || Downloaders.size()!= DownloadersAnt.size()) && contador > 0){
                 try {
                     showStatus();
-                    System.out.println("Para voltar ao Menu clique em ^Z"+ "\n");
+                    System.out.println("Para voltar ao Menu clique em ^C"+ "\n");
                 } catch (SQLException | RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -217,7 +217,7 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
 		System.getProperties().put("java.security.policy", "policy.all");
 		System.setSecurityManager(new RMISecurityManager());
 		*/
-        Signal.handle(new Signal("TSTP"), new SignalHandler() {
+        Signal.handle(new Signal("INT"), new SignalHandler() {
 
             @Override
             public void handle(Signal sig) {
