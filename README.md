@@ -49,5 +49,20 @@ Este é o comando que tem de correr na linha de comandos para abrir o ficheiro Q
 C:\Users\conta\.jdks\openjdk-19.0.2\bin\java.exe "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.2.2\lib\idea_rt.jar=35600:C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.2.2\bin" -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -classpath "C:\Users\conta\OneDrive\Ambiente de Trabalho\SistemasDistribuidos\out\production\SistemasDistribuidos;C:\Users\conta\OneDrive\Ambiente de Trabalho\SistemasDistribuidos\jsoup-1.15.4.jar;C:\Users\conta\OneDrive\Ambiente de Trabalho\SistemasDistribuidos\postgresql-42.5.4.jar" Message.Downloaders 5555
 ```
 
+Caso queira correr o programa a partir dos ficheiros jar deve, na pasta desses ficheiros fazer
+
+```cmd
+java -jar nomedoficheiro.jar
+```
+
+caso o ficheiro seja um barrel ou um downloader deve meter o id dele à frente
+
+```cmd
+java -jar nomedoficheiro.jar 1111
+```
+
+
+
+
 Assim, tem tudo o que precisa para correr a aplicação.
 
