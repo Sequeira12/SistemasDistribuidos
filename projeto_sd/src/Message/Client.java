@@ -344,7 +344,10 @@ public class Client extends UnicastRemoteObject implements InterfaceClienteServe
                 System.out.println(h.sayHello(login));
                 System.out.println("\nDigite um número:");
             }
-        } catch (Exception e) {
+        }catch (java.rmi.ConnectException e) {
+            System.out.println("Search Module indisponivel");
+            System.exit(0);
+        }catch (Exception e) {
             System.out.println("Exception in main: " + e);
             e.printStackTrace();
         }
