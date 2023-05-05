@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <p th:if="${error}"> Utilizador ou password nao correspondem/não tá registado </p>
+        <form th:action="@{/login}" th:object="${Client}" method="post">
+            <h2 class="title">Welcome</h2>
+            <div class="input-group">
+                <input type="text" name="username" required>
+                <label for="username" class="label">Username</label>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" required>
+                <label for="password" class="label">Password</label>
+                <span class="show-password"></span>
+            </div>
+            <button class="btn">Login</button>
+            <div class="register">
+                <span class="text">Don’t have an account?</span>
+                <a href="../register" class="link">Sign Up</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

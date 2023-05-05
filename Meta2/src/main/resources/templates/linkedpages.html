@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Googol</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{/css/linkedpages.css}">
+</head>
+<body>
+<div class="search-container">
+  <form th:action="@{/linked}" th:object="${UrlsForQueue}" method="post">
+    <input type="text" placeholder="url" name = "url">
+    <label for="url" class="label">Url to check</label>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+<div>
+    <span th:if="${show}">
+        <p th:text="'Results for url ' + ${url} + ':'" />
+        <p th:text="${results}" />
+    </span>
+  <div th:each="result : ${lista}">
+    <div>
+      <a th:href="${result}" th:text="${result}"></a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

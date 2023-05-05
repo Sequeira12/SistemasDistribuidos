@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <p th:if="${error}"> Erro no registo </p>
+        <form th:action="@{/register}" th:object="${Client}" method="post">
+            <h2 class="title">Welcome</h2>
+            <div class="input-group">
+                <input type="text" name="username" required>
+                <label for="username" class="label">Username</label>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" required>
+                <label for="password" class="label">Password</label>
+            </div>
+            <button class="btn">Register</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://kit.fontawesome.com/xxxxxx.js" crossorigin="anonymous"></script>
+</body>
+</html>

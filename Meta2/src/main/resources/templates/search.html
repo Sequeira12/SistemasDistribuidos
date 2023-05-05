@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Googol</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/search.css}">
+</head>
+<body>
+<div class="logo-container">
+    <img th:src="@{images/googol.jpg}">
+</div>
+<div class="search-container">
+    <form th:action="@{/search}" th:object="${TokensParaPesquisa}" method="post">
+        <input type="text" placeholder="Search..." name = "token">
+        <button type="submit">Search</button>
+    </form>
+</div>
+<div class="resultadoss">
+    <span th:if="${show}">
+        <p th:text="'Results for token ' + ${tokens} + ':'" />
+        <p th:text="${results}" />
+    </span>
+    <div th:each="result, it: ${resultados}">
+        <div>
+            <a th:href="${result.getUrl()}" th:text="${result.getTitulo()}"></a>
+        </div>
+        <div th:text="${result.getCitacao()}"></div>
+        <div th:if="${logado}">
+            <a th:if="${ligados != it.index}" th:href="@{../search(show=${show}, page=${page}, token = ${tks},connected=${it.index})}">See</a>
+            <div th:if="${it.index == ligados}" th:each=" p: ${lista}">
+                <a th:href="${p}" th:text="${p}"></a>
+            </div>
+            <a th:if="${it.index == ligados}" th:href="@{../search(show=${show}, page=${page}, token = ${tks},connected=-1)}">Don't see</a>
+        </div>
+        <br>
+        <br>
+    </div>
+
+</div>
+<div class="pages">
+    <span th:if="${previouspage}">
+            <a th:href="@{../search(show=${show}, page=${page}-1, token = ${tks})}">Previous Page</a>
+    </span>
+    <span th:if="${nextpage}">
+            <a th:href="@{../search(show=${show}, page=${page}+1, token = ${tks})}">Next Page</a>
+    </span>
+
+</div>
+</body>
+</html>

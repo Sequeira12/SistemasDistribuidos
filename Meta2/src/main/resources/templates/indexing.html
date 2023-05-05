@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Googol</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <link rel="stylesheet" th:href="@{/css/indexing.css}">
+</head>
+<body>
+<div class="search-container">
+  <form th:action="@{/indexing}" th:object="${UrlsForQueue}" method="post">
+    <input type="text" placeholder="url" name = "url">
+    <label for="url" class="label">Url to add</label>
+    <button type="submit">Add</button>
+  </form>
+</div>
+</body>
+</html>
