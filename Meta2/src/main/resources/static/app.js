@@ -45,7 +45,27 @@ function sendMessage() {
 
 function showMessage(message) {
     if(message!=""){
-        $("#messages").append("<tr><td>" + message + "</td></tr>");
+        $("#messages").empty();
+        $("#messages1").empty();
+        $("#messages2").empty();
+        let substrings = message.split("||");
+        let subDown = substrings[0].split(",");
+        let subBarrel = substrings[1].split(",");
+        let subtop10 = substrings[2].split("::");
+
+        for (let i = 0; i < subDown.length; i++) {
+          $("#messages").append("<tr><td>" + subDown[i] + "</td></tr>");
+        }
+
+
+        for (let i = 0; i < subBarrel.length; i++) {
+          $("#messages1").append("<tr><td>" + subBarrel[i] + "</td></tr>");
+        }
+
+        for (let i = 1; i < subtop10.length; i++) {
+            $("#messages2").append("<tr><td>" + subtop10[i] + "</td></tr>");
+        }
+
     }
 }
 

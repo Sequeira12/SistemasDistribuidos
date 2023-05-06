@@ -58,13 +58,13 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
      */
     public String VerificaTop10() throws RemoteException, SQLException {
         StringBuilder top10;
-        top10 = new StringBuilder("TOP 10 PESQUISAS!!!!\n");
+        top10 = new StringBuilder("TOP 10 PESQUISAS!!!!\n::");
         String sql = "select token1, sum(contador) as soma from (select distinct(token1),barrel,contador from token_url where contador > 0 group by token1,barrel,contador) as Counter group by token1 order by soma DESC limit 10;";
         PreparedStatement statement = connection.prepareStatement(sql);
         ResultSet rs = statement.executeQuery();
         int pos = 1;
         while (rs.next()) {
-            top10.append(pos).append(" - ").append(rs.getString(1)).append(" --> ").append(rs.getInt(2)).append("\n");
+            top10.append(pos).append(" - ").append(rs.getString(1)).append(" --> ").append(rs.getInt(2)).append("::");
             pos++;
         }
 
@@ -144,7 +144,7 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
             }
             if (Downloads != Download2) {
                 Download2 = Downloads;
-                //updated = true;
+                updated = true;
                 //System.out.println("foi aqui 2");
                 for (InterfaceClienteServer cliente : Clientes) {
                     cliente.atualizaStatus(Barrels, Downloads);

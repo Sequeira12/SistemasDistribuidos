@@ -14,9 +14,11 @@ import pt.uc.sd.forms.TokensParaPesquisa;
 import pt.uc.sd.forms.UrlsForQueue;
 import pt.uc.sd.models.Resultado;
 
+
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.server.RemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,18 +43,91 @@ public class MessagingController {
                 MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
                 if ("first".equals(message.content())) {
                     ArrayList<InterfaceDownloaders> downloaders = h.getDownloaders();
+
                     ArrayList<IBarrelRemoteInterface> barrels = h.getBarrels();
+
+                    StringBuilder Final = new StringBuilder();
+
+                    for (int i = 0; i < downloaders.size(); i++) {
+                        String endpoint = RemoteObject.toStub(downloaders.get(i)).toString();
+                        // Extrai o IP e a porta do endpoint
+                        String[] endpointParts = endpoint.split(":");
+
+                        String ip = endpointParts[2].substring(1);
+                        String porta = endpointParts[3].substring(0, endpointParts[3].lastIndexOf("]"));
+
+                        // Exibe o IP e a porta do endpoint
+                        String infoB = (i + 1) + " - IP: " + ip + " Porta: " + porta + ",";
+                        Final.append(infoB);
+                    }
+
+
+                    Final.append("||");
+
+                    for (int i = 0; i < barrels.size(); i++) {
+                        String endpoint = RemoteObject.toStub(barrels.get(i)).toString();
+                        // Extrai o IP e a porta do endpoint
+                        String[] endpointParts = endpoint.split(":");
+
+                        String ip = endpointParts[2].substring(1);
+                        String porta = endpointParts[3].substring(0, endpointParts[3].lastIndexOf("]"));
+
+                        // Exibe o IP e a porta do endpoint
+                        String infoB = (i + 1) + " - IP: " + ip + " Porta: " + porta + ",";
+                        Final.append(infoB);
+
+
+                    }
                     String top10 = h.VerificaTop10();
+                    Final.append("||");
+                    Final.append(top10);
+                    String f = Final.toString();
                     h.setUpdated(false);
-                    return new Message(HtmlUtils.htmlEscape(top10));
+                    return new Message(HtmlUtils.htmlEscape(f));
                 } else {
                     if (h.getUpdated()==true) {
                         System.out.println(h.getUpdated());
                         ArrayList<InterfaceDownloaders> downloaders = h.getDownloaders();
                         ArrayList<IBarrelRemoteInterface> barrels = h.getBarrels();
+
+                        StringBuilder Final = new StringBuilder();
+
+                        for (int i = 0; i < downloaders.size(); i++) {
+                            String endpoint = RemoteObject.toStub(downloaders.get(i)).toString();
+                            // Extrai o IP e a porta do endpoint
+                            String[] endpointParts = endpoint.split(":");
+
+                            String ip = endpointParts[2].substring(1);
+                            String porta = endpointParts[3].substring(0, endpointParts[3].lastIndexOf("]"));
+
+                            // Exibe o IP e a porta do endpoint
+                            String infoB = (i + 1) + " - IP: " + ip + " Porta: " + porta + ",";
+                            Final.append(infoB);
+                        }
+
+
+                        Final.append("||");
+
+                        for (int i = 0; i < barrels.size(); i++) {
+                            String endpoint = RemoteObject.toStub(barrels.get(i)).toString();
+                            // Extrai o IP e a porta do endpoint
+                            String[] endpointParts = endpoint.split(":");
+
+                            String ip = endpointParts[2].substring(1);
+                            String porta = endpointParts[3].substring(0, endpointParts[3].lastIndexOf("]"));
+
+                            // Exibe o IP e a porta do endpoint
+                            String infoB = (i + 1) + " - IP: " + ip + " Porta: " + porta + ",";
+                            Final.append(infoB);
+
+
+                        }
                         String top10 = h.VerificaTop10();
+                        Final.append("||");
+                        Final.append(top10);
+                        String f = Final.toString();
                         h.setUpdated(false);
-                        return new Message(HtmlUtils.htmlEscape(top10));
+                        return new Message(HtmlUtils.htmlEscape(f));
                     }
                 }
                 return new Message(HtmlUtils.htmlEscape(""));
@@ -100,7 +175,10 @@ public class MessagingController {
     public String getLogin(@ModelAttribute Client client, Model model) {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession(true);
+
         try {
+       
+
             MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
             boolean noError = h.Login(client.getUsername(), client.getPassword());
             if (noError) {
@@ -174,6 +252,7 @@ public class MessagingController {
         ArrayList<Resultado> novo = new ArrayList<>();
         if(show_results) {
             try {
+
                 MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
                 ArrayList<String> linksAssociados = h.FindUrlWithToken(newtoken, logged);
                 if(linksAssociados!=null) {
