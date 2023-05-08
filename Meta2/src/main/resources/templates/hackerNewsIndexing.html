@@ -11,7 +11,7 @@
   <ul class="nav-menu">
     <li><a href="../stats">Administração</a></li>
     <li><a href="../linked">List pages connected to another</a></li>
-    <li><a href="../hackernewsindex">Index with hackernews</a></li>
+    <li><a href="../indexing">Indexação de novos Urls</a></li>
     <li><a href="../search">Googol</a></li>
     <li>
       <div class="nav-right-elements">
@@ -23,9 +23,9 @@
   </ul>
 </nav>
 <div class="search-container">
-  <form th:action="@{/indexing}" th:object="${UrlsForQueue}" method="post">
-    <label for="url" class="label">Url to add</label>
-    <input type="text" placeholder="url" name = "url">
+  <form th:action="@{/hackernewsindex}" th:object="${Client}" method="post">
+    <label for="username" class="label">Username: </label>
+    <input type="text" placeholder="hackernews username" name = "username">
     <button type="submit">Add</button>
   </form>
 </div>

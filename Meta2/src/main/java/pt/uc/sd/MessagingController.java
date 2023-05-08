@@ -12,6 +12,9 @@ import org.springframework.web.util.HtmlUtils;
 import pt.uc.sd.forms.Client;
 import pt.uc.sd.forms.TokensParaPesquisa;
 import pt.uc.sd.forms.UrlsForQueue;
+import pt.uc.sd.meta1files.IBarrelRemoteInterface;
+import pt.uc.sd.meta1files.InterfaceDownloaders;
+import pt.uc.sd.meta1files.MessageServerInterface;
 import pt.uc.sd.models.Resultado;
 
 
@@ -163,6 +166,10 @@ public class MessagingController {
 
     @GetMapping("/")
     public String redirect() {
+
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(true);
+        session.setAttribute("logado", false);
         return "redirect:/search";
     }
 
@@ -339,8 +346,6 @@ public class MessagingController {
     }
     @PostMapping("/indexing")
     public String getUrl(@ModelAttribute UrlsForQueue url) {
-
-
         try {
             MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
             h.SendUrltoQueue(url.getUrl());

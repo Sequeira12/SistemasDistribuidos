@@ -1,4 +1,4 @@
-package pt.uc.sd;
+package pt.uc.sd.meta1files;
 
 import java.net.MalformedURLException;
 import java.rmi.*;

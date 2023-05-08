@@ -9,9 +9,10 @@
 <body>
 <nav>
     <ul class="nav-menu">
-        <li><a href="../stats">Administração</a></li>
-        <li><a href="../indexing">Indexação de novos Urls</a></li>
+        <li><a href="../stats">Admin</a></li>
+        <li><a href="../indexing">Index new urls</a></li>
         <li><a href="../linked">List pages connected to another</a></li>
+        <li><a href="../hackernewsindex">Index with hackernews</a></li>
         <li>
             <div class="nav-right-elements">
                 <span th:if="${logado}"><a href="../logout">   Logout   </a></span>
@@ -36,6 +37,8 @@
     <span th:if="${show}">
         <p th:text="'Results for token ' + ${tokens} + ':'" />
         <p th:text="${results}" />
+        <a th:href="@{../hackernews(search=${tokens})}">Indexar com hackernews</a>
+    </form>
     </span>
     <div th:each="result, it: ${resultados}">
         <div>

@@ -8,7 +8,9 @@ public class Client implements Serializable {
 
     public Client() {
     }
-
+    public Client(String username) {
+        this.username = username;
+    }
     public Client(String username, String password) {
         this.username = username;
         this.password = password;

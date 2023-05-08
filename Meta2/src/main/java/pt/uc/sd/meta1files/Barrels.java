@@ -1,4 +1,4 @@
-package pt.uc.sd;
+package pt.uc.sd.meta1files;
 
 import java.rmi.Naming;
 import java.rmi.RemoteException;
