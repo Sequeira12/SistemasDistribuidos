@@ -30,7 +30,20 @@ import java.util.concurrent.CompletableFuture;
 public class MessagingController {
 
     @RequestMapping("/stats")
-    public String start() {
+    public String start(Model model) {
+
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(true);
+
+
+
+        Client client = (Client) session.getAttribute("cliente");
+        String nome;
+        if (client == null || client.getUsername()==null) nome = "Not logged in";
+        else nome = client.getUsername();
+        System.out.println(session.getAttribute("logado") + "AHHAHAH");
+        model.addAttribute("username", nome);
+        model.addAttribute("logado", session.getAttribute("logado"));
         return "status";
     }
 
@@ -150,23 +163,10 @@ public class MessagingController {
 
     @GetMapping("/")
     public String redirect() {
-        return "redirect:/menu";
+        return "redirect:/search";
     }
 
-    @GetMapping("/menu")
-    public String showMenu(Model model) {
-        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpSession session = attr.getRequest().getSession(true);
-        if(session.getAttribute("logado") == null) session.setAttribute("logado", false);
-        Client client = (Client) session.getAttribute("cliente");
-        String name;
-        if (client == null || client.getUsername()==null) name = "Not logged in";
-        else name = client.getUsername();
-        model.addAttribute("username", name);
-        model.addAttribute("logado", session.getAttribute("logado"));
-        System.out.println(session.getAttribute("logado"));
-        return "menu";
-    }
+
     @GetMapping("/login")
     public String showLogin() {
         return "login";
@@ -194,7 +194,7 @@ public class MessagingController {
         } catch (RemoteException | NotBoundException | SQLException e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/menu";
+        return "redirect:/search";
     }
 
     @GetMapping("/register")
@@ -222,7 +222,7 @@ public class MessagingController {
             throw new RuntimeException(e);
         }
 
-        return "redirect:/menu";
+        return "redirect:/search";
     }
 
     @GetMapping("/logout")
@@ -231,7 +231,7 @@ public class MessagingController {
         HttpSession session = attr.getRequest().getSession(true);
         session.setAttribute("logado", false);
         session.removeAttribute("cliente");
-        return "redirect:/menu";
+        return "redirect:/search";
     }
 
     @GetMapping("/search")
@@ -248,6 +248,16 @@ public class MessagingController {
         boolean show_results = !Objects.equals(name, "false");
         int show_ligados = Integer.parseInt(ligados);
         String newtoken=token.replace("%20", " ");
+
+
+
+        Client client = (Client) session.getAttribute("cliente");
+        String nome;
+        if (client == null || client.getUsername()==null) nome = "Not logged in";
+        else nome = client.getUsername();
+        model.addAttribute("username", nome);
+        model.addAttribute("logado", session.getAttribute("logado"));
+        System.out.println(session.getAttribute("logado"));
 
         ArrayList<Resultado> novo = new ArrayList<>();
         if(show_results) {
@@ -311,23 +321,51 @@ public class MessagingController {
 
 
     @GetMapping("/indexing")
-    public String newIndexing() {
+    public String newIndexing(Model model) {
+
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(true);
+
+
+
+        Client client = (Client) session.getAttribute("cliente");
+        String nome;
+        if (client == null || client.getUsername()==null) nome = "Not logged in";
+        else nome = client.getUsername();
+        System.out.println(session.getAttribute("logado") + "AHHAHAH");
+        model.addAttribute("username", nome);
+        model.addAttribute("logado", session.getAttribute("logado"));
         return "indexing";
     }
     @PostMapping("/indexing")
     public String getUrl(@ModelAttribute UrlsForQueue url) {
+
+
         try {
             MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
             h.SendUrltoQueue(url.getUrl());
         } catch (RemoteException | NotBoundException | SQLException e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/menu";
+        return "redirect:/search";
     }
 
     @GetMapping("/linked")
     public String checkUrl(@RequestParam(name="show", required=false, defaultValue="false") String name,
                            @RequestParam(name="url", required=false, defaultValue="null") String url, Model model) {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(true);
+
+
+
+        Client client = (Client) session.getAttribute("cliente");
+        String nome;
+        if (client == null || client.getUsername()==null) nome = "Not logged in";
+        else nome = client.getUsername();
+        model.addAttribute("username", nome);
+        model.addAttribute("logado", session.getAttribute("logado"));
+
+
         boolean show_results = !Objects.equals(name, "false");
         List<String> lista = null;
         if (show_results){

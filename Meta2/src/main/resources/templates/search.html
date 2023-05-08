@@ -7,6 +7,22 @@
     <link rel="stylesheet" th:href="@{/css/search.css}">
 </head>
 <body>
+<nav>
+    <ul class="nav-menu">
+        <li><a href="../stats">Administração</a></li>
+        <li><a href="../indexing">Indexação de novos Urls</a></li>
+        <li><a href="../linked">List pages connected to another</a></li>
+        <li>
+            <div class="nav-right-elements">
+                <span th:if="${logado}"><a href="../logout">   Logout   </a></span>
+                <span th:if="${logado}"><p th:text="${username}" style="color: white"></p></span>
+                <span th:if="${not logado}"><a href="../login" class="login">Login/Register</a></span>
+            </div>
+        </li>
+    </ul>
+</nav>
+
+
 <div class="logo-container">
     <img th:src="@{images/googol.jpg}">
 </div>
