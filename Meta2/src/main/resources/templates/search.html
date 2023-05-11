@@ -34,12 +34,18 @@
     </form>
 </div>
 <div class="resultadoss">
-    <span th:if="${show}">
-        <p th:text="'Results for token ' + ${tokens} + ':'" />
+    <div th:if="${show}">
+         <div class="Hacker1">
+            <p th:text="'Results for token ' + ${tokens} + ':'" />
+         </div>
+        <div class="Hacker2">
+            <p><a th:href="@{../hackernews(search=${tokens})}" style="text-decoration: none; color: white; padding:2px">Indexar com hackernews</a></p>
+        </div>
         <p th:text="${results}" />
-        <a th:href="@{../hackernews(search=${tokens})}">Indexar com hackernews</a>
+
+
     </form>
-    </span>
+    </div>
     <div th:each="result, it: ${resultados}">
         <div>
             <a th:href="${result.getUrl()}" th:text="${result.getTitulo()}"></a>

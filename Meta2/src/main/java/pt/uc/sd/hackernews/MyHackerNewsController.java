@@ -138,6 +138,7 @@ public class MyHackerNewsController {
         }
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/search");
+        System.out.println("O rui nao faz um caralho");
         return modelAndView;
     }
 }
