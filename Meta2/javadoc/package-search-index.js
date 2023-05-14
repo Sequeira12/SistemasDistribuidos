@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"pt.uc.sd"},{"l":"pt.uc.sd.forms"},{"l":"pt.uc.sd.hackernews"},{"l":"pt.uc.sd.meta1files"},{"l":"pt.uc.sd.models"}];updateSearchResults();

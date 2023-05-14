@@ -32,6 +32,11 @@ import java.util.concurrent.CompletableFuture;
 @Controller
 public class MessagingController {
 
+    /**
+     * This function is used to send to user the page of the status of the application
+     * @param model -> used to send to the view information that it needs
+     * @return the stats page
+     */
     @RequestMapping("/stats")
     public String start(Model model) {
 
@@ -51,6 +56,10 @@ public class MessagingController {
     }
 
 
+    /**
+     * Funtion that controls a websocket to be able to update that status page in real time
+     * @param message -> message that the webserver gets from the website
+     */
     @MessageMapping("/message")
     @SendTo("/topic/messages")
     public CompletableFuture<Message> onMessage(Message message) {
@@ -163,7 +172,10 @@ public class MessagingController {
     }*/
 
 
-
+    /**
+     * a redirect function that redirects the user to the search page
+     * @return a redirect to the search page
+     */
     @GetMapping("/")
     public String redirect() {
 
@@ -173,11 +185,21 @@ public class MessagingController {
         return "redirect:/search";
     }
 
-
+    /**
+     * Send to user the login page
+     * @return the login page
+     */
     @GetMapping("/login")
     public String showLogin() {
         return "login";
     }
+
+    /**
+     *
+     * @param client -> information of the client that is trying to login
+     * @param model -> used to send to the view information that it needs
+     * @return a redirect to the search page
+     */
     @PostMapping("/login")
     public String getLogin(@ModelAttribute Client client, Model model) {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -204,10 +226,20 @@ public class MessagingController {
         return "redirect:/search";
     }
 
+    /**
+     * @return registar page
+     */
     @GetMapping("/register")
     public String showRegister() {
         return "register";
     }
+
+    /**
+     * Function that gets the client information and tryes to register him
+     * @param client that is trying to register
+     * @param model -> used to send to the view information that it needs
+     * @return a redirect to the search page
+     */
     @PostMapping("/register")
     public String getRegist(@ModelAttribute Client client, Model model) {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -232,6 +264,10 @@ public class MessagingController {
         return "redirect:/search";
     }
 
+    /**
+     * Function that disconnects an user to the session
+     * @return a redirect to the search page
+     */
     @GetMapping("/logout")
     public String showLogout() {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -241,6 +277,15 @@ public class MessagingController {
         return "redirect:/search";
     }
 
+    /**
+     * Function used to ask the user for tokens to display some results
+     * @param name -> if it is to show any result or if we are waiting for an user input
+     * @param token -> token that the user send
+     * @param pagina -> current page of results
+     * @param ligados -> where we want to show the linked urls to an url
+     * @param model -> used to send to the view information that it needs
+     * @return the search page
+     */
     @GetMapping("/search")
     public String showSearch(@RequestParam(name="show", required=false, defaultValue="false") String name,
                              @RequestParam(name="token", required=false, defaultValue="none") String token,
@@ -325,6 +370,12 @@ public class MessagingController {
         model.addAttribute("logado", logado);
         return "search";
     }
+
+    /**
+     * Gets the user input and sends a page with the results
+     * @param tokens that the user sent
+     * @return search page with the results
+     */
     @PostMapping("/search")
     public String postSearch(@ModelAttribute TokensParaPesquisa tokens) {
         String toReturn = "redirect:/search?show=true&page=1&token=";
@@ -332,7 +383,11 @@ public class MessagingController {
         return toReturn;
     }
 
-
+    /**
+     * Function used to ask an user for an url that he wants to index
+     * @param model -> used to send to the view information that it needs
+     * @return the indexing page
+     */
     @GetMapping("/indexing")
     public String newIndexing(Model model) {
 
@@ -350,6 +405,12 @@ public class MessagingController {
         model.addAttribute("logado", session.getAttribute("logado"));
         return "indexing";
     }
+
+    /**
+     * Function that gets the url the user send and send it to the queue
+     * @param url that the user send to index
+     * @return a redirect to the search page
+     */
     @PostMapping("/indexing")
     public String getUrl(@ModelAttribute UrlsForQueue url) {
         try {
@@ -361,6 +422,13 @@ public class MessagingController {
         return "redirect:/search";
     }
 
+    /**
+     * This function is used to ask an user for an url that he wants to see the urls linked to that one
+     * @param name -> variable used to see if it is to show the result or if we are waiting for an user input
+     * @param url -> url that the user wants to see the linked pages
+     * @param model -> used to send to the view information that it needs
+     * @return the linked page
+     */
     @GetMapping("/linked")
     public String checkUrl(@RequestParam(name="show", required=false, defaultValue="false") String name,
                            @RequestParam(name="url", required=false, defaultValue="null") String url, Model model) {
@@ -399,6 +467,12 @@ public class MessagingController {
 
         return "linkedpages";
     }
+
+    /**
+     * Gets the user input and sends the page with the urls he asked
+     * @param url that the user send
+     * @return the page with the results
+     */
     @PostMapping("/linked")
     public String giveUrl(@ModelAttribute UrlsForQueue url) {
         String toReturn = "redirect:/linked?show=true&url=";

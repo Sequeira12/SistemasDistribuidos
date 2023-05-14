@@ -23,6 +23,12 @@ import java.util.List;
 public class MyHackerNewsController {
     private static final Logger log = LoggerFactory.getLogger(MyHackerNewsController.class);
 
+    /**
+     *
+     * @param search -> indicates if it is to display any search results or
+     *               if we are waiting for the user to post a token to search
+     * @return search view of the token that the client set
+     */
     @GetMapping("/hackernews")
     private ModelAndView hackerNewsTopStories(@RequestParam(name = "search", required = false) String search) {
         System.out.println(search);
@@ -88,6 +94,12 @@ public class MyHackerNewsController {
         return modelAndView;
     }
 
+    /**
+     * This function is used to send the user the page for the indexing the stories of a certain hackernews user.
+     * @param model -> model that we use to send to the view the username of the client and
+     *              the state of session (if he is logged in or not)
+     * @return the view of the hackernewsindex page
+     */
     @GetMapping("/hackernewsindex")
     public ModelAndView newHackerIndexing(Model model) {
 
@@ -106,6 +118,11 @@ public class MyHackerNewsController {
         return modelAndView;
     }
 
+    /**
+     * This function is used to get the user that we want to index his stories
+     * @param client the user
+     * @return a redirect to the search page
+     */
     @PostMapping("/hackernewsindex")
     private ModelAndView hackerNewsTopStories(@ModelAttribute Client client) {
         try {
