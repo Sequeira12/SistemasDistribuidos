@@ -54,7 +54,7 @@
         <div th:if="${logado}">
             <a th:if="${ligados != it.index}" th:href="@{../search(show=${show}, page=${page}, token = ${tks},connected=${it.index})}">See</a>
             <div th:if="${it.index == ligados}" th:each=" p: ${lista}">
-                <a th:href="${p}" th:text="${p}"></a>
+                <a th:href="${p}" target="_blank" th:text="${p}"></a>
             </div>
             <a th:if="${it.index == ligados}" th:href="@{../search(show=${show}, page=${page}, token = ${tks},connected=-1)}">Don't see</a>
         </div>

@@ -272,19 +272,25 @@ public class MessagingController {
 
                 MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
                 ArrayList<String> linksAssociados = h.FindUrlWithToken(newtoken, logged);
+                System.out.println(linksAssociados.size());
+
                 if(linksAssociados!=null) {
-                    for (int i = 20 * page; i < linksAssociados.size() && i < 20 * (page + 1); i += 2) {
+                    for (int i = 20 * (page-1); i < linksAssociados.size() && i < 20 * (page); i += 2) {
                         String[] a = linksAssociados.get(i).split("\n\t");
 
                         String url = ((a[0].split(": "))[1]).strip();
+                        System.out.println(url);
                         String titulo = ((a[1].split(": "))[1]).strip();
+                        System.out.println(titulo);
                         String citacao = ((a[2].split(": "))[1]).strip();
+                        System.out.println(citacao);
                         if (show_ligados >= 0) {
                             //adicionar o top 10
-                            if (i == show_ligados * 2 + (20 * page)) {
+                            if (i == show_ligados * 2 + (20 * (page-1))) {
                                 String connectados = h.listPagesConnectedtoAnotherPage(url);
                                 ArrayList<String> lista = new ArrayList<>(Arrays.asList(connectados.split("Ligação: ")));
                                 model.addAttribute("lista", lista);
+                                //System.out.println(i + " " + url);
                                 //for(String k: lista) System.out.println(k);
                                 novo.add(new Resultado(titulo, citacao, url, lista));
                             } else {
