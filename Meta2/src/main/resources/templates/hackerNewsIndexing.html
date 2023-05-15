@@ -7,6 +7,7 @@
 </head>
 <body>
 
+
 <nav>
   <ul class="nav-menu">
     <li><a href="../stats">Administração</a></li>
@@ -25,9 +26,24 @@
 <div class="search-container">
   <form th:action="@{/hackernewsindex}" th:object="${Client}" method="post">
     <label for="username" class="label">Username: </label>
-    <input type="text" placeholder="hackernews username" name = "username">
-    <button type="submit">Add</button>
+    <input type="text" placeholder="hackernews username" name="username" id="text-form">
+    <button type="submit" id="submit-button">Add</button>
   </form>
+
 </div>
+<script th:if="${errorScript != null}" th:inline="javascript">
+  var preenchido=[[${errorScript}]];
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  async function executarTarefa() {
+    document.getElementById("text-form").placeholder=preenchido;
+    await sleep(10);
+    alert("Pedido recusado!\nSearche Module Indiponivel!!\nClique em OK para retornar!!");
+    document.getElementById("text-form").placeholder="hackernews username";
+  }
+  executarTarefa();
+</script>
+
 </body>
 </html>

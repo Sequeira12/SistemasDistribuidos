@@ -124,7 +124,11 @@ public class MyHackerNewsController {
      * @return a redirect to the search page
      */
     @PostMapping("/hackernewsindex")
-    private ModelAndView hackerNewsTopStories(@ModelAttribute Client client) {
+    private ModelAndView hackerNewsTopStories(@ModelAttribute Client client,Model model) {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(true);
+
+
         try {
             String username = client.getUsername();
             System.out.println(username);
@@ -151,8 +155,17 @@ public class MyHackerNewsController {
             }
 
         } catch (RemoteException | NotBoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Searche Module Indisponivel");
+
+            ModelAndView modelAndView = new ModelAndView();
+            model.addAttribute("errorScript",client.getUsername());
+            model.addAttribute("username", client.getUsername());
+            model.addAttribute("logado", session.getAttribute("logado"));
+            modelAndView.setViewName("hackerNewsIndexing");
+            return modelAndView;
         }
+
+
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/search");
         return modelAndView;

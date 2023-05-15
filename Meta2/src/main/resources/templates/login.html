@@ -14,11 +14,11 @@
         <form th:action="@{/login}" th:object="${Client}" method="post">
             <h2 class="title">Welcome</h2>
             <div class="input-group">
-                <input type="text" name="username" required>
+                <input type="text" id="user" name="username" required>
                 <label for="username" class="label">Username</label>
             </div>
             <div class="input-group">
-                <input type="password" name="password" required>
+                <input type="password" id="pass" name="password" required>
                 <label for="password" class="label">Password</label>
                 <span class="show-password"></span>
             </div>
@@ -30,6 +30,19 @@
         </form>
     </div>
 </div>
+
+<script th:if="${errorScript != null}" th:inline="javascript">
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    async function executarTarefa() {
+
+        await sleep(10);
+
+        alert("Login não registado!\nSearche Module Indisponivel!!\nClique em OK para retornar!!");
+        }
+    executarTarefa();
+</script>
 
 </body>
 </html>

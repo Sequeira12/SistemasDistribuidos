@@ -25,9 +25,23 @@
 <div class="search-container">
   <form th:action="@{/indexing}" th:object="${UrlsForQueue}" method="post">
     <label for="url" class="label">Url to add</label>
-    <input type="text" placeholder="url" name = "url">
-    <button type="submit">Add</button>
+    <input type="text" placeholder="url" name = "url" id="text-form">
+    <button type="submit"  id="submit-button">Add</button>
   </form>
 </div>
+<script th:if="${errorScript != null}" th:inline="javascript">
+  var preenchido=[[${errorScript}]];
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  async function executarTarefa() {
+    document.getElementById("text-form").placeholder=preenchido;
+    await sleep(10);
+
+    alert("Pedido recusado!\nSearche Module Indiponivel!!\nClique em OK para retornar!!");
+    document.getElementById("text-form").placeholder="url";
+  }
+  executarTarefa();
+</script>
 </body>
 </html>

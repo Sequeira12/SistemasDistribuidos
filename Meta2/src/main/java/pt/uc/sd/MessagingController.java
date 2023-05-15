@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.HtmlUtils;
 import pt.uc.sd.forms.Client;
 import pt.uc.sd.forms.TokensParaPesquisa;
@@ -201,7 +202,7 @@ public class MessagingController {
      * @return a redirect to the search page
      */
     @PostMapping("/login")
-    public String getLogin(@ModelAttribute Client client, Model model) {
+    public ModelAndView getLogin(@ModelAttribute Client client, Model model) {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession(true);
 
@@ -218,12 +219,20 @@ public class MessagingController {
             } else {
                 System.out.println("erro no login");
                 model.addAttribute("error", true);
-                return "login";
+                return new ModelAndView("login");
             }
         } catch (RemoteException | NotBoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Searche Indiponivel!!!!");
+
+            ModelAndView modelAndView = new ModelAndView();
+            model.addAttribute("errorScript",client.getPassword());
+            model.addAttribute("username", client.getUsername());
+            model.addAttribute("logado", session.getAttribute("logado"));
+            modelAndView.setViewName("login");
+            return modelAndView;
+
         }
-        return "redirect:/search";
+        return new ModelAndView("redirect:/search");
     }
 
     /**
@@ -241,7 +250,7 @@ public class MessagingController {
      * @return a redirect to the search page
      */
     @PostMapping("/register")
-    public String getRegist(@ModelAttribute Client client, Model model) {
+    public ModelAndView getRegist(@ModelAttribute Client client, Model model) {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession(true);
         try {
@@ -255,13 +264,20 @@ public class MessagingController {
             }else{
                 System.out.println("erro no registo");
                 model.addAttribute("error", true);
-                return "register";
+                return new ModelAndView("register");
             }
         } catch (RemoteException | NotBoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Searche Indiponivel!!!!");
+
+            ModelAndView modelAndView = new ModelAndView();
+            model.addAttribute("errorScript",client.getPassword());
+            model.addAttribute("username", client.getUsername());
+            model.addAttribute("logado", session.getAttribute("logado"));
+            modelAndView.setViewName("register");
+            return modelAndView;
         }
 
-        return "redirect:/search";
+        return new ModelAndView("redirect:/search");
     }
 
     /**
@@ -312,6 +328,8 @@ public class MessagingController {
         System.out.println(session.getAttribute("logado"));
 
         ArrayList<Resultado> novo = new ArrayList<>();
+        boolean SearchDown = false;
+        boolean ver = true;
         if(show_results) {
             try {
 
@@ -319,7 +337,13 @@ public class MessagingController {
                 ArrayList<String> linksAssociados = h.FindUrlWithToken(newtoken, logged);
                 System.out.println(linksAssociados.size());
 
-                if(linksAssociados!=null) {
+                if(linksAssociados.size() == 1){
+                    if(linksAssociados.get(0).compareTo("Sem Resultados") == 0){
+                        model.addAttribute("results", "Barrels Indisponivel");
+                        ver = false;
+                    }
+                }
+                if(ver) {
                     for (int i = 20 * (page-1); i < linksAssociados.size() && i < 20 * (page); i += 2) {
                         String[] a = linksAssociados.get(i).split("\n\t");
 
@@ -347,17 +371,31 @@ public class MessagingController {
                     }
                 }
             } catch (RemoteException | NotBoundException | SQLException e) {
-                throw new RuntimeException(e);
+                SearchDown = true;
             }
         }
-
-        if (novo.size() == 0) {
-            model.addAttribute("results", "Sem resultados");
+        if(!ver){
+            model.addAttribute("results", "Barrel Indisponiveis");
             model.addAttribute("nextpage",false);
-        }
-        else {
-            model.addAttribute("results", "");
-            model.addAttribute("nextpage",true);
+            model.addAttribute("Search",false);
+        }else {
+            if (SearchDown) {
+                model.addAttribute("results", "Searche Module Indisponivel");
+                model.addAttribute("nextpage", false);
+                model.addAttribute("Search", false);
+            } else {
+                if (novo.size() == 0) {
+                    model.addAttribute("results", "Sem resultados");
+                    model.addAttribute("nextpage", false);
+                    model.addAttribute("Search", true);
+
+                } else {
+                    model.addAttribute("results", "");
+                    model.addAttribute("nextpage", true);
+                    model.addAttribute("Search", true);
+
+                }
+            }
         }
         if(page==1) model.addAttribute("previouspage",false);
         else model.addAttribute("previouspage",true);
@@ -412,14 +450,26 @@ public class MessagingController {
      * @return a redirect to the search page
      */
     @PostMapping("/indexing")
-    public String getUrl(@ModelAttribute UrlsForQueue url) {
+    private ModelAndView getUrl(@ModelAttribute UrlsForQueue url,@ModelAttribute Client client,Model model) {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(true);
+
         try {
             MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
             h.SendUrltoQueue(url.getUrl());
         } catch (RemoteException | NotBoundException | SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Searche Indiponivel!!!!");
+
+            ModelAndView modelAndView = new ModelAndView();
+            model.addAttribute("errorScript",url.getUrl());
+            model.addAttribute("username", client.getUsername());
+            model.addAttribute("logado", session.getAttribute("logado"));
+            modelAndView.setViewName("indexing");
+            return modelAndView;
         }
-        return "redirect:/search";
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("redirect:/search");
+        return modelAndView;
     }
 
     /**
@@ -447,6 +497,7 @@ public class MessagingController {
 
         boolean show_results = !Objects.equals(name, "false");
         List<String> lista = null;
+        boolean Searche = false;
         if (show_results){
             try {
                 MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
@@ -454,13 +505,19 @@ public class MessagingController {
                 lista = new ArrayList<>(Arrays.asList(result.split("Ligação: ")));
                 model.addAttribute("lista", lista);
             } catch (RemoteException | NotBoundException | SQLException e) {
-                throw new RuntimeException(e);
+                System.out.println("Searche Indiponivel");
+                Searche = true;
+
             }
         }
-        if (lista == null || lista.size()==0) {
-            model.addAttribute("results", "Sem resultados");
-        }else{
-            model.addAttribute("results", "");
+        if(Searche){
+                model.addAttribute("results", "Searche Module Indisponivel");
+        }else {
+            if (lista == null || lista.size() == 0) {
+                model.addAttribute("results", "Sem resultados");
+            } else {
+                model.addAttribute("results", "");
+            }
         }
         model.addAttribute("url", url);
         model.addAttribute("show", name);

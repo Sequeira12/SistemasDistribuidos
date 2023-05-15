@@ -27,5 +27,19 @@
 </div>
 
 <script src="https://kit.fontawesome.com/xxxxxx.js" crossorigin="anonymous"></script>
+
+
+<script th:if="${errorScript != null}" th:inline="javascript">
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    async function executarTarefa() {
+
+        await sleep(10);
+
+        alert("Registo não registado!\nSearche Module Indisponivel!!\nClique em OK para retornar!!");
+    }
+    executarTarefa();
+</script>
 </body>
 </html>

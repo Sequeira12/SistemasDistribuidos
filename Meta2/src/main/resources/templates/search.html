@@ -39,7 +39,7 @@
             <p th:text="'Results for token ' + ${tokens} + ':'" />
          </div>
         <div class="Hacker2">
-            <p><a th:href="@{../hackernews(search=${tokens})}" style="text-decoration: none; color: white; padding:2px">Indexar com hackernews</a></p>
+            <span th:if="${Search}"><p><a th:href="@{../hackernews(search=${tokens})}" style="text-decoration: none; color: white; padding:2px">Indexar com hackernews</a></p>
         </div>
         <p th:text="${results}" />
 
@@ -72,5 +72,6 @@
     </span>
 
 </div>
+
 </body>
 </html>
