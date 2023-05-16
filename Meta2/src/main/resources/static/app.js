@@ -74,6 +74,12 @@ $(function () {
     e.preventDefault();
   });
 
+  $("#connect").click(() => {
+    connect();
+  });
+  $("#disconnect").click(() => {
+    disconnect();
+  });
   $("#send").click(() => {
     sendMessage();
   });
