@@ -338,8 +338,20 @@ public class MessagingController {
                         v = false;
                     }
                 }
+                System.out.println(linksAssociados.size());
+                //se tiver logado o linksAssociados tem os links e os links associados a ele(see dont see)
+                //se nao tiver logado so tem os links associados
+                int salto, top;
+                if(logado){
+                    salto=2;
+                    top=20;
+                }else{
+                    salto=1;
+                    top=10;
+                }
+
                 if(ver && v) {
-                    for (int i = 20 * (page-1); i < linksAssociados.size() && i < 20 * (page); i += 2) {
+                    for (int i = top * (page-1); i < linksAssociados.size() && i < top * (page); i += salto) {
                         String[] a = linksAssociados.get(i).split("\n\t");
 
                         String url = ((a[0].split(": "))[1]).strip();
@@ -362,7 +374,6 @@ public class MessagingController {
                             }
 
                         } else novo.add(new Resultado(titulo, citacao, url, null));
-
                     }
                 }
             } catch (RemoteException | NotBoundException | SQLException e) {
