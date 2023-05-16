@@ -306,6 +306,10 @@ public class SearcheModule extends UnicastRemoteObject implements MessageServerI
                 String No = "Sem Resultados";
                 connectados.add(No);
             }
+            if(connectados==null || connectados.size() == 0){
+                connectados = new ArrayList<>();
+                connectados.add("Nada");
+            }
             return connectados;
         } catch (RemoteException a) {
 

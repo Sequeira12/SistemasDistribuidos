@@ -73,13 +73,7 @@ $(function () {
   $("form").on('submit', (e) => {
     e.preventDefault();
   });
-  // Exercise 3.
-  $("#connect").click(() => {
-    connect();
-  });
-  $("#disconnect").click(() => {
-    disconnect();
-  });
+
   $("#send").click(() => {
     sendMessage();
   });

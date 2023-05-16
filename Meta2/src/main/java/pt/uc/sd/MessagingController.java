@@ -87,9 +87,7 @@ public class MessagingController {
                         Final.append(infoB);
                     }
 
-
                     Final.append("||");
-
                     for (int i = 0; i < barrels.size(); i++) {
                         String endpoint = RemoteObject.toStub(barrels.get(i)).toString();
                         // Extrai o IP e a porta do endpoint
@@ -111,7 +109,7 @@ public class MessagingController {
                     h.setUpdated(false);
                     return new Message(HtmlUtils.htmlEscape(f));
                 } else {
-                    if (h.getUpdated()==true) {
+                    if (h.getUpdated()) {
                         System.out.println(h.getUpdated());
                         ArrayList<InterfaceDownloaders> downloaders = h.getDownloaders();
                         ArrayList<IBarrelRemoteInterface> barrels = h.getBarrels();
@@ -164,13 +162,6 @@ public class MessagingController {
             }
         });
     }
-/*
-    @MessageMapping("/message")
-    @SendTo("/topic/messages")
-    public Message onMessage(Message message) throws InterruptedException {
-        Thread.sleep(1000);
-        return new Message(HtmlUtils.htmlEscape(message.content()));
-    }*/
 
 
     /**
@@ -330,20 +321,24 @@ public class MessagingController {
         ArrayList<Resultado> novo = new ArrayList<>();
         boolean SearchDown = false;
         boolean ver = true;
+        boolean v = true;
         if(show_results) {
             try {
 
                 MessageServerInterface h = (MessageServerInterface) LocateRegistry.getRegistry(7001).lookup("SD");
                 ArrayList<String> linksAssociados = h.FindUrlWithToken(newtoken, logged);
-                System.out.println(linksAssociados.size());
 
                 if(linksAssociados.size() == 1){
                     if(linksAssociados.get(0).compareTo("Sem Resultados") == 0){
                         model.addAttribute("results", "Barrels Indisponivel");
                         ver = false;
                     }
+                    if(linksAssociados.get(0).compareTo("Nada") == 0){
+                        model.addAttribute("results", "Sem resultados");
+                        v = false;
+                    }
                 }
-                if(ver) {
+                if(ver && v) {
                     for (int i = 20 * (page-1); i < linksAssociados.size() && i < 20 * (page); i += 2) {
                         String[] a = linksAssociados.get(i).split("\n\t");
 
@@ -374,13 +369,18 @@ public class MessagingController {
                 SearchDown = true;
             }
         }
+        if(!v){
+            model.addAttribute("results", "Sem resultados");
+            model.addAttribute("nextpage",false);
+            model.addAttribute("Search",false);
+        }
         if(!ver){
-            model.addAttribute("results", "Barrel Indisponiveis");
+            model.addAttribute("results", "Barrels Indisponiveis");
             model.addAttribute("nextpage",false);
             model.addAttribute("Search",false);
         }else {
             if (SearchDown) {
-                model.addAttribute("results", "Searche Module Indisponivel");
+                model.addAttribute("results", "Search Module Indisponível");
                 model.addAttribute("nextpage", false);
                 model.addAttribute("Search", false);
             } else {
@@ -511,7 +511,7 @@ public class MessagingController {
             }
         }
         if(Searche){
-                model.addAttribute("results", "Searche Module Indisponivel");
+                model.addAttribute("results", "Search Module Indisponível");
         }else {
             if (lista == null || lista.size() == 0) {
                 model.addAttribute("results", "Sem resultados");
