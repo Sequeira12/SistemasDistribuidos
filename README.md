@@ -61,7 +61,7 @@ caso o ficheiro seja um barrel ou um downloader deve meter o id dele à frente
 java -jar nomedoficheiro.jar 1111
 ```
 
-
+Para executar a apicação com a interface web (SpringBoot) basta, para além dos programas acima referidos, correr o ficheiro googol.java
 
 
 Assim, tem tudo o que precisa para correr a aplicação.
